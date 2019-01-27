@@ -15,17 +15,31 @@ function Utils.KillAllObjectsInArea(surface, positionedBoundingBox, killerEntity
     end
 end
 
-function Utils.ApplyBoundingBoxToPosition(centrePos, boundingBox)
-    return {
-        left_top = {
-            x = centrePos.x + boundingBox.left_top.x,
-            y = centrePos.y + boundingBox.left_top.y
-        },
-        right_bottom = {
-            x = centrePos.x + boundingBox.right_bottom.x,
-            y = centrePos.y + boundingBox.right_bottom.y
-        }
-    }
+function Utils.ApplyBoundingBoxToPosition(centrePos, boundingBox, direction)
+	if direction == nil or direction == defines.direction.north then
+		return {
+			left_top = {
+				x = centrePos.x + boundingBox.left_top.x,
+				y = centrePos.y + boundingBox.left_top.y
+			},
+			right_bottom = {
+				x = centrePos.x + boundingBox.right_bottom.x,
+				y = centrePos.y + boundingBox.right_bottom.y
+			}
+		}
+	else
+		game.print("direction not handled yet")
+		return {
+			left_top = {
+				x = centrePos.x + boundingBox.left_top.x,
+				y = centrePos.y + boundingBox.left_top.y
+			},
+			right_bottom = {
+				x = centrePos.x + boundingBox.right_bottom.x,
+				y = centrePos.y + boundingBox.right_bottom.y
+			}
+		}
+	end
 end
 
 function Utils.ApplyOffsetToPosition(position, offset)
@@ -141,19 +155,6 @@ function Utils.CalculateBoundingBoxFromPositionAndRange(position, range)
     }
 end
 
-function Utils.CalculatePositionedBoundingBox(centrePos, boundingBox)
-    return {
-        left_top = {
-            x = centrePos.x + boundingBox.left_top.x,
-            y = centrePos.y + boundingBox.left_top.y,
-        },
-        right_bottom = {
-            x = centrePos.x + boundingBox.right_bottom.x,
-            y = centrePos.y + boundingBox.right_bottom.y,
-        }
-    }
-end
-
 function Utils.CalculateTilesUnderPositionedBoundingBox(positionedBoundingBox)
     local tiles = {}
     for x = positionedBoundingBox.left_top.x, positionedBoundingBox.right_bottom.x do
@@ -162,6 +163,14 @@ function Utils.CalculateTilesUnderPositionedBoundingBox(positionedBoundingBox)
         end
     end
     return tiles
+end
+
+function Utils.GetEntityReturnedToInventoryName(entity)
+	if entity.prototype.mineable_properties  ~= nil and entity.prototype.mineable_properties.products ~= nil and #entity.prototype.mineable_properties.products > 0 then
+		return entity.prototype.mineable_properties.products[1].name
+	else
+		return entity.name
+	end
 end
 
 return Utils
