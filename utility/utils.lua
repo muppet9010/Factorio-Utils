@@ -46,13 +46,9 @@ function Utils.ApplyOffsetToPosition(position, offset)
     if offset == nil then return position end
     if offset.x ~= nil then
         position.x = position.x + offset.x
-    elseif offset[1] ~= nil then
-        position.x = position.x + offset[1]
     end
     if offset.y ~= nil then
         position.y = position.y + offset.y
-    elseif offset[2] ~= nil then
-        position.y = position.y + offset[2]
     end
     return position
 end
@@ -159,7 +155,7 @@ function Utils.CalculateTilesUnderPositionedBoundingBox(positionedBoundingBox)
     local tiles = {}
     for x = positionedBoundingBox.left_top.x, positionedBoundingBox.right_bottom.x do
         for y = positionedBoundingBox.left_top.y, positionedBoundingBox.right_bottom.y do
-            table.insert(tiles, {x = x, y = y})
+            table.insert(tiles, {x = math.floor(x), y = math.floor(y)})
         end
     end
     return tiles
@@ -171,6 +167,82 @@ function Utils.GetEntityReturnedToInventoryName(entity)
 	else
 		return entity.name
 	end
+end
+
+function Utils.TableKeyToArray(aTable)
+	local newArray = {}
+	for key, value in pairs(aTable) do
+		table.insert(newArray, key)
+	end
+	return newArray
+end
+
+Utils.tablesLogged = {}
+function Utils.TableContentsToJSON(target_table, name, indent, stop_traversing)
+	indent = indent or 1
+	local indentstring = string.rep(" ", (indent * 4))
+	local table_id = string.gsub(tostring(target_table), "table: ", "")
+	Utils.tablesLogged[table_id] = "logged"
+	local table_contents = ""
+	if Utils.GetTableLength(target_table) > 0 then
+		for k,v in pairs(target_table) do
+			local key, value
+			if type(k) == "string" or type(k) == "number" or type(k) == "boolean" then
+				key = '"' ..tostring(k) .. '"'
+			elseif type(k) == "nil" then
+				key = '"nil"'
+			elseif type(k) == "table" then
+				local sub_table_id = string.gsub(tostring(k), "table: ", "")
+				if stop_traversing == true then
+					key = '"CIRCULAR LOOP TABLE'
+				else
+					local sub_stop_traversing = nil
+					if Utils.tablesLogged[sub_table_id] ~= nil then
+						sub_stop_traversing = true
+					end
+					key = '{\r\n' .. Utils.TableContentsToJSON(k, name, indent + 1, sub_stop_traversing) .. '\r\n' .. indentstring .. '}'
+				end
+			elseif type(k) == "function" then
+				key = '"' .. tostring(k) .. '"'
+			else
+				key = '"unhandled type: ' .. type(k) .. '"'
+			end
+			if type(v) == "string" or type(v) == "number" or type(v) == "boolean" then
+				value = '"' .. tostring(v) .. '"'
+			elseif type(v) == "nil" then
+				value = '"nil"'
+			elseif type(v) == "table" then
+				local sub_table_id = string.gsub(tostring(v), "table: ", "")
+				if stop_traversing == true then
+					value = '"CIRCULAR LOOP TABLE'
+				else
+					local sub_stop_traversing = nil
+					if Utils.tablesLogged[sub_table_id] ~= nil then
+						sub_stop_traversing = true
+					end
+					value = '{\r\n' .. Utils.TableContentsToJSON(v, name, indent + 1, sub_stop_traversing) .. '\r\n' .. indentstring .. '}'
+				end
+			elseif type(v) == "function" then
+				value = '"' .. tostring(v) .. '"'
+			else
+				value = '"unhandled type: ' .. type(v) .. '"'
+			end
+			if table_contents ~= "" then table_contents = table_contents .. ',' .. '\r\n' end
+			table_contents = table_contents .. indentstring .. tostring(key) .. ':' .. tostring(value)
+		end
+	else
+		table_contents = indentstring .. '"empty"'
+	end
+	if indent == 1 then
+		Utils.tablesLogged = {}
+		return '"' .. name .. '":{' .. '\r\n' .. table_contents .. '\r\n' .. '}'
+	else
+		return table_contents
+	end
+end
+
+function Utils.FormatPositionTableToString(positionTable)
+	return positionTable.x .. "," .. positionTable.y
 end
 
 return Utils
