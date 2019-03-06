@@ -15,8 +15,8 @@ function Utils.KillAllObjectsInArea(surface, positionedBoundingBox, killerEntity
     end
 end
 
-function Utils.ApplyBoundingBoxToPosition(centrePos, boundingBox, direction)
-	if direction == nil or direction == defines.direction.north then
+function Utils.ApplyBoundingBoxToPosition(centrePos, boundingBox, orientation)
+	if orientation == nil or orientation == 0 or orientation == 1 then
 		return {
 			left_top = {
 				x = centrePos.x + boundingBox.left_top.x,
@@ -25,21 +25,51 @@ function Utils.ApplyBoundingBoxToPosition(centrePos, boundingBox, direction)
 			right_bottom = {
 				x = centrePos.x + boundingBox.right_bottom.x,
 				y = centrePos.y + boundingBox.right_bottom.y
+			}
+		}
+	elseif orientation == 0.25 or orientation == 0.5 or orientation == 0.75 then
+		local rotatedPoint1 = Utils.RotatePositionAround0(orientation, boundingBox.left_top)
+		local rotatedPoint2 = Utils.RotatePositionAround0(orientation, boundingBox.right_bottom)
+		local rotatedBoundingBox = Utils.CalculateBoundingBoxFrom2Points(rotatedPoint1, rotatedPoint2)
+		return {
+			left_top = {
+				x = centrePos.x + rotatedBoundingBox.left_top.x,
+				y = centrePos.y + rotatedBoundingBox.left_top.y
+			},
+			right_bottom = {
+				x = centrePos.x + rotatedBoundingBox.right_bottom.x,
+				y = centrePos.y + rotatedBoundingBox.right_bottom.y
 			}
 		}
 	else
-		game.print("direction not handled yet")
-		return {
-			left_top = {
-				x = centrePos.x + boundingBox.left_top.x,
-				y = centrePos.y + boundingBox.left_top.y
-			},
-			right_bottom = {
-				x = centrePos.x + boundingBox.right_bottom.x,
-				y = centrePos.y + boundingBox.right_bottom.y
-			}
-		}
+		game.print("Error: Diagonal orientations not supported by Utils.ApplyBoundingBoxToPosition()")
 	end
+end
+
+function Utils.RotatePositionAround0(orientation, position)
+	local deg = orientation * 360
+	local rad = math.rad(deg)
+	local cosValue = math.cos(rad)
+	local sinValue = math.sin(rad)
+	local rotatedX = position.x*cosValue - position.y*sinValue;
+	local rotatedY = position.x*sinValue + position.y*cosValue;
+	return {x=rotatedX, y=rotatedY}
+end
+
+function Utils.CalculateBoundingBoxFrom2Points(point1, point2)
+    local minX = nil
+    local maxX = nil
+    local minY = nil
+    local maxY = nil
+    if minX == nil or point1.x < minX then minX = point1.x end
+    if maxX == nil or point1.x > maxX then maxX = point1.x end
+    if minY == nil or point1.y < minY then minY = point1.y end
+    if maxY == nil or point1.y > maxY then maxY = point1.y end
+    if minX == nil or point2.x < minX then minX = point2.x end
+    if maxX == nil or point2.x > maxX then maxX = point2.x end
+    if minY == nil or point2.y < minY then minY = point2.y end
+    if maxY == nil or point2.y > maxY then maxY = point2.y end
+    return {left_top = {x = minX, y = minY}, right_bottom = {x = maxX, y = maxY}}
 end
 
 function Utils.ApplyOffsetToPosition(position, offset)
@@ -152,12 +182,12 @@ function Utils.CalculateBoundingBoxFromPositionAndRange(position, range)
 end
 
 function Utils.CalculateTilesUnderPositionedBoundingBox(positionedBoundingBox)
-    local tiles = {}
-    for x = positionedBoundingBox.left_top.x, positionedBoundingBox.right_bottom.x do
-        for y = positionedBoundingBox.left_top.y, positionedBoundingBox.right_bottom.y do
-            table.insert(tiles, {x = math.floor(x), y = math.floor(y)})
-        end
-    end
+	local tiles = {}
+	for x = positionedBoundingBox.left_top.x, positionedBoundingBox.right_bottom.x do
+		for y = positionedBoundingBox.left_top.y, positionedBoundingBox.right_bottom.y do
+			table.insert(tiles, {x = math.floor(x), y = math.floor(y)})
+		end
+	end
     return tiles
 end
 
@@ -171,7 +201,7 @@ end
 
 function Utils.TableKeyToArray(aTable)
 	local newArray = {}
-	for key, value in pairs(aTable) do
+	for key in pairs(aTable) do
 		table.insert(newArray, key)
 	end
 	return newArray
@@ -243,6 +273,17 @@ end
 
 function Utils.FormatPositionTableToString(positionTable)
 	return positionTable.x .. "," .. positionTable.y
+end
+
+function Utils.GetTableKeyWithValue(theTable, value)
+	for k, v in pairs(theTable) do
+		if v == value then return k end
+	end
+	return nil
+end
+
+function Utils.GetRandomFloatInRange(lower, upper)
+    return lower + math.random() * (upper - lower);
 end
 
 return Utils

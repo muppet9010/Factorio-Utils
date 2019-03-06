@@ -1,0 +1,11 @@
+{
+    "name": "mod_name",
+    "version": "17.0.0",
+    "title": "MOD NAME",
+    "author": "Muppet9010",
+    "contact": "",
+    "homepage": "",
+    "factorio_version": "0.17",
+    "dependencies": ["base >= 0.17"],
+    "description": "DESCRIPTON"
+}
