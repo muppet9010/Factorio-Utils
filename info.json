@@ -1,10 +1,10 @@
 {
-    "name": "mod_name",
+    "name": "MOD_NAME",
     "version": "17.0.0",
     "title": "MOD NAME",
     "author": "Muppet9010",
     "contact": "",
-    "homepage": "",
+    "homepage": "MOD PORTAL LINK",
     "factorio_version": "0.17",
     "dependencies": ["base >= 0.17"],
     "description": "DESCRIPTON"
