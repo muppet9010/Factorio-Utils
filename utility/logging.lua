@@ -5,13 +5,15 @@ function Logging.PositionToString(position)
 	return "(" .. position.x .. ", " .. position.y ..")"
 end
 
-function Logging.Log(text)
+function Logging.Log(text, enabled)
+	if enabled ~= nil and not enabled then return end
 	if game ~= nil then
 		game.write_file("Biter_Attack_Waves_logOutput.txt", tostring(text) .. "\r\n", true)
 	end
 end
 
-function Logging.LogPrint(text)
+function Logging.LogPrint(text, enabled)
+	if enabled ~= nil and not enabled then return end
 	if game ~= nil then
 		game.print(tostring(text))
 	end
