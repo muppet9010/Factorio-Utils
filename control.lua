@@ -1,21 +1,19 @@
-UpdateSetting = function(settingName)
+local function UpdateSetting(settingName)
     --if settingName == "xxxxx" or settingName == nil then
     --	local x = tonumber(settings.global["xxxxx"].value)
     --end
 end
 
-CreateGlobals = function()
-    if global.Mod == nil then
-        global.Mod = {}
-    end
+local function CreateGlobals()
+    global.Mod = global.Mod or {}
 end
 
-OnStartup = function()
+local function OnStartup()
     CreateGlobals()
     UpdateSetting(nil)
 end
 
-OnSettingChanged = function(event)
+local function OnSettingChanged(event)
     UpdateSetting(event.setting)
 end
 
