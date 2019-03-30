@@ -332,4 +332,69 @@ function Utils.WasCreativeModeInstantDeconstructionUsed(event)
     end
 end
 
+function Utils.GetBiterType(modEnemyProbabilities, spawnerType, evolution)
+    if modEnemyProbabilities[spawnerType] == nil then
+        modEnemyProbabilities[spawnerType] = {}
+    end
+    if modEnemyProbabilities[spawnerType].calculatedEvolution == nil or math.abs(modEnemyProbabilities[spawnerType].calculatedEvolution - evolution) > 0.001 then
+        modEnemyProbabilities[spawnerType].calculatedEvolution = evolution
+        modEnemyProbabilities[spawnerType].probabilities = Utils.CalculateSpecificBiterSelectionProbabilities(spawnerType, evolution)
+    end
+
+    local randNum = math.random()
+    for topChance, unit in pairs(modEnemyProbabilities[spawnerType].probabilities) do
+        if topChance > 0 and topChance >= randNum then
+            return unit
+        end
+    end
+end
+
+function Utils.CalculateSpecificBiterSelectionProbabilities(spawnerType, currentEvolution)
+    local rawUnitProbs = game.entity_prototypes[spawnerType].result_units
+    local currentEvolutionProbabilities = {}
+    local currentEvolutionProbabilitiesTop = 0
+
+    for _, possibility in pairs(rawUnitProbs) do
+        local startSpawnPointIndex = nil
+        for spawnPointIndex, spawnPoint in pairs(possibility.spawn_points) do
+            if spawnPoint.evolution_factor <= currentEvolution then
+                startSpawnPointIndex = spawnPointIndex
+            end
+        end
+        if startSpawnPointIndex ~= nil then
+            local startSpawnPoint = possibility.spawn_points[startSpawnPointIndex]
+            local endSpawnPoint
+            if possibility.spawn_points[startSpawnPointIndex + 1] ~= nil then
+                endSpawnPoint = possibility.spawn_points[startSpawnPointIndex + 1]
+            else
+                endSpawnPoint = {evolution_factor = 1.0, weight = startSpawnPoint.weight}
+            end
+
+            local weight
+            if startSpawnPoint.evolution_factor ~= endSpawnPoint.evolution_factor then
+                local evoRange = endSpawnPoint.evolution_factor - startSpawnPoint.evolution_factor
+                local weightRange = endSpawnPoint.weight - startSpawnPoint.weight
+                local evoRangeMultiplier = (currentEvolution - startSpawnPoint.evolution_factor) / evoRange
+                weight = (weightRange * evoRangeMultiplier) + startSpawnPoint.weight
+            else
+                weight = startSpawnPoint.weight
+            end
+            local probability = currentEvolutionProbabilitiesTop + weight
+            currentEvolutionProbabilities[probability] = possibility.unit
+            currentEvolutionProbabilitiesTop = probability
+        end
+    end
+    log(spawnerType)
+    log(serpent.block(currentEvolutionProbabilities))
+
+    local normalisedcurrentEvolutionProbabilities = {}
+    local normaliseMultiplier = 1 / currentEvolutionProbabilitiesTop
+    for probability, unit in pairs(currentEvolutionProbabilities) do
+        normalisedcurrentEvolutionProbabilities[normaliseMultiplier * probability] = unit
+    end
+    log(serpent.block(normalisedcurrentEvolutionProbabilities))
+
+    return normalisedcurrentEvolutionProbabilities
+end
+
 return Utils
