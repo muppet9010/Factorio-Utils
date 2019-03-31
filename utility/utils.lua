@@ -1,5 +1,5 @@
 local Utils = {}
---local Logging = require("scripts/logging")
+--local Logging = require("utility/logging")
 
 function Utils.KillAllObjectsInArea(surface, positionedBoundingBox, killerEntity, collisionBoxOnlyEntities)
     local entitiesFound = surface.find_entities(positionedBoundingBox)
@@ -241,12 +241,15 @@ function Utils.TableKeyToArray(aTable)
     return newArray
 end
 
-Utils.tablesLogged = {}
-function Utils.TableContentsToJSON(target_table, name, indent, stop_traversing)
+function Utils.TableContentsToJSON(target_table, name)
+    local tablesLogged = {}
+    return Utils._TableContentsToJSON(target_table, name, tablesLogged)
+end
+function Utils._TableContentsToJSON(target_table, name, tablesLogged, indent, stop_traversing)
     indent = indent or 1
     local indentstring = string.rep(" ", (indent * 4))
     local table_id = string.gsub(tostring(target_table), "table: ", "")
-    Utils.tablesLogged[table_id] = "logged"
+    tablesLogged[table_id] = "logged"
     local table_contents = ""
     if Utils.GetTableLength(target_table) > 0 then
         for k, v in pairs(target_table) do
@@ -261,10 +264,10 @@ function Utils.TableContentsToJSON(target_table, name, indent, stop_traversing)
                     key = '"CIRCULAR LOOP TABLE'
                 else
                     local sub_stop_traversing = nil
-                    if Utils.tablesLogged[sub_table_id] ~= nil then
+                    if tablesLogged[sub_table_id] ~= nil then
                         sub_stop_traversing = true
                     end
-                    key = "{\r\n" .. Utils.TableContentsToJSON(k, name, indent + 1, sub_stop_traversing) .. "\r\n" .. indentstring .. "}"
+                    key = "{\r\n" .. Utils._TableContentsToJSON(k, name, tablesLogged, indent + 1, sub_stop_traversing) .. "\r\n" .. indentstring .. "}"
                 end
             elseif type(k) == "function" then
                 key = '"' .. tostring(k) .. '"'
@@ -281,10 +284,10 @@ function Utils.TableContentsToJSON(target_table, name, indent, stop_traversing)
                     value = '"CIRCULAR LOOP TABLE'
                 else
                     local sub_stop_traversing = nil
-                    if Utils.tablesLogged[sub_table_id] ~= nil then
+                    if tablesLogged[sub_table_id] ~= nil then
                         sub_stop_traversing = true
                     end
-                    value = "{\r\n" .. Utils.TableContentsToJSON(v, name, indent + 1, sub_stop_traversing) .. "\r\n" .. indentstring .. "}"
+                    value = "{\r\n" .. Utils._TableContentsToJSON(v, name, tablesLogged, indent + 1, sub_stop_traversing) .. "\r\n" .. indentstring .. "}"
                 end
             elseif type(v) == "function" then
                 value = '"' .. tostring(v) .. '"'
@@ -300,7 +303,6 @@ function Utils.TableContentsToJSON(target_table, name, indent, stop_traversing)
         table_contents = indentstring .. '"empty"'
     end
     if indent == 1 then
-        Utils.tablesLogged = {}
         return '"' .. name .. '":{' .. "\r\n" .. table_contents .. "\r\n" .. "}"
     else
         return table_contents
@@ -338,18 +340,18 @@ function Utils.GetBiterType(modEnemyProbabilities, spawnerType, evolution)
     end
     if modEnemyProbabilities[spawnerType].calculatedEvolution == nil or math.abs(modEnemyProbabilities[spawnerType].calculatedEvolution - evolution) > 0.001 then
         modEnemyProbabilities[spawnerType].calculatedEvolution = evolution
-        modEnemyProbabilities[spawnerType].probabilities = Utils.CalculateSpecificBiterSelectionProbabilities(spawnerType, evolution)
+        modEnemyProbabilities[spawnerType].probabilities = Utils._CalculateSpecificBiterSelectionProbabilities(spawnerType, evolution)
     end
 
     local randNum = math.random()
-    for topChance, unit in pairs(modEnemyProbabilities[spawnerType].probabilities) do
-        if topChance > 0 and topChance >= randNum then
-            return unit
+    for _, probability in pairs(modEnemyProbabilities[spawnerType].probabilities) do
+        if probability.top > 0 and randNum >= probability.bottom and randNum <= probability.top then
+            return probability.unit
         end
     end
 end
 
-function Utils.CalculateSpecificBiterSelectionProbabilities(spawnerType, currentEvolution)
+function Utils._CalculateSpecificBiterSelectionProbabilities(spawnerType, currentEvolution)
     local rawUnitProbs = game.entity_prototypes[spawnerType].result_units
     local currentEvolutionProbabilities = {}
     local currentEvolutionProbabilitiesTop = 0
@@ -380,19 +382,20 @@ function Utils.CalculateSpecificBiterSelectionProbabilities(spawnerType, current
                 weight = startSpawnPoint.weight
             end
             local probability = currentEvolutionProbabilitiesTop + weight
-            currentEvolutionProbabilities[probability] = possibility.unit
+            table.insert(currentEvolutionProbabilities, {bottom = currentEvolutionProbabilitiesTop, top = probability, unit = possibility.unit})
             currentEvolutionProbabilitiesTop = probability
         end
     end
-    log(spawnerType)
-    log(serpent.block(currentEvolutionProbabilities))
 
     local normalisedcurrentEvolutionProbabilities = {}
     local normaliseMultiplier = 1 / currentEvolutionProbabilitiesTop
-    for probability, unit in pairs(currentEvolutionProbabilities) do
-        normalisedcurrentEvolutionProbabilities[normaliseMultiplier * probability] = unit
+    for index, probability in pairs(currentEvolutionProbabilities) do
+        normalisedcurrentEvolutionProbabilities[index] = {
+            bottom = probability.bottom * normaliseMultiplier,
+            top = probability.top * normaliseMultiplier,
+            unit = probability.unit
+        }
     end
-    log(serpent.block(normalisedcurrentEvolutionProbabilities))
 
     return normalisedcurrentEvolutionProbabilities
 end
