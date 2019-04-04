@@ -7,7 +7,7 @@ function Commands.Register(name, helpText, commandFunction, adminOnly)
         handlerFunction = commandFunction
     elseif adminOnly then
         handlerFunction = function(data)
-            local player = game.players[data.player_index]
+            local player = game.get_player(data.player_index)
             if player.admin then
                 commandFunction(data)
             else
