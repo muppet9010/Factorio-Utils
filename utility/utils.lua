@@ -435,6 +435,28 @@ function Utils.DisableSiloScript()
     end
 end
 
+function Utils.ClearSpawnRespawnItems()
+    if remote.interfaces["freeplay"] == nil then
+        return
+    end
+    remote.call("freeplay", "set_created_items", {})
+    remote.call("freeplay", "set_respawn_items", {})
+end
+
+function Utils.SetStartingMapReveal(distance)
+    if remote.interfaces["freeplay"] == nil then
+        return
+    end
+    remote.call("freeplay", "set_chart_distance", distance)
+end
+
+function Utils.DisableIntroMessage()
+    if remote.interfaces["freeplay"] == nil then
+        return
+    end
+    remote.call("freeplay", "set_skip_intro", true)
+end
+
 function Utils.PadNumberToMinimumDigits(input, requiredLength)
     local shortBy = requiredLength - string.len(input)
     for i = 1, shortBy do
