@@ -435,6 +435,13 @@ function Utils.DisableSiloScript()
     end
 end
 
+function Utils.DisableWinOnRocket()
+    if remote.interfaces["silo_script"] == nil then
+        return
+    end
+    remote.call("silo_script", "set_no_victory", true)
+end
+
 function Utils.ClearSpawnRespawnItems()
     if remote.interfaces["freeplay"] == nil then
         return
