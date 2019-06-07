@@ -7,12 +7,16 @@ function Commands.Register(name, helpText, commandFunction, adminOnly)
         handlerFunction = commandFunction
     elseif adminOnly then
         handlerFunction = function(data)
-            local player = game.get_player(data.player_index)
-            if player.admin then
-                commandFunction(data)
-            else
-                player.print {"api-error.must-be-admin", data.name}
-            end
+			if data.player_index == nil then
+				commandFunction(data)
+			else
+				local player = game.get_player(data.player_index)
+				if player.admin then
+					commandFunction(data)
+				else
+					player.print {"api-error.must-be-admin", data.name}
+				end
+			end
         end
     end
     commands.add_command(name, helpText, handlerFunction)
