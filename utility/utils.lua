@@ -340,7 +340,8 @@ function Utils.GetBiterType(modEnemyProbabilities, spawnerType, evolution)
     if modEnemyProbabilities[spawnerType] == nil then
         modEnemyProbabilities[spawnerType] = {}
     end
-    if modEnemyProbabilities[spawnerType].calculatedEvolution == nil or math.abs(modEnemyProbabilities[spawnerType].calculatedEvolution - evolution) > 0.001 then
+	evolution = Utils.RoundNumberToDecimalPlaces(evolution, 2)
+    if modEnemyProbabilities[spawnerType].calculatedEvolution == nil or modEnemyProbabilities[spawnerType].calculatedEvolution == evolution then
         modEnemyProbabilities[spawnerType].calculatedEvolution = evolution
         modEnemyProbabilities[spawnerType].probabilities = Utils._CalculateSpecificBiterSelectionProbabilities(spawnerType, evolution)
     end
@@ -425,11 +426,11 @@ function Utils.DeepCopy(outerObject)
 end
 
 function Utils.DisableSiloScript()
-	--OnLoad
+    --OnLoad
     if remote.interfaces["silo_script"] == nil then
         return
     end
-    remote.call("silo_script", "set_no_victory", true)
+    Utils.DisableWinOnRocket()
     local items = remote.call("silo_script", "get_tracked_items")
     for itemName in pairs(items) do
         remote.call("silo_script", "remove_tracked_item", itemName)
@@ -437,7 +438,7 @@ function Utils.DisableSiloScript()
 end
 
 function Utils.DisableWinOnRocket()
-	--OnInit
+    --OnInit
     if remote.interfaces["silo_script"] == nil then
         return
     end
@@ -445,7 +446,7 @@ function Utils.DisableWinOnRocket()
 end
 
 function Utils.ClearSpawnRespawnItems()
-	--OnInit
+    --OnInit
     if remote.interfaces["freeplay"] == nil then
         return
     end
@@ -454,7 +455,7 @@ function Utils.ClearSpawnRespawnItems()
 end
 
 function Utils.SetStartingMapReveal(distance)
-	--OnInit
+    --OnInit
     if remote.interfaces["freeplay"] == nil then
         return
     end
@@ -462,7 +463,7 @@ function Utils.SetStartingMapReveal(distance)
 end
 
 function Utils.DisableIntroMessage()
-	--OnInit
+    --OnInit
     if remote.interfaces["freeplay"] == nil then
         return
     end
@@ -516,6 +517,29 @@ function Utils.LocalisedStringOfTime(inputTicks, displayLargestTimeUnit, display
         return {"muppet-utils.time-second-" .. displaySmallestTimeUnit, negativeSign .. displaySeconds}
     else
         error("unrecognised displayLargestTimeUnit argument in Utils.MakeLocalisedStringDisplayOfTime")
+    end
+end
+
+function Utils.GetDistance(pos1, pos2)
+    local dx = pos1.x - pos2.x
+    local dy = pos1.y - pos2.y
+    return math.sqrt(dx * dx + dy * dy)
+end
+
+function Utils.IsPositionInBoundingBox(position, boundingBox, safeTiling)
+    --safeTiling means that the boundingbox can be tiled without risk of an entity on the border being in 2 result sets, i.e. for use on each chunk.
+    if safeTiling == nil or not safeTiling then
+        if position.x >= boundingBox.left_top.x and position.x <= boundingBox.right_bottom.x and position.y >= boundingBox.left_top.y and position.y <= boundingBox.right_bottom.y then
+            return true
+        else
+            return false
+        end
+    else
+        if position.x > boundingBox.left_top.x and position.x <= boundingBox.right_bottom.x and position.y > boundingBox.left_top.y and position.y <= boundingBox.right_bottom.y then
+            return true
+        else
+            return false
+        end
     end
 end
 
