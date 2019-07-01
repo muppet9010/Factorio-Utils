@@ -5,7 +5,6 @@ local function UpdateSetting(settingName)
 end
 
 local function CreateGlobals()
-    global.Mod = global.Mod or {}
 end
 
 local function OnStartup()

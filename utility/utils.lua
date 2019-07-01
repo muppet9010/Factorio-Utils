@@ -1,13 +1,53 @@
 local Utils = {}
 --local Logging = require("utility/logging")
+local factorioUtil = require("__core__/lualib/util")
+Utils.DeepCopy = factorioUtil.table.deepcopy
+Utils.TableMerge = factorioUtil.merge
 
-function Utils.KillAllObjectsInArea(surface, positionedBoundingBox, killerEntity, collisionBoxOnlyEntities)
+function Utils.KillAllKillableObjectsInArea(surface, positionedBoundingBox, killerEntity, collisionBoxOnlyEntities)
     local entitiesFound = surface.find_entities(positionedBoundingBox)
     for k, entity in pairs(entitiesFound) do
         if entity.valid then
             if entity.health ~= nil and entity.destructible and ((collisionBoxOnlyEntities and Utils.IsCollisionBoxPopulated(entity.prototype.collision_box)) or (not collisionBoxOnlyEntities)) then
-                entity.die("neutral", killerEntity)
+                if killerEntity ~= nil then
+                    entity.die("neutral", killerEntity)
+                else
+                    entity.die("neutral")
+                end
             end
+        end
+    end
+end
+
+function Utils.KillAllObjectsInArea(surface, positionedBoundingBox, killerEntity)
+    local entitiesFound = surface.find_entities(positionedBoundingBox)
+    for k, entity in pairs(entitiesFound) do
+        if entity.valid then
+            if killerEntity ~= nil then
+                entity.die("neutral", killerEntity)
+            else
+                entity.die("neutral")
+            end
+        end
+    end
+end
+
+function Utils.DestroyAllKillableObjectsInArea(surface, positionedBoundingBox, collisionBoxOnlyEntities)
+    local entitiesFound = surface.find_entities(positionedBoundingBox)
+    for k, entity in pairs(entitiesFound) do
+        if entity.valid then
+            if entity.health ~= nil and entity.destructible and ((collisionBoxOnlyEntities and Utils.IsCollisionBoxPopulated(entity.prototype.collision_box)) or (not collisionBoxOnlyEntities)) then
+                entity.destroy({dp_cliff_correction = true, raise_destroy = false})
+            end
+        end
+    end
+end
+
+function Utils.DestroyAllObjectsInArea(surface, positionedBoundingBox)
+    local entitiesFound = surface.find_entities(positionedBoundingBox)
+    for k, entity in pairs(entitiesFound) do
+        if entity.valid then
+            entity.destroy({dp_cliff_correction = true, raise_destroy = false})
         end
     end
 end
@@ -41,6 +81,14 @@ function Utils.ApplyBoundingBoxToPosition(centrePos, boundingBox, orientation)
     else
         game.print("Error: Diagonal orientations not supported by Utils.ApplyBoundingBoxToPosition()")
     end
+end
+
+function Utils.GetChunkPositionForTilePosition(pos)
+    return {x = math.floor(pos.x / 32), y = math.floor(pos.y / 32)}
+end
+
+function Utils.GetLeftTopTilePositionForChunkPosition(chunkPos)
+    return {x = chunkPos.x * 32, y = chunkPos.y * 32}
 end
 
 function Utils.RotatePositionAround0(orientation, position)
@@ -113,8 +161,8 @@ function Utils.LogisticEquation(index, height, steepness)
     return height / (1 + math.exp(steepness * (index - 0)))
 end
 
-function Utils.ExponentialDecayEquation(index, multiplyer, scale)
-    return multiplyer * math.exp(-index * scale)
+function Utils.ExponentialDecayEquation(index, multiplier, scale)
+    return multiplier * math.exp(-index * scale)
 end
 
 function Utils.RoundNumberToDecimalPlaces(num, numDecimalPlaces)
@@ -225,6 +273,29 @@ function Utils.CalculateTilesUnderPositionedBoundingBox(positionedBoundingBox)
     return tiles
 end
 
+function Utils.GetDistance(pos1, pos2)
+    local dx = pos1.x - pos2.x
+    local dy = pos1.y - pos2.y
+    return math.sqrt(dx * dx + dy * dy)
+end
+
+function Utils.IsPositionInBoundingBox(position, boundingBox, safeTiling)
+    --safeTiling means that the boundingbox can be tiled without risk of an entity on the border being in 2 result sets, i.e. for use on each chunk.
+    if safeTiling == nil or not safeTiling then
+        if position.x >= boundingBox.left_top.x and position.x <= boundingBox.right_bottom.x and position.y >= boundingBox.left_top.y and position.y <= boundingBox.right_bottom.y then
+            return true
+        else
+            return false
+        end
+    else
+        if position.x > boundingBox.left_top.x and position.x <= boundingBox.right_bottom.x and position.y > boundingBox.left_top.y and position.y <= boundingBox.right_bottom.y then
+            return true
+        else
+            return false
+        end
+    end
+end
+
 function Utils.GetEntityReturnedToInventoryName(entity)
     if entity.prototype.mineable_properties ~= nil and entity.prototype.mineable_properties.products ~= nil and #entity.prototype.mineable_properties.products > 0 then
         return entity.prototype.mineable_properties.products[1].name
@@ -303,7 +374,12 @@ function Utils._TableContentsToJSON(target_table, name, tablesLogged, indent, st
         table_contents = indentstring .. '"empty"'
     end
     if indent == 1 then
-        return '"' .. name .. '":{' .. "\r\n" .. table_contents .. "\r\n" .. "}"
+        local resultString = ""
+        if name ~= nil then
+            resultString = resultString .. '"' .. name .. '":'
+        end
+        resultString = resultString .. "{" .. "\r\n" .. table_contents .. "\r\n" .. "}"
+        return resultString
     else
         return table_contents
     end
@@ -340,24 +416,18 @@ function Utils.GetBiterType(modEnemyProbabilities, spawnerType, evolution)
     if modEnemyProbabilities[spawnerType] == nil then
         modEnemyProbabilities[spawnerType] = {}
     end
-	evolution = Utils.RoundNumberToDecimalPlaces(evolution, 2)
+    evolution = Utils.RoundNumberToDecimalPlaces(evolution, 2)
     if modEnemyProbabilities[spawnerType].calculatedEvolution == nil or modEnemyProbabilities[spawnerType].calculatedEvolution == evolution then
         modEnemyProbabilities[spawnerType].calculatedEvolution = evolution
         modEnemyProbabilities[spawnerType].probabilities = Utils._CalculateSpecificBiterSelectionProbabilities(spawnerType, evolution)
     end
 
-    local randNum = math.random()
-    for _, probability in pairs(modEnemyProbabilities[spawnerType].probabilities) do
-        if probability.top > 0 and randNum >= probability.bottom and randNum <= probability.top then
-            return probability.unit
-        end
-    end
+    return Utils.GetRandomEntryFromNormalisedDataSet(modEnemyProbabilities[spawnerType].probabilitie, "chance").unit
 end
 
 function Utils._CalculateSpecificBiterSelectionProbabilities(spawnerType, currentEvolution)
     local rawUnitProbs = game.entity_prototypes[spawnerType].result_units
     local currentEvolutionProbabilities = {}
-    local currentEvolutionProbabilitiesTop = 0
 
     for _, possibility in pairs(rawUnitProbs) do
         local startSpawnPointIndex = nil
@@ -384,45 +454,37 @@ function Utils._CalculateSpecificBiterSelectionProbabilities(spawnerType, curren
             else
                 weight = startSpawnPoint.weight
             end
-            local probability = currentEvolutionProbabilitiesTop + weight
-            table.insert(currentEvolutionProbabilities, {bottom = currentEvolutionProbabilitiesTop, top = probability, unit = possibility.unit})
-            currentEvolutionProbabilitiesTop = probability
+            table.insert(currentEvolutionProbabilities, {chance = weight, unit = possibility.unit})
         end
     end
 
-    local normalisedcurrentEvolutionProbabilities = {}
-    local normaliseMultiplier = 1 / currentEvolutionProbabilitiesTop
-    for index, probability in pairs(currentEvolutionProbabilities) do
-        normalisedcurrentEvolutionProbabilities[index] = {
-            bottom = probability.bottom * normaliseMultiplier,
-            top = probability.top * normaliseMultiplier,
-            unit = probability.unit
-        }
-    end
+    local normalisedcurrentEvolutionProbabilities = Utils.NormalisedChanceList(currentEvolutionProbabilities, "chance")
 
     return normalisedcurrentEvolutionProbabilities
 end
 
---copied from Factorio core Util 0.17.21
-function Utils.DeepCopy(outerObject)
-    local lookup_table = {}
-    local function _copy(object)
-        if type(object) ~= "table" then
-            -- don't copy factorio rich objects
-            return object
-        elseif object.__self then
-            return object
-        elseif lookup_table[object] then
-            return lookup_table[object]
-        end
-        local new_table = {}
-        lookup_table[object] = new_table
-        for index, value in pairs(object) do
-            new_table[_copy(index)] = _copy(value)
-        end
-        return setmetatable(new_table, getmetatable(object))
+function Utils.NormalisedChanceList(dataSet, chancePropertyName)
+    local totalChance = 0
+    for k, v in pairs(dataSet) do
+        totalChance = totalChance + v[chancePropertyName]
     end
-    return _copy(outerObject)
+    local multiplier = 1 / totalChance
+    for _, v in pairs(dataSet) do
+        v[chancePropertyName] = v[chancePropertyName] * multiplier
+    end
+end
+
+function Utils.GetRandomEntryFromNormalisedDataSet(dataSet, chancePropertyName)
+    local random = math.random()
+    local chanceRangeLow = 0
+    local chanceRangeHigh
+    for _, v in pairs(dataSet) do
+        chanceRangeHigh = chanceRangeLow + v[chancePropertyName]
+        if random >= chanceRangeLow and random <= chanceRangeHigh then
+            return v
+        end
+        chanceRangeLow = chanceRangeHigh
+    end
 end
 
 function Utils.DisableSiloScript()
@@ -430,7 +492,6 @@ function Utils.DisableSiloScript()
     if remote.interfaces["silo_script"] == nil then
         return
     end
-    Utils.DisableWinOnRocket()
     local items = remote.call("silo_script", "get_tracked_items")
     for itemName in pairs(items) do
         remote.call("silo_script", "remove_tracked_item", itemName)
@@ -478,7 +539,22 @@ function Utils.PadNumberToMinimumDigits(input, requiredLength)
     return input
 end
 
-function Utils.LocalisedStringOfTime(inputTicks, displayLargestTimeUnit, displaySmallestTimeUnit)
+function Utils.DisplayNumberPretty(number)
+    local formatted = number
+    local k
+    while true do
+        formatted, k = string.gsub(formatted, "^(-?%d+)(%d%d%d)", "%1,%2")
+        if (k == 0) then
+            break
+        end
+    end
+    return formatted
+end
+
+function Utils.DisplayTimeOfTicks(inputTicks, displayLargestTimeUnit, displaySmallestTimeUnit)
+    if inputTicks == nil then
+        return ""
+    end
     local negativeSign = ""
     if inputTicks < 0 then
         negativeSign = "-"
@@ -493,7 +569,7 @@ function Utils.LocalisedStringOfTime(inputTicks, displayLargestTimeUnit, display
     local seconds = math.floor(inputTicks / 60)
     local displaySeconds = Utils.PadNumberToMinimumDigits(seconds, 2)
 
-    if displayLargestTimeUnit == "auto" then
+    if displayLargestTimeUnit == nil or displayLargestTimeUnit == "" or displayLargestTimeUnit == "auto" then
         if hours > 0 then
             displayLargestTimeUnit = "hour"
         elseif minutes > 0 then
@@ -502,6 +578,9 @@ function Utils.LocalisedStringOfTime(inputTicks, displayLargestTimeUnit, display
             displayLargestTimeUnit = "second"
         end
     end
+    if not (displayLargestTimeUnit == "hour" or displayLargestTimeUnit == "minute" or displayLargestTimeUnit == "second") then
+        error("unrecognised displayLargestTimeUnit argument in Utils.MakeLocalisedStringDisplayOfTime")
+    end
     if displaySmallestTimeUnit == nil or displaySmallestTimeUnit == "" or displaySmallestTimeUnit == "auto" then
         displaySmallestTimeUnit = "second"
     end
@@ -509,38 +588,75 @@ function Utils.LocalisedStringOfTime(inputTicks, displayLargestTimeUnit, display
         error("unrecognised displaySmallestTimeUnit argument in Utils.MakeLocalisedStringDisplayOfTime")
     end
 
-    if displayLargestTimeUnit == "hour" then
-        return {"muppet-utils.time-hour-" .. displaySmallestTimeUnit, negativeSign .. displayHours, displayMinutes, displaySeconds}
-    elseif displayLargestTimeUnit == "minute" then
-        return {"muppet-utils.time-minute-" .. displaySmallestTimeUnit, negativeSign .. displayMinutes, displaySeconds}
-    elseif displayLargestTimeUnit == "second" then
-        return {"muppet-utils.time-second-" .. displaySmallestTimeUnit, negativeSign .. displaySeconds}
+    local timeUnitIndex = {second = 1, minute = 2, hour = 3}
+    local displayLargestTimeUnitIndex = timeUnitIndex[displayLargestTimeUnit]
+    local displaySmallestTimeUnitIndex = timeUnitIndex[displaySmallestTimeUnit]
+    local timeUnitRange = displayLargestTimeUnitIndex - displaySmallestTimeUnitIndex
+
+    if timeUnitRange == 2 then
+        return (negativeSign .. displayHours .. ":" .. displayMinutes .. ":" .. displaySeconds)
+    elseif timeUnitRange == 1 then
+        if displayLargestTimeUnit == "hour" then
+            return (negativeSign .. displayHours .. ":" .. displayMinutes)
+        else
+            return (negativeSign .. displayMinutes .. ":" .. displaySeconds)
+        end
+    elseif timeUnitRange == 0 then
+        if displayLargestTimeUnit == "hour" then
+            return (negativeSign .. displayHours)
+        elseif displayLargestTimeUnit == "minute" then
+            return (negativeSign .. displayMinutes)
+        else
+            return (negativeSign .. displaySeconds)
+        end
     else
-        error("unrecognised displayLargestTimeUnit argument in Utils.MakeLocalisedStringDisplayOfTime")
+        error("time unit range is negative in Utils.MakeLocalisedStringDisplayOfTime")
     end
 end
 
-function Utils.GetDistance(pos1, pos2)
-    local dx = pos1.x - pos2.x
-    local dy = pos1.y - pos2.y
-    return math.sqrt(dx * dx + dy * dy)
+function Utils.CreateLandPlacementTestEntityPrototype(entityToClone, newEntityName)
+    local clonedIcon = entityToClone.icon
+    local clonedIconSize = entityToClone.icon_size
+    if clonedIcon == nil then
+        clonedIcon = entityToClone.icons[1].icon
+        clonedIconSize = entityToClone.icons[1].icon_size
+    end
+    return {
+        type = "simple-entity",
+        name = newEntityName,
+        order = "zzz",
+        icons = {
+            {
+                icon = clonedIcon,
+                icon_size = clonedIconSize
+            },
+            {
+                icon = "__core__/graphics/cancel.png",
+                icon_size = 64,
+                scale = (clonedIconSize / 64) * 0.75
+            }
+        },
+        collision_box = entityToClone.collision_box,
+        collision_mask = {"water-tile", "colliding-with-tiles-only"},
+        picture = data.raw["container"]["wooden-chest"].picture
+    }
 end
 
-function Utils.IsPositionInBoundingBox(position, boundingBox, safeTiling)
-    --safeTiling means that the boundingbox can be tiled without risk of an entity on the border being in 2 result sets, i.e. for use on each chunk.
-    if safeTiling == nil or not safeTiling then
-        if position.x >= boundingBox.left_top.x and position.x <= boundingBox.right_bottom.x and position.y >= boundingBox.left_top.y and position.y <= boundingBox.right_bottom.y then
-            return true
-        else
-            return false
+function Utils.GetValidPositionForEntityNearPosition(entityName, surface, centerPos, radius, maxAttempts)
+    local pos
+    local attempts = 1
+    while pos == nil do
+        local searchRadius = radius * attempts
+        pos = surface.find_non_colliding_position(entityName, centerPos, searchRadius, 1, true)
+        if pos ~= nil then
+            return pos
         end
-    else
-        if position.x > boundingBox.left_top.x and position.x <= boundingBox.right_bottom.x and position.y > boundingBox.left_top.y and position.y <= boundingBox.right_bottom.y then
-            return true
-        else
-            return false
+        attempts = attempts + 1
+        if attempts > maxAttempts then
+            return nil
         end
     end
+    return nil
 end
 
 return Utils

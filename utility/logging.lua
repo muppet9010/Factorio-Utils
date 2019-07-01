@@ -21,6 +21,8 @@ function Logging.Log(text, enabled)
     end
     if game ~= nil then
         game.write_file(Constants.LogFileName, tostring(text) .. "\r\n", true)
+    else
+        log(tostring(text))
     end
 end
 

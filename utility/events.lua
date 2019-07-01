@@ -1,14 +1,10 @@
-local Utils = require("factorio-utils/utils")
+local Utils = require("utility/utils")
+--local Logging = require("utility/logging")
+
 local Events = {}
-if MOD == nil then
-    MOD = {}
-end
-if MOD.events == nil then
-    MOD.events = {}
-end
-if MOD.customEventNameToId == nil then
-    MOD.customEventNameToId = {}
-end
+MOD = MOD or {}
+MOD.events = MOD.events or {}
+MOD.customEventNameToId = MOD.customEventNameToId or {}
 
 function Events.RegisterEvent(eventName)
     local eventId
@@ -20,7 +16,7 @@ function Events.RegisterEvent(eventName)
         eventId = script.generate_event_name()
         MOD.customEventNameToId[eventName] = eventId
     end
-    script.on_event(eventId, Events.CallHandler)
+    script.on_event(eventId, Events._HandleEvent)
 end
 
 function Events.RegisterHandler(eventName, handlerName, handlerFunction)
@@ -43,7 +39,7 @@ function Events.RemoveHandler(eventName, handlerName)
     MOD.events[eventName][handlerName] = nil
 end
 
-function Events.CallHandler(eventData)
+function Events._HandleEvent(eventData)
     local eventId = eventData.name
     if MOD.events[eventId] == nil then
         return
@@ -53,14 +49,16 @@ function Events.CallHandler(eventData)
     end
 end
 
-function Events.Fire(eventData)
+function Events.RaiseEvent(eventData)
     eventData.tick = game.tick
     local eventName = eventData.name
     if defines.events[eventName] ~= nil then
         script.raise_event(eventName, eventData)
-    else
+    elseif MOD.customEventNameToId[eventName] ~= nil then
         local eventId = MOD.customEventNameToId[eventName]
         script.raise_event(eventId, eventData)
+    else
+        error("WARNING: raise event called that doesn't exist: " .. eventName)
     end
 end
 
