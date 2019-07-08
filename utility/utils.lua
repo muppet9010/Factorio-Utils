@@ -52,6 +52,34 @@ function Utils.DestroyAllObjectsInArea(surface, positionedBoundingBox)
     end
 end
 
+function Utils.IsTableValidPosition(thing)
+    if thing.x ~= nil and thing.y ~= nil then
+        if type(thing.x) == "number" and type(thing.y) == "number" then
+            return true
+        else
+            return false
+        end
+    end
+    if #thing ~= 2 then
+        return false
+    end
+    if type(thing[1]) == "number" and type(thing[2]) == "number" then
+        return true
+    else
+        return false
+    end
+end
+
+function Utils.TableToProperPosition(thing)
+    if not Utils.IsTableValidPosition(thing) then
+        return nil
+    elseif thing.x ~= nil and thing.y ~= nil then
+        return {x = thing.x, y = thing.y}
+    else
+        return {x = thing[1], y = thing[1]}
+    end
+end
+
 function Utils.ApplyBoundingBoxToPosition(centrePos, boundingBox, orientation)
     if orientation == nil or orientation == 0 or orientation == 1 then
         return {
@@ -96,8 +124,8 @@ function Utils.RotatePositionAround0(orientation, position)
     local rad = math.rad(deg)
     local cosValue = math.cos(rad)
     local sinValue = math.sin(rad)
-    local rotatedX = position.x * cosValue - position.y * sinValue
-    local rotatedY = position.x * sinValue + position.y * cosValue
+    local rotatedX = (position.x * cosValue) - (position.y * sinValue)
+    local rotatedY = (position.x * sinValue) + (position.y * cosValue)
     return {x = rotatedX, y = rotatedY}
 end
 
@@ -636,18 +664,26 @@ function Utils.CreateLandPlacementTestEntityPrototype(entityToClone, newEntityNa
                 scale = (clonedIconSize / 64) * 0.75
             }
         },
+        flags = entityToClone.flags,
+        selection_box = entityToClone.selection_box,
         collision_box = entityToClone.collision_box,
         collision_mask = {"water-tile", "colliding-with-tiles-only"},
-        picture = data.raw["container"]["wooden-chest"].picture
+        picture = {
+            filename = "__core__/graphics/cancel.png",
+            height = 64,
+            width = 64
+        }
     }
 end
 
-function Utils.GetValidPositionForEntityNearPosition(entityName, surface, centerPos, radius, maxAttempts)
+function Utils.GetValidPositionForEntityNearPosition(entityName, surface, centerPos, radius, maxAttempts, searchIncrement, allowNonTileCenter)
     local pos
     local attempts = 1
+    searchIncrement = searchIncrement or 1
+    allowNonTileCenter = allowNonTileCenter or false
     while pos == nil do
         local searchRadius = radius * attempts
-        pos = surface.find_non_colliding_position(entityName, centerPos, searchRadius, 1, true)
+        pos = surface.find_non_colliding_position(entityName, centerPos, searchRadius, searchIncrement, not allowNonTileCenter)
         if pos ~= nil then
             return pos
         end
@@ -657,6 +693,40 @@ function Utils.GetValidPositionForEntityNearPosition(entityName, surface, center
         end
     end
     return nil
+end
+
+function Utils.ToBoolean(text)
+    text = string.lower(text)
+    if text ~= nil and text == "true" then
+        return true
+    elseif text ~= nil and text == "false" then
+        return false
+    end
+    return nil
+end
+
+function Utils.RandomLocationInRadius(centrePos, maxRadius, minRadius)
+    local angleRad = math.random() * (math.pi * 2)
+    minRadius = minRadius or 0
+    local radiusMultiplier = maxRadius - minRadius
+    local distance = minRadius + (math.random() * radiusMultiplier)
+    local randomPos = {
+        x = (distance * math.sin(angleRad)) + centrePos.x,
+        y = (distance * -math.cos(angleRad)) + centrePos.y
+    }
+    return randomPos
+end
+
+function Utils.GetPositionForAngledDistance(startingPos, distance, angle)
+    if angle < 0 then
+        angle = 360 + angle
+    end
+    local angleRad = math.rad(angle)
+    local newPos = {
+        x = (distance * math.sin(angleRad)) + startingPos.x,
+        y = (distance * -math.cos(angleRad)) + startingPos.y
+    }
+    return newPos
 end
 
 return Utils
