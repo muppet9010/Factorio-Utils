@@ -16,9 +16,9 @@ function EventScheduler.OnSchedulerCycle(event)
     if global.UTILITYSCHEDULEDFUNCTIONS[tick] ~= nil then
         for eventName, instances in pairs(global.UTILITYSCHEDULEDFUNCTIONS[tick]) do
             for instanceId, scheduledFunctionData in pairs(instances) do
-                local data = {tick = tick, name = eventName, instanceId = instanceId, data = scheduledFunctionData}
+                local eventData = {tick = tick, name = eventName, instanceId = instanceId, data = scheduledFunctionData}
                 if MOD.scheduledEventNames[eventName] ~= nil then
-                    MOD.scheduledEventNames[eventName](data)
+                    MOD.scheduledEventNames[eventName](eventData)
                 else
                     error("WARNING: schedule event called that doesn't exist: '" .. eventName .. "' id: '" .. instanceId .. "' at tick: " .. tick)
                 end
@@ -62,17 +62,40 @@ function EventScheduler.RemoveScheduledEvents(targetEventName, targetInstanceId,
 end
 
 function EventScheduler._RemoveScheduledEventsFromTickEntry(events, targetEventName, targetInstanceId)
-    for eventName, instances in pairs(events) do
-        if eventName == targetEventName then
-            if targetInstanceId == nil then
-                events[targetEventName] = nil
-            else
-                for instanceId in pairs(instances) do
-                    if instanceId == targetInstanceId then
-                        instances[targetInstanceId] = nil
-                    end
-                end
+    if targetInstanceId == nil then
+        events[targetEventName] = nil
+    elseif events[targetEventName] ~= nil then
+        events[targetEventName][targetInstanceId] = nil
+    end
+end
+
+function EventScheduler.IsEventScheduled(targetEventName, targetInstanceId, targetTick)
+    global.UTILITYSCHEDULEDFUNCTIONS = global.UTILITYSCHEDULEDFUNCTIONS or {}
+    if targetTick == nil then
+        for _, events in pairs(global.UTILITYSCHEDULEDFUNCTIONS) do
+            if EventScheduler._IsEventScheduledInTickEntry(events, targetEventName, targetInstanceId) then
+                return true
             end
+        end
+    else
+        local events = global.UTILITYSCHEDULEDFUNCTIONS[targetTick]
+        if events ~= nil then
+            if EventScheduler._IsEventScheduledInTickEntry(events, targetEventName, targetInstanceId) then
+                return true
+            end
+        end
+    end
+    return false
+end
+
+function EventScheduler._IsEventScheduledInTickEntry(events, targetEventName, targetInstanceId)
+    if targetInstanceId == nil then
+        if events[targetEventName] ~= nil then
+            return true
+        end
+    else
+        if events[targetEventName] ~= nil and events[targetEventName][targetInstanceId] ~= nil then
+            return true
         end
     end
 end

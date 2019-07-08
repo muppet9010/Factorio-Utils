@@ -46,14 +46,15 @@ function GuiUtil.GetElementFromPlayersReferenceStorage(playerIndex, storeName, n
 end
 
 function GuiUtil.UpdateElementFromPlayersReferenceStorage(playerIndex, storeName, name, type, arguments)
-    GuiUtil._CreatePlayersElementReferenceStorage(playerIndex, storeName)
     local element = GuiUtil.GetElementFromPlayersReferenceStorage(playerIndex, storeName, name, type)
-    local generatedName = GuiUtil.GenerateName(name, type)
-    for argName, argValue in pairs(arguments) do
-        if argName == "caption" or argName == "tooltip" then
-            argValue = GuiUtil._ReplaceSelfWithGeneratedName({name = generatedName, [argName] = argValue}, argName)
+    if element ~= nil then
+        local generatedName = GuiUtil.GenerateName(name, type)
+        for argName, argValue in pairs(arguments) do
+            if argName == "caption" or argName == "tooltip" then
+                argValue = GuiUtil._ReplaceSelfWithGeneratedName({name = generatedName, [argName] = argValue}, argName)
+            end
+            element[argName] = argValue
         end
-        element[argName] = argValue
     end
     return element
 end
