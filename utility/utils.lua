@@ -23,10 +23,14 @@ function Utils.KillAllObjectsInArea(surface, positionedBoundingBox, killerEntity
     local entitiesFound = surface.find_entities(positionedBoundingBox)
     for k, entity in pairs(entitiesFound) do
         if entity.valid then
-            if killerEntity ~= nil then
-                entity.die("neutral", killerEntity)
+            if entity.destructible then
+                if killerEntity ~= nil then
+                    entity.die("neutral", killerEntity)
+                else
+                    entity.die("neutral")
+                end
             else
-                entity.die("neutral")
+                entity.destroy({dp_cliff_correction = true, raise_destroy = false})
             end
         end
     end
