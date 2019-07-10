@@ -162,6 +162,7 @@ function Utils.CalculateBoundingBoxFrom2Points(point1, point2)
 end
 
 function Utils.ApplyOffsetToPosition(position, offset)
+    position = Utils.DeepCopy(position)
     if offset == nil then
         return position
     end
@@ -642,7 +643,7 @@ function Utils.DisplayTimeOfTicks(inputTicks, displayLargestTimeUnit, displaySma
     end
 end
 
-function Utils.CreateLandPlacementTestEntityPrototype(entityToClone, newEntityName)
+function Utils._CreatePlacementTestEntityPrototype(entityToClone, newEntityName, subgroup, collisionMask)
     local clonedIcon = entityToClone.icon
     local clonedIconSize = entityToClone.icon_size
     if clonedIcon == nil then
@@ -652,6 +653,7 @@ function Utils.CreateLandPlacementTestEntityPrototype(entityToClone, newEntityNa
     return {
         type = "simple-entity",
         name = newEntityName,
+        subgroup = subgroup,
         order = "zzz",
         icons = {
             {
@@ -667,13 +669,23 @@ function Utils.CreateLandPlacementTestEntityPrototype(entityToClone, newEntityNa
         flags = entityToClone.flags,
         selection_box = entityToClone.selection_box,
         collision_box = entityToClone.collision_box,
-        collision_mask = {"water-tile", "colliding-with-tiles-only"},
+        collision_mask = collisionMask,
         picture = {
             filename = "__core__/graphics/cancel.png",
             height = 64,
             width = 64
         }
     }
+end
+
+function Utils.CreateLandPlacementTestEntityPrototype(entityToClone, newEntityName, subgroup)
+    subgroup = subgroup or "other"
+    return Utils._CreatePlacementTestEntityPrototype(entityToClone, newEntityName, subgroup, {"water-tile", "colliding-with-tiles-only"})
+end
+
+function Utils.CreateWaterPlacementTestEntityPrototype(entityToClone, newEntityName, subgroup)
+    subgroup = subgroup or "other"
+    return Utils._CreatePlacementTestEntityPrototype(entityToClone, newEntityName, subgroup, {"ground-tile", "colliding-with-tiles-only"})
 end
 
 function Utils.GetValidPositionForEntityNearPosition(entityName, surface, centerPos, radius, maxAttempts, searchIncrement, allowNonTileCenter)
