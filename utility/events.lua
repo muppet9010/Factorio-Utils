@@ -12,6 +12,8 @@ function Events.RegisterEvent(eventName)
         eventId = eventName
     elseif MOD.customEventNameToId[eventName] ~= nil then
         eventId = MOD.customEventNameToId[eventName]
+    elseif type(eventName) == "number" then
+        eventId = eventName
     else
         eventId = script.generate_event_name()
         MOD.customEventNameToId[eventName] = eventId
@@ -57,6 +59,8 @@ function Events.RaiseEvent(eventData)
     elseif MOD.customEventNameToId[eventName] ~= nil then
         local eventId = MOD.customEventNameToId[eventName]
         script.raise_event(eventId, eventData)
+    elseif type(eventName) == "number" then
+        script.raise_event(eventName, eventData)
     else
         error("WARNING: raise event called that doesn't exist: " .. eventName)
     end
