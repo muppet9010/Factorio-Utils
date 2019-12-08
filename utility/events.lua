@@ -71,7 +71,6 @@ function Events._HandleEvent(eventData)
 end
 
 function Events._HandleFilteredEvent(eventData)
-    --MOD.filteredEvents[eventId .. filterName][handlerName]
     local eventId = eventData.name
     local filterName = eventData.filterName
     if MOD.filteredEvents[eventId .. filterName] == nil then
