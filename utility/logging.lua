@@ -20,6 +20,10 @@ function Logging.Log(text, enabled)
         return
     end
     if game ~= nil then
+        if Constants.LogFileName == nil or Constants.LogFileName == "" then
+            game.print("ERROR - No Constants.LogFileName set")
+            log("ERROR - No Constants.LogFileName set")
+        end
         game.write_file(Constants.LogFileName, tostring(text) .. "\r\n", true)
     else
         log(tostring(text))
