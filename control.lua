@@ -1,24 +1,21 @@
-local function UpdateSetting(settingName)
-    --if settingName == "xxxxx" or settingName == nil then
-    --	local x = tonumber(settings.global["xxxxx"].value)
-    --end
-end
-
 local function CreateGlobals()
 end
 
 local function OnLoad()
 end
 
-local function OnStartup()
-    CreateGlobals()
-	OnLoad()
-    UpdateSetting(nil)
+local function OnSettingChanged(event)
+    --if event == nil or event.setting == "xxxxx" then
+    --	local x = tonumber(settings.global["xxxxx"].value)
+    --end
 end
 
-local function OnSettingChanged(event)
-    UpdateSetting(event.setting)
+local function OnStartup()
+    CreateGlobals()
+    OnSettingChanged(nil)
+	OnLoad()
 end
+
 
 script.on_init(OnStartup)
 script.on_configuration_changed(OnStartup)
