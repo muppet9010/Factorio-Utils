@@ -26,25 +26,25 @@ defaultStyle.muppet_margin_frame = {
 defaultStyle.muppet_padded_table = {
     type = "table_style",
     top_padding = 5,
-    bottom_padding = 5,
+    --doesn't need bottom padding in 0.17
     left_padding = 5,
     right_padding = 5
 }
-defaultStyle.muppet_padded_table_and_cell = {
+defaultStyle.muppet_padded_table_and_cells = {
     type = "table_style",
     top_padding = 5,
-    bottom_padding = 5,
+    --doesn't need bottom padding in 0.17
     left_padding = 5,
     right_padding = 5,
     top_cell_padding = 5,
-    bottom_cell_padding = 5,
+    --doesn't need bottom padding in 0.17
     left_cell_padding = 5,
     right_cell_padding = 5
 }
 defaultStyle.muppet_padded_table_cells = {
     type = "table_style",
     top_cell_padding = 5,
-    bottom_cell_padding = 5,
+    --doesn't need bottom padding in 0.17
     left_cell_padding = 5,
     right_cell_padding = 5
 }
@@ -53,14 +53,18 @@ defaultStyle.muppet_mod_button_sprite = {
     type = "button_style",
     width = 36,
     height = 36,
-    scalable = true
+    scalable = true,
+    left_padding = 0,
+    right_padding = 0
 }
---same size as a button
-defaultStyle.muppet_button_sprite = {
+--same height as a button default font
+defaultStyle.tm_button_sprite = {
     type = "button_style",
-    width = 42,
-    height = 42,
-    scalable = true
+    width = 28,
+    height = 28,
+    scalable = true,
+    left_padding = 0,
+    right_padding = 0
 }
 defaultStyle.muppet_small_button = {
     type = "button_style",
