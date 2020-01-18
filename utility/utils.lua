@@ -255,20 +255,10 @@ function Utils.FuzzyCompareDoubles(num1, logic, num2)
     end
 end
 
-function Utils.GetTableLength(table)
+function Utils.GetTableNonNilLength(table)
     local count = 0
     for _ in pairs(table) do
         count = count + 1
-    end
-    return count
-end
-
-function Utils.GetTableNonNilLength(table)
-    local count = 0
-    for k, v in pairs(table) do
-        if v ~= nil then
-            count = count + 1
-        end
     end
     return count
 end
@@ -354,7 +344,7 @@ function Utils._TableContentsToJSON(target_table, name, tablesLogged, indent, st
     local indentstring = string.rep(" ", (indent * 4))
     tablesLogged[target_table] = "logged"
     local table_contents = ""
-    if Utils.GetTableLength(target_table) > 0 then
+    if Utils.GetTableNonNilLength(target_table) > 0 then
         for k, v in pairs(target_table) do
             local key, value
             if type(k) == "string" or type(k) == "number" or type(k) == "boolean" then

@@ -45,6 +45,14 @@ function GuiUtil.GetElementFromPlayersReferenceStorage(playerIndex, storeName, n
     return global.GUIUtilPlayerElementReferenceStorage[playerIndex][storeName][GuiUtil.GenerateName(name, type)]
 end
 
+function GuiUtil.GetOrAddElement(arguments, storeName)
+    local frameElement = GuiUtil.GetElementFromPlayersReferenceStorage(arguments.parent.player_index, storeName, arguments.name, arguments.type)
+    if frameElement == nil then
+        frameElement = GuiUtil.AddElement(arguments, storeName)
+    end
+    return frameElement
+end
+
 function GuiUtil.UpdateElementFromPlayersReferenceStorage(playerIndex, storeName, name, type, arguments)
     local element = GuiUtil.GetElementFromPlayersReferenceStorage(playerIndex, storeName, name, type)
     if element ~= nil then

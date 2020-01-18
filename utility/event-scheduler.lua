@@ -8,11 +8,7 @@ local function GetDefaultInstanceId(instanceId)
     return instanceId or ""
 end
 
-function EventScheduler.RegisterScheduler()
-    script.on_event(defines.events.on_tick, EventScheduler.OnSchedulerCycle)
-end
-
-function EventScheduler.OnSchedulerCycle(event)
+local function OnSchedulerCycle(event)
     local tick = event.tick
     if global.UTILITYSCHEDULEDFUNCTIONS == nil then
         return
@@ -32,6 +28,12 @@ function EventScheduler.OnSchedulerCycle(event)
     end
 end
 
+--Called from the root of Control.lua
+function EventScheduler.RegisterScheduler()
+    script.on_event(defines.events.on_tick, OnSchedulerCycle)
+end
+
+--Called from OnLoad() from each script file.
 function EventScheduler.RegisterScheduledEventType(eventName, eventFunction)
     if eventName == nil or eventFunction == nil then
         error("EventScheduler.RegisterScheduledEventType called with missing arguments")
@@ -39,6 +41,7 @@ function EventScheduler.RegisterScheduledEventType(eventName, eventFunction)
     MOD.scheduledEventNames[eventName] = eventFunction
 end
 
+--Called from OnStartup() or from some other event or trigger to schedule an event.
 function EventScheduler.ScheduleEvent(eventTick, eventName, instanceId, eventData)
     if eventName == nil then
         error("EventScheduler.ScheduleEvent called with missing arguments")
@@ -58,30 +61,8 @@ function EventScheduler.ScheduleEvent(eventTick, eventName, instanceId, eventDat
     global.UTILITYSCHEDULEDFUNCTIONS[eventTick][eventName][instanceId] = eventData
 end
 
-function EventScheduler.RemoveScheduledEvents(targetEventName, targetInstanceId, targetTick)
-    if targetEventName == nil then
-        error("EventScheduler.RemoveScheduledEvents called with missing arguments")
-    end
-    targetInstanceId = GetDefaultInstanceId(targetInstanceId)
-    if targetTick == nil then
-        for tick, events in pairs(global.UTILITYSCHEDULEDFUNCTIONS) do
-            EventScheduler._RemoveScheduledEventsFromTickEntry(events, targetEventName, targetInstanceId)
-            if Utils.GetTableNonNilLength(events) == 0 then
-                global.UTILITYSCHEDULEDFUNCTIONS[tick] = nil
-            end
-        end
-    else
-        local events = global.UTILITYSCHEDULEDFUNCTIONS[targetTick]
-        if events ~= nil then
-            EventScheduler._RemoveScheduledEventsFromTickEntry(events, targetEventName, targetInstanceId)
-            if Utils.GetTableNonNilLength(events) == 0 then
-                global.UTILITYSCHEDULEDFUNCTIONS[targetTick] = nil
-            end
-        end
-    end
-end
-
-function EventScheduler._RemoveScheduledEventsFromTickEntry(events, targetEventName, targetInstanceId)
+--Commented while the new merged approach is confirmed. Should offer identical behaviour, but with addition of the get function.
+--[[local function RemoveScheduledEventsFromTickEntry(events, targetEventName, targetInstanceId)
     if events[targetEventName] ~= nil then
         events[targetEventName][targetInstanceId] = nil
         if Utils.GetTableNonNilLength(events[targetEventName]) == 0 then
@@ -90,35 +71,144 @@ function EventScheduler._RemoveScheduledEventsFromTickEntry(events, targetEventN
     end
 end
 
+--Called whenever required.
+function EventScheduler.RemoveScheduledEvents(targetEventName, targetInstanceId, targetTick)
+    if targetEventName == nil then
+        error("EventScheduler.RemoveScheduledEvents called with missing arguments")
+    end
+    targetInstanceId = GetDefaultInstanceId(targetInstanceId)
+    if targetTick == nil then
+        for tick, events in pairs(global.UTILITYSCHEDULEDFUNCTIONS) do
+            RemoveScheduledEventsFromTickEntry(events, targetEventName, targetInstanceId)
+            if Utils.GetTableNonNilLength(events) == 0 then
+                global.UTILITYSCHEDULEDFUNCTIONS[tick] = nil
+            end
+        end
+    else
+        local events = global.UTILITYSCHEDULEDFUNCTIONS[targetTick]
+        if events ~= nil then
+            RemoveScheduledEventsFromTickEntry(events, targetEventName, targetInstanceId)
+            if Utils.GetTableNonNilLength(events) == 0 then
+                global.UTILITYSCHEDULEDFUNCTIONS[targetTick] = nil
+            end
+        end
+    end
+end
+
+local function IsEventScheduledInTickEntry(events, targetEventName, targetInstanceId)
+    if events[targetEventName] ~= nil and events[targetEventName][targetInstanceId] ~= nil then
+        return true
+    end
+end
+
+--Called whenever required.
 function EventScheduler.IsEventScheduled(targetEventName, targetInstanceId, targetTick)
     if targetEventName == nil then
         error("EventScheduler.IsEventScheduled called with missing arguments")
     end
-    if global.UTILITYSCHEDULEDFUNCTIONS == nil then
-        return false
-    end
     targetInstanceId = GetDefaultInstanceId(targetInstanceId)
     if targetTick == nil then
         for _, events in pairs(global.UTILITYSCHEDULEDFUNCTIONS) do
-            if EventScheduler._IsEventScheduledInTickEntry(events, targetEventName, targetInstanceId) then
+            if IsEventScheduledInTickEntry(events, targetEventName, targetInstanceId) then
                 return true
             end
         end
     else
         local events = global.UTILITYSCHEDULEDFUNCTIONS[targetTick]
         if events ~= nil then
-            if EventScheduler._IsEventScheduledInTickEntry(events, targetEventName, targetInstanceId) then
+            if IsEventScheduledInTickEntry(events, targetEventName, targetInstanceId) then
                 return true
             end
         end
     end
     return false
+end]]
+local function ParseScheduledEvents(targetEventName, targetInstanceId, targetTick, actionFunction)
+    targetInstanceId = GetDefaultInstanceId(targetInstanceId)
+    local result, results = nil, {}
+    if targetTick == nil then
+        for tick, events in pairs(global.UTILITYSCHEDULEDFUNCTIONS) do
+            local outcome = actionFunction(events, targetEventName, targetInstanceId, tick)
+            if outcome ~= nil then
+                result = outcome.result
+                if outcome.results ~= nil then
+                    table.insert(results, outcome.results)
+                end
+                if result then
+                    break
+                end
+            end
+        end
+    else
+        local events = global.UTILITYSCHEDULEDFUNCTIONS[targetTick]
+        if events ~= nil then
+            local outcome = actionFunction(events, targetEventName, targetInstanceId)
+            result = outcome.result
+            if outcome.results ~= nil then
+                table.insert(results, outcome.results)
+            end
+        end
+    end
+    return result, results
 end
 
-function EventScheduler._IsEventScheduledInTickEntry(events, targetEventName, targetInstanceId)
+local function IsEventScheduledInTickEntry(events, targetEventName, targetInstanceId)
     if events[targetEventName] ~= nil and events[targetEventName][targetInstanceId] ~= nil then
-        return true
+        return {result = true}
     end
+end
+
+local function RemoveScheduledEventsFromTickEntry(events, targetEventName, targetInstanceId, tick)
+    if events[targetEventName] ~= nil then
+        events[targetEventName][targetInstanceId] = nil
+        if Utils.GetTableNonNilLength(events[targetEventName]) == 0 then
+            events[targetEventName] = nil
+        end
+    end
+    if Utils.GetTableNonNilLength(events) == 0 then
+        global.UTILITYSCHEDULEDFUNCTIONS[tick] = nil
+    end
+end
+
+local function GetScheduledEventsFromTickEntry(events, targetEventName, targetInstanceId, tick)
+    if events[targetEventName] ~= nil and events[targetEventName][targetInstanceId] ~= nil then
+        local scheduledEvent = {
+            tick = tick,
+            eventName = targetEventName,
+            instanceId = targetInstanceId,
+            eventData = events[targetEventName][targetInstanceId]
+        }
+        return {results = scheduledEvent}
+    end
+end
+
+--Called whenever required.
+function EventScheduler.IsEventScheduled(targetEventName, targetInstanceId, targetTick)
+    if targetEventName == nil then
+        error("EventScheduler.IsEventScheduled called with missing arguments")
+    end
+    local result = ParseScheduledEvents(targetEventName, targetInstanceId, targetTick, IsEventScheduledInTickEntry)
+    if result ~= true then
+        result = false
+    end
+    return result
+end
+
+--Called whenever required.
+function EventScheduler.RemoveScheduledEvents(targetEventName, targetInstanceId, targetTick)
+    if targetEventName == nil then
+        error("EventScheduler.RemoveScheduledEvents called with missing arguments")
+    end
+    ParseScheduledEvents(targetEventName, targetInstanceId, targetTick, RemoveScheduledEventsFromTickEntry)
+end
+
+--Called whenever required.
+function EventScheduler.GetScheduledEvents(targetEventName, targetInstanceId, targetTick)
+    if targetEventName == nil then
+        error("EventScheduler.GetScheduledEvents called with missing arguments")
+    end
+    local _, results = ParseScheduledEvents(targetEventName, targetInstanceId, targetTick, GetScheduledEventsFromTickEntry)
+    return results
 end
 
 return EventScheduler

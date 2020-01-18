@@ -4,10 +4,12 @@ local Interfaces = {}
 MOD = MOD or {}
 MOD.interfaces = MOD.interfaces or {}
 
+--Called from OnLoad() from each script file.
 function Interfaces.RegisterInterface(interfaceName, interfaceFunction)
     MOD.interfaces[interfaceName] = interfaceFunction
 end
 
+--Called when needed.
 function Interfaces.Call(interfaceName, ...)
     if MOD.interfaces[interfaceName] ~= nil then
         return MOD.interfaces[interfaceName](...)

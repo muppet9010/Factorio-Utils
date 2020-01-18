@@ -7,6 +7,7 @@ MOD.events = MOD.events or {}
 MOD.customEventNameToId = MOD.customEventNameToId or {}
 MOD.filteredEvents = MOD.filteredEvents or {}
 
+--Called from the root of Control.lua
 function Events.RegisterEvent(eventName, filterName, filterData)
     if eventName == nil then
         error("Events.RegisterEvent called with missing arguments")
@@ -33,6 +34,7 @@ function Events.RegisterEvent(eventName, filterName, filterData)
     script.on_event(eventId, Events._HandleEvent)
 end
 
+--Called from OnLoad() from each script file.
 function Events.RegisterHandler(eventName, handlerName, handlerFunction, filterName)
     if eventName == nil or handlerName == nil or handlerFunction == nil then
         error("Events.RegisterHandler called with missing arguments")
@@ -52,6 +54,7 @@ function Events.RegisterHandler(eventName, handlerName, handlerFunction, filterN
     MOD.events[eventId][handlerName] = handlerFunction
 end
 
+--Called when needed
 function Events.RemoveHandler(eventName, handlerName, filterName)
     if eventName == nil or handlerName == nil then
         error("Events.RemoveHandler called with missing arguments")
@@ -90,6 +93,7 @@ function Events._HandleFilteredEvent(eventData)
     end
 end
 
+--Called when needed
 function Events.RaiseEvent(eventData)
     eventData.tick = game.tick
     local eventName = eventData.name

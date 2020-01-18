@@ -25,6 +25,7 @@ function Logging.Log(text, enabled)
             log("ERROR - No Constants.LogFileName set")
         end
         game.write_file(Constants.LogFileName, tostring(text) .. "\r\n", true)
+        log(tostring(text))
     else
         log(tostring(text))
     end
