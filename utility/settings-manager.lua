@@ -2,8 +2,6 @@ local SettingsManager = {}
 local Utils = require("utility/utils")
 local Logging = require("utility/logging")
 
-local debugLogging = false
-
 SettingsManager.ExpectedValueTypes = {}
 SettingsManager.ExpectedValueTypes.string = {name = "string", hasChildren = false}
 SettingsManager.ExpectedValueTypes.number = {name = "number", hasChildren = false}
@@ -33,7 +31,6 @@ local function ValueToType(value, expectedType)
         local tableOfTypedValues = {}
         for k, v in pairs(value) do
             local typedV = ValueToType(v, expectedType.childExpectedValueType)
-            Logging.LogPrint("ValueToType: '" .. tostring(v) .. "' = '" .. tostring(typedV) .. "'", debugLogging)
             if typedV ~= nil then
                 tableOfTypedValues[k] = typedV
             else
@@ -92,7 +89,6 @@ SettingsManager.HandleSettingWithArrayOfValues = function(settingType, settingNa
     end
 
     if isMultipleGroups then
-        Logging.LogPrint("A - " .. Utils.TableContentsToJSON(tableOfValues, settingName), debugLogging)
         for id, value in pairs(tableOfValues) do
             local thisGlobalSettingContainer = SettingsManager.CreateGlobalGroupSettingsContainer(globalGroupsContainer, id, globalSettingContainerName)
             local typedValue = ValueToType(value, expectedValueType)
@@ -102,12 +98,10 @@ SettingsManager.HandleSettingWithArrayOfValues = function(settingType, settingNa
                 thisGlobalSettingContainer[globalSettingName] = valueHandlingFunction(defaultValue)
                 Logging.LogPrint("Setting '[" .. settingType .. "][" .. settingName .. "]' for entry number '" .. id .. "' has an invalid value type. Expected a '" .. expectedValueType.name .. "' but got the value '" .. tostring(value) .. "', so using default value of '" .. tostring(defaultValue) .. "'")
             end
-            Logging.LogPrint("A - " .. Utils.TableContentsToJSON(thisGlobalSettingContainer[globalSettingName], "set value"), debugLogging)
         end
         defaultSettingsContainer[globalSettingName] = valueHandlingFunction(defaultValue)
     else
         local value = tableOfValues or values
-        Logging.LogPrint("B - " .. settingName .. ": " .. tostring(value), debugLogging)
         local typedValue = ValueToType(value, expectedValueType)
         if typedValue ~= nil then
             defaultSettingsContainer[globalSettingName] = valueHandlingFunction(typedValue)
