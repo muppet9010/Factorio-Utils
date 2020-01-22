@@ -1,9 +1,10 @@
 local Colors = {}
 --https://www.rapidtables.com/web/color/html-color-codes.html
---=CONCATENATE("Colors.", SUBSTITUTE(B1," ","_"), " = {",  SUBSTITUTE(SUBSTITUTE(D1, "(", ""),")",""), ",255}")
+--=CONCATENATE("Colors.", B1, " = {",  SUBSTITUTE(SUBSTITUTE(D1, "(", ""),")",""), ",255}")
 
 --Custom
 Colors.lightred = {255, 100, 100, 255}
+Colors.guiheadingcolor = {255, 230, 192, 255}
 
 --Red
 Colors.lightsalmon = {255, 160, 122, 255}
