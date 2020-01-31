@@ -234,7 +234,8 @@ defaultStyle.muppet_text = {
     padding = 0,
     left_padding = 4,
     right_padding = 4,
-    margin = 0
+    margin = 0,
+    single_line = false
 }
 defaultStyle.muppet_semibold_text = {
     type = "label_style",

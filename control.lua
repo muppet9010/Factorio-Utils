@@ -13,8 +13,8 @@ end
 
 local function OnStartup()
     CreateGlobals()
-    OnSettingChanged(nil)
 	OnLoad()
+    OnSettingChanged(nil)
 end
 
 
