@@ -104,12 +104,12 @@ Events._HandleFilteredEvent = function(eventData)
     end
 end
 
---Called when needed
+--Called when needed, but not before tick 0 as they are ignored
 Events.RaiseEvent = function(eventData)
     eventData.tick = game.tick
     local eventName = eventData.name
     if defines.events[eventName] ~= nil then
-        script.raise_event(eventName, eventData)
+        script.raise_event(defines.events[eventName], eventData)
     elseif MOD.customEventNameToId[eventName] ~= nil then
         local eventId = MOD.customEventNameToId[eventName]
         script.raise_event(eventId, eventData)
