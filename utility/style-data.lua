@@ -173,9 +173,9 @@ for _, attributes in pairs(
 end
 
 --BUTTON
-for _, textSize in pairs({{"_small", "default"}, {"_medium", "default-medium"}, {"_large", "default-large"}}) do
-    for _, boldness in pairs({{"", ""}, {"_semibold", "-semibold"}, {"_bold", "-bold"}}) do
-        for _, purpose in pairs({{"_text", Colors.black}, {"_heading", Colors.guiheadingcolor}}) do
+for _, purpose in pairs({{"_text", Colors.black}, {"_heading", Colors.guiheadingcolor}}) do
+    for _, textSize in pairs({{"_small", "default"}, {"_medium", "default-medium"}, {"_large", "default-large"}}) do
+        for _, boldness in pairs({{"", ""}, {"_semibold", "-semibold"}, {"_bold", "-bold"}}) do
             for _, attributes in pairs(
                 {
                     {"", {}},
@@ -212,9 +212,9 @@ for _, textSize in pairs({{"_small", "default"}, {"_medium", "default-medium"}, 
 end
 
 --LABEL
-for _, textSize in pairs({{"_small", "default"}, {"_medium", "default-medium"}, {"_large", "default-large"}}) do
-    for _, boldness in pairs({{"", ""}, {"_semibold", "-semibold"}, {"_bold", "-bold"}}) do
-        for _, purpose in pairs({{"_text", Colors.white}, {"_heading", Colors.guiheadingcolor}}) do
+for _, purpose in pairs({{"_text", Colors.white}, {"_heading", Colors.guiheadingcolor}}) do
+    for _, textSize in pairs({{"_small", "default"}, {"_medium", "default-medium"}, {"_large", "default-large"}}) do
+        for _, boldness in pairs({{"", ""}, {"_semibold", "-semibold"}, {"_bold", "-bold"}}) do
             for _, margin in pairs({{"", 0, 0, 0, 0}, {"_marginTL", 4, 4, 0, 0}}) do
                 for _, padding in pairs({{"", 0, 0, 0, 0}, {"_paddingBR", 0, 0, 4, 4}, {"_paddingSides", 4, 0, 4, 0}}) do
                     defaultStyle["muppet_label" .. purpose[1] .. textSize[1] .. boldness[1] .. margin[1] .. padding[1]] = {

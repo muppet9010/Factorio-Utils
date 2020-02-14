@@ -120,4 +120,9 @@ Events.RaiseEvent = function(eventData)
     end
 end
 
+--Called from OnStartup() to trigger the defines.events.on_runtime_mod_setting_changed event to run with a nil value to trigger all mod settings being updated on game start.
+Events.RaiseRuntimeModSettingChangedEventFromStartup = function()
+    Events._HandleEvent({name = defines.events.on_runtime_mod_setting_changed})
+end
+
 return Events
