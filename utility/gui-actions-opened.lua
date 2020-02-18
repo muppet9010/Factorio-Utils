@@ -80,7 +80,7 @@ GuiActionsOpened._HandleGuiOpenedAction = function(event)
         end
     end
 
-    if global.UTILITYGUIACTIONSENTITYGUIOPENED ~= nil and entityOpened ~= nil then
+    if global.UTILITYGUIACTIONSENTITYGUIOPENED ~= nil and entityOpened ~= nil and global.UTILITYGUIACTIONSENTITYGUIOPENED[entityOpened.unit_number] ~= nil then
         for actionName, data in pairs(global.UTILITYGUIACTIONSENTITYGUIOPENED[entityOpened.unit_number]) do
             local actionFunction = MOD.guiOpenedActions[actionName]
             local actionData = {actionName = actionName, playerIndex = event.player_index, entity = entityOpened, data = data, eventData = event}
