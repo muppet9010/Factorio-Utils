@@ -3,9 +3,11 @@ A mix of helper libraries and scripts used in many of my mods. Tries to be backw
 
 The `utility` folder is dumped whole in to mods root folder and then built, tested and distributed as part of the mod. This is to make each mod generally self contained that utilise these libraries.
 
+
 Root files
 -----------
 Files in the root are templates I use when starting new mods.
+
 
 Utility folder
 -----------
@@ -21,3 +23,11 @@ Utility folder
 - style-data.lua = Contains the default style prototypes for GUIs I use in mods. WARNING: adds directly to game prototypes and so is not self contained within each mod instance, version mismatch can cause overwriting in rare scenarios. 
 - utils.lua = Contains all sorts of odd functions, not limited to area entity killing, to evolution specific biter selection to making test prototypes for testing entity placement in/out of water. 
 - version.txt = The version of the utility folder. Incremented with any impacting changes. 
+
+
+VSCode Extensions
+----------
+ - Lua Coder Assist: https://marketplace.visualstudio.com/items?itemName=liwangqian.luacoderassist
+ - Lua Plus: https://marketplace.visualstudio.com/items?itemName=jep-a.lua-plus
+ - Factorio Lua API autocomplete: https://marketplace.visualstudio.com/items?itemName=svizzini.factorio-lua-api-autocomplete
+ - Factorio Lua Check RC: https://github.com/Nexela/Factorio-luacheckrc
