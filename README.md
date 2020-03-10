@@ -31,3 +31,4 @@ VSCode Extensions
  - Lua Plus: https://marketplace.visualstudio.com/items?itemName=jep-a.lua-plus
  - Factorio Lua API autocomplete: https://marketplace.visualstudio.com/items?itemName=svizzini.factorio-lua-api-autocomplete
  - Factorio Lua Check RC: https://github.com/Nexela/Factorio-luacheckrc
+ - Factorio Mod Debug: https://marketplace.visualstudio.com/items?itemName=justarandomgeek.factoriomod-debug
