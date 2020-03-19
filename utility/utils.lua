@@ -216,6 +216,19 @@ function Utils.RoundNumberToDecimalPlaces(num, numDecimalPlaces)
     return result
 end
 
+function Utils.HandleFloatNumberAsChancedValue(value)
+    local intValue = math.floor(value)
+    local partialValue = value - intValue
+    local chancedValue = intValue
+    if partialValue ~= 0 then
+        local rand = math.random()
+        if rand >= partialValue then
+            chancedValue = chancedValue + 1
+        end
+    end
+    return chancedValue
+end
+
 --This doesn't guarentee correct on some of the edge cases, but is as close as possible assuming that 1/256 is the variance for the same number (Bilka, Dev on Discord)
 function Utils.FuzzyCompareDoubles(num1, logic, num2)
     local numDif = num1 - num2
