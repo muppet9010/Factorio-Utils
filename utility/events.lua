@@ -1,21 +1,22 @@
-local Utils = require("utility/utils")
 --local Logging = require("utility/logging")
 
 local Events = {}
 MOD = MOD or {}
 MOD.events = MOD.events or {}
 MOD.customEventNameToId = MOD.customEventNameToId or {}
+MOD.eventFilters = MOD.eventFilters or {}
 
 -- Called either from the root of Control.lua or from OnLoad for vanilla events and custom events.
 -- Filtered events have to expect to recieve results outside of their filter. As an event can only be registered one time, with multiple instances the most lienient or merged filters for all instances must be applied.
-Events.RegisterEvent = function(eventName, filterData)
+Events.RegisterEvent = function(eventName, thisFilterName, thisFilterData)
     if eventName == nil then
         error("Events.RegisterEvent called with missing arguments")
     end
-    local eventId
-    if Utils.GetTableKeyWithValue(defines.events, eventName) ~= nil then
+    local eventId, filterData
+    if type(eventName) == "number" then
         eventId = eventName
-        if filterData ~= nil then
+        if thisFilterData ~= nil then
+            MOD.eventFilters[thisFilterName] = thisFilterData
             local currentFilter, currentHandler = script.get_event_filter(eventId), script.get_event_handler(eventId)
             if currentHandler ~= nil then
                 if currentFilter == nil then
@@ -23,21 +24,23 @@ Events.RegisterEvent = function(eventName, filterData)
                     return
                 else
                     --add new filter to old filter and let it be re-applied.
-                    currentFilter[1].mode = "or"
-                    for _, currentFilterEntry in pairs(currentFilter) do
-                        table.insert(filterData, currentFilterEntry)
+                    filterData = {}
+                    for _, filterTable in pairs(MOD.eventFilters) do
+                        filterTable[1].mode = "or"
+                        for _, filterEntry in pairs(filterTable) do
+                            table.insert(filterData, filterEntry)
+                        end
                     end
                 end
-            --else
-            --no current handler so just let our filter be set.
+            else
+                --no current handler so just let our filter be set.
+                filterData = thisFilterData
             end
         --else
         --we're not filtering so just blindly overwrite whatever is there safely.
         end
     elseif MOD.customEventNameToId[eventName] ~= nil then
         eventId = MOD.customEventNameToId[eventName]
-    elseif type(eventName) == "number" then
-        eventId = eventName
     else
         eventId = script.generate_event_name()
         MOD.customEventNameToId[eventName] = eventId
