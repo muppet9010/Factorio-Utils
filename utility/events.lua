@@ -18,26 +18,19 @@ Events.RegisterEvent = function(eventName, thisFilterName, thisFilterData)
         if thisFilterData ~= nil then
             MOD.eventFilters[thisFilterName] = thisFilterData
             local currentFilter, currentHandler = script.get_event_filter(eventId), script.get_event_handler(eventId)
-            if currentHandler ~= nil then
-                if currentFilter == nil then
-                    --event registered with no filter, so already fully lienent.
-                    return
-                else
-                    --add new filter to old filter and let it be re-applied.
-                    filterData = {}
-                    for _, filterTable in pairs(MOD.eventFilters) do
-                        filterTable[1].mode = "or"
-                        for _, filterEntry in pairs(filterTable) do
-                            table.insert(filterData, filterEntry)
-                        end
+            if currentHandler ~= nil and currentFilter == nil then
+                --an event is registered already and has no filter, so already fully lienent.
+                return
+            else
+                --add new filter to any existing old filter and let it be re-applied.
+                filterData = {}
+                for _, filterTable in pairs(MOD.eventFilters) do
+                    filterTable[1].mode = "or"
+                    for _, filterEntry in pairs(filterTable) do
+                        table.insert(filterData, filterEntry)
                     end
                 end
-            else
-                --no current handler so just let our filter be set.
-                filterData = thisFilterData
             end
-        --else
-        --we're not filtering so just blindly overwrite whatever is there safely.
         end
     elseif MOD.customEventNameToId[eventName] ~= nil then
         eventId = MOD.customEventNameToId[eventName]
