@@ -8,6 +8,7 @@ MOD.eventFilters = MOD.eventFilters or {}
 
 -- Called either from the root of Control.lua or from OnLoad for vanilla events and custom events.
 -- Filtered events have to expect to recieve results outside of their filter. As an event can only be registered one time, with multiple instances the most lienient or merged filters for all instances must be applied.
+-- Returns the eventId, useful for  custom event names when you need to store the eventId to return via a remote interface call.
 Events.RegisterEvent = function(eventName, thisFilterName, thisFilterData)
     if eventName == nil then
         error("Events.RegisterEvent called with missing arguments")
@@ -39,6 +40,7 @@ Events.RegisterEvent = function(eventName, thisFilterName, thisFilterData)
         MOD.customEventNameToId[eventName] = eventId
     end
     script.on_event(eventId, Events._HandleEvent, filterData)
+    return eventId
 end
 
 --Called from the root of Control.lua for custom inputs (key bindings) as their names are handled specially.
@@ -93,13 +95,11 @@ end
 Events.RaiseEvent = function(eventData)
     eventData.tick = game.tick
     local eventName = eventData.name
-    if defines.events[eventName] ~= nil then
-        script.raise_event(defines.events[eventName], eventData)
+    if type(eventName) == "number" then
+        script.raise_event(eventName, eventData)
     elseif MOD.customEventNameToId[eventName] ~= nil then
         local eventId = MOD.customEventNameToId[eventName]
         script.raise_event(eventId, eventData)
-    elseif type(eventName) == "number" then
-        script.raise_event(eventName, eventData)
     else
         error("WARNING: raise event called that doesn't exist: " .. eventName)
     end
@@ -109,12 +109,10 @@ end
 Events.RaiseInternalEvent = function(eventData)
     eventData.tick = game.tick
     local eventName = eventData.name
-    if defines.events[eventName] ~= nil then
+    if type(eventName) == "number" then
         Events._HandleEvent(eventData)
     elseif MOD.customEventNameToId[eventName] ~= nil then
         eventData.name = MOD.customEventNameToId[eventName]
-        Events._HandleEvent(eventData)
-    elseif type(eventName) == "number" then
         Events._HandleEvent(eventData)
     else
         error("WARNING: raise event called that doesn't exist: " .. eventName)
