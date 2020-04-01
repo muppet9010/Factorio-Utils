@@ -20,15 +20,20 @@ Utility folder
 - interfaces.lua = Library to allow registering functions as interfaces internally within the mod to support modualr mod design.
 - logging.lua = Logging functions.
 - settings-manager.lua = Library to support using mod settings to acept and array of values for N instances of something. Rather than having to add lots of repeat mod settings entry boxes.
-- style-data.lua = Contains the default style prototypes for GUIs I use in mods. WARNING: adds directly to game prototypes and so is not self contained within each mod instance, version mismatch can cause overwriting in rare scenarios. 
-- utils.lua = Contains all sorts of odd functions, not limited to area entity killing, to evolution specific biter selection to making test prototypes for testing entity placement in/out of water. 
-- version.txt = The version of the utility folder. Incremented with any impacting changes. 
+- style-data.lua = Contains the default style prototypes for GUIs I use in mods. WARNING: adds directly to game prototypes and so is not self contained within each mod instance, version mismatch can cause overwriting in rare scenarios.
+- utils.lua = Contains all sorts of odd functions, not limited to area entity killing, to evolution specific biter selection to making test prototypes for testing entity placement in/out of water.
+- version.txt = The version of the utility folder. Incremented with any impacting changes.
 
 
 VSCode Extensions
 ----------
+
+The VSCode settings file is stored in this folder. Its location for deployment can be found here:
+https://code.visualstudio.com/docs/getstarted/settings#_settings-file-locations
+
+Extensions currently used:
  - Lua Coder Assist: https://marketplace.visualstudio.com/items?itemName=liwangqian.luacoderassist
  - Lua Plus: https://marketplace.visualstudio.com/items?itemName=jep-a.lua-plus
- - Factorio Lua API autocomplete: https://marketplace.visualstudio.com/items?itemName=svizzini.factorio-lua-api-autocomplete
+ - Factorio Lua API autocomplete (rather out of date): https://marketplace.visualstudio.com/items?itemName=svizzini.factorio-lua-api-autocomplete
  - Factorio Lua Check RC: https://github.com/Nexela/Factorio-luacheckrc
  - Factorio Mod Debug: https://marketplace.visualstudio.com/items?itemName=justarandomgeek.factoriomod-debug
