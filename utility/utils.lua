@@ -30,7 +30,7 @@ function Utils.KillAllObjectsInArea(surface, positionedBoundingBox, killerEntity
                     entity.die("neutral")
                 end
             else
-                entity.destroy({dp_cliff_correction = true, raise_destroy = false})
+                entity.destroy({dp_cliff_correction = true, raise_destroy = true})
             end
         end
     end
@@ -41,7 +41,7 @@ function Utils.DestroyAllKillableObjectsInArea(surface, positionedBoundingBox, c
     for k, entity in pairs(entitiesFound) do
         if entity.valid and (force == nil or entity.force == force) then
             if entity.health ~= nil and entity.destructible and ((collisionBoxOnlyEntities and Utils.IsCollisionBoxPopulated(entity.prototype.collision_box)) or (not collisionBoxOnlyEntities)) then
-                entity.destroy({dp_cliff_correction = true, raise_destroy = false})
+                entity.destroy({dp_cliff_correction = true, raise_destroy = true})
             end
         end
     end
@@ -51,7 +51,7 @@ function Utils.DestroyAllObjectsInArea(surface, positionedBoundingBox, force)
     local entitiesFound = surface.find_entities(positionedBoundingBox)
     for k, entity in pairs(entitiesFound) do
         if entity.valid and (force == nil or entity.force == force) then
-            entity.destroy({dp_cliff_correction = true, raise_destroy = false})
+            entity.destroy({dp_cliff_correction = true, raise_destroy = true})
         end
     end
 end
