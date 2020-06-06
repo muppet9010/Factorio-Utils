@@ -14,7 +14,8 @@ Utility folder
 - colors.lua = A list of standard colors for use across mods.
 - commands.lua = Library functions to help manage adding and handling Facotrio mod commands.
 - event-scheduler.lua = Library to facilitate scheduling functions with data to fire on a future tick.
-- events.lua = Library to facilitate multiple functions subscribing to the same event in a modular way. Supprts custom events and event filters also.
+- events.lua = Library to facilitate multiple functions subscribing to the same script.event in a modular way. Supports custom events and event filters also.
+- setup-events.lua = Library to facilitate multiple functions subscribing to the same bespoke setup events related to vanilla mod setup events (i.e. script.on_init) in a modular way.
 - gui-actions.lua = Library to register and handle GUI actions (button clicks) registering and handling functions in a modular way.
 - gui-util.lua = Library to support making, storing and accessing GUI elements.
 - interfaces.lua = Library to allow registering functions as interfaces internally within the mod to support modualr mod design.
