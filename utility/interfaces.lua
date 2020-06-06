@@ -7,6 +7,7 @@ MOD.interfaces = MOD.interfaces or {}
 --Called from OnLoad() from each script file.
 Interfaces.RegisterInterface = function(interfaceName, interfaceFunction)
     MOD.interfaces[interfaceName] = interfaceFunction
+    return interfaceName
 end
 
 --Called when needed.
