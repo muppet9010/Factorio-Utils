@@ -94,26 +94,28 @@ end
 EventScheduler._ParseScheduledEvents = function(targetEventName, targetInstanceId, targetTick, actionFunction)
     targetInstanceId = EventScheduler._GetDefaultInstanceId(targetInstanceId)
     local result, results = nil, {}
-    if targetTick == nil then
-        for tick, events in pairs(global.UTILITYSCHEDULEDFUNCTIONS) do
-            local outcome = actionFunction(events, targetEventName, targetInstanceId, tick)
-            if outcome ~= nil then
+    if global.UTILITYSCHEDULEDFUNCTIONS ~= nil then
+        if targetTick == nil then
+            for tick, events in pairs(global.UTILITYSCHEDULEDFUNCTIONS) do
+                local outcome = actionFunction(events, targetEventName, targetInstanceId, tick)
+                if outcome ~= nil then
+                    result = outcome.result
+                    if outcome.results ~= nil then
+                        table.insert(results, outcome.results)
+                    end
+                    if result then
+                        break
+                    end
+                end
+            end
+        else
+            local events = global.UTILITYSCHEDULEDFUNCTIONS[targetTick]
+            if events ~= nil then
+                local outcome = actionFunction(events, targetEventName, targetInstanceId)
                 result = outcome.result
                 if outcome.results ~= nil then
                     table.insert(results, outcome.results)
                 end
-                if result then
-                    break
-                end
-            end
-        end
-    else
-        local events = global.UTILITYSCHEDULEDFUNCTIONS[targetTick]
-        if events ~= nil then
-            local outcome = actionFunction(events, targetEventName, targetInstanceId)
-            result = outcome.result
-            if outcome.results ~= nil then
-                table.insert(results, outcome.results)
             end
         end
     end
