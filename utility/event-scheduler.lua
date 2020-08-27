@@ -111,10 +111,12 @@ EventScheduler._ParseScheduledEvents = function(targetEventName, targetInstanceI
         else
             local events = global.UTILITYSCHEDULEDFUNCTIONS[targetTick]
             if events ~= nil then
-                local outcome = actionFunction(events, targetEventName, targetInstanceId)
-                result = outcome.result
-                if outcome.results ~= nil then
-                    table.insert(results, outcome.results)
+                local outcome = actionFunction(events, targetEventName, targetInstanceId, targetTick)
+                if outcome ~= nil then
+                    result = outcome.result
+                    if outcome.results ~= nil then
+                        table.insert(results, outcome.results)
+                    end
                 end
             end
         end

@@ -372,50 +372,59 @@ function Utils.TableKeyToArray(aTable)
     return newArray
 end
 
-function Utils.TableContentsToJSON(target_table, name)
+function Utils.TableContentsToJSON(targetTable, name, singleLineOutput)
+    --targetTable is the only mandatory parameter. name if provided will appear as a "name:JSONData" output. singleLineOutput removes all lines and spacing from the output.
+    singleLineOutput = singleLineOutput or false
     local tablesLogged = {}
-    return Utils._TableContentsToJSON(target_table, name, tablesLogged)
+    return Utils._TableContentsToJSON(targetTable, name, singleLineOutput, tablesLogged)
 end
-function Utils._TableContentsToJSON(target_table, name, tablesLogged, indent, stop_traversing)
+function Utils._TableContentsToJSON(targetTable, name, singleLineOutput, tablesLogged, indent, stopTraversing)
+    local newLineCharacter = "\r\n"
     indent = indent or 1
     local indentstring = string.rep(" ", (indent * 4))
-    tablesLogged[target_table] = "logged"
+    if singleLineOutput then
+        newLineCharacter = ""
+        indentstring = ""
+    end
+    tablesLogged[targetTable] = "logged"
     local table_contents = ""
-    if Utils.GetTableNonNilLength(target_table) > 0 then
-        for k, v in pairs(target_table) do
+    if Utils.GetTableNonNilLength(targetTable) > 0 then
+        for k, v in pairs(targetTable) do
             local key, value
-            if type(k) == "string" or type(k) == "number" or type(k) == "boolean" then
+            if type(k) == "string" or type(k) == "number" or type(k) == "boolean" then -- keys are always strings
                 key = '"' .. tostring(k) .. '"'
             elseif type(k) == "nil" then
                 key = '"nil"'
             elseif type(k) == "table" then
-                if stop_traversing == true then
+                if stopTraversing == true then
                     key = '"CIRCULAR LOOP TABLE"'
                 else
-                    local sub_stop_traversing = nil
+                    local subStopTraversing = nil
                     if tablesLogged[k] ~= nil then
-                        sub_stop_traversing = true
+                        subStopTraversing = true
                     end
-                    key = "{\r\n" .. Utils._TableContentsToJSON(k, name, tablesLogged, indent + 1, sub_stop_traversing) .. "\r\n" .. indentstring .. "}"
+                    key = "{" .. newLineCharacter .. Utils._TableContentsToJSON(k, name, singleLineOutput, tablesLogged, indent + 1, subStopTraversing) .. newLineCharacter .. indentstring .. "}"
                 end
             elseif type(k) == "function" then
                 key = '"' .. tostring(k) .. '"'
             else
                 key = '"unhandled type: ' .. type(k) .. '"'
             end
-            if type(v) == "string" or type(v) == "number" or type(v) == "boolean" then
+            if type(v) == "string" then
                 value = '"' .. tostring(v) .. '"'
+            elseif type(v) == "number" or type(v) == "boolean" then
+                value = tostring(v)
             elseif type(v) == "nil" then
                 value = '"nil"'
             elseif type(v) == "table" then
-                if stop_traversing == true then
+                if stopTraversing == true then
                     value = '"CIRCULAR LOOP TABLE"'
                 else
-                    local sub_stop_traversing = nil
+                    local subStopTraversing = nil
                     if tablesLogged[v] ~= nil then
-                        sub_stop_traversing = true
+                        subStopTraversing = true
                     end
-                    value = "{\r\n" .. Utils._TableContentsToJSON(v, name, tablesLogged, indent + 1, sub_stop_traversing) .. "\r\n" .. indentstring .. "}"
+                    value = "{" .. newLineCharacter .. Utils._TableContentsToJSON(v, name, singleLineOutput, tablesLogged, indent + 1, subStopTraversing) .. newLineCharacter .. indentstring .. "}"
                 end
             elseif type(v) == "function" then
                 value = '"' .. tostring(v) .. '"'
@@ -423,7 +432,7 @@ function Utils._TableContentsToJSON(target_table, name, tablesLogged, indent, st
                 value = '"unhandled type: ' .. type(v) .. '"'
             end
             if table_contents ~= "" then
-                table_contents = table_contents .. "," .. "\r\n"
+                table_contents = table_contents .. "," .. newLineCharacter
             end
             table_contents = table_contents .. indentstring .. tostring(key) .. ":" .. tostring(value)
         end
@@ -433,9 +442,9 @@ function Utils._TableContentsToJSON(target_table, name, tablesLogged, indent, st
     if indent == 1 then
         local resultString = ""
         if name ~= nil then
-            resultString = resultString .. '"' .. name .. '":'
+            resultString = '"' .. name .. '":'
         end
-        resultString = resultString .. "{" .. "\r\n" .. table_contents .. "\r\n" .. "}"
+        resultString = resultString .. "{" .. newLineCharacter .. table_contents .. newLineCharacter .. "}"
         return resultString
     else
         return table_contents
@@ -574,6 +583,7 @@ function Utils.DisplayNumberPretty(number)
 end
 
 function Utils.DisplayTimeOfTicks(inputTicks, displayLargestTimeUnit, displaySmallestTimeUnit)
+    -- display time units: hour, minute, second
     if inputTicks == nil then
         return ""
     end
