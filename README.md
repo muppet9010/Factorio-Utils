@@ -3,6 +3,8 @@ A mix of helper libraries and scripts used in many of my mods. Tries to be backw
 
 The `utility` folder is dumped whole in to mods root folder and then built, tested and distributed as part of the mod. This is to make each mod generally self contained that utilise these libraries.
 
+Many of the libraries include using core game events, i.e. on_tick, on_gui_XXX. This means these can't be mixed with other uses of those core game events. No player or entity type events are used.
+
 
 Root files
 -----------

@@ -2,7 +2,14 @@
 local Utils = require("utility/utils")
 local EventScheduler = {}
 MOD = MOD or {}
-MOD.scheduledEventNames = MOD.scheduledEventNames or {}
+MOD.scheduledEventNames =
+    MOD.scheduledEventNames or
+    {
+        ["EventScheduler.GamePrint"] = function(event)
+            --Builtin game.print delayed function, needed for 0 tick logging (startup) writing to screen activites.
+            game.print(event.data.message)
+        end
+    }
 
 --Called from the root of Control.lua
 EventScheduler.RegisterScheduler = function()
