@@ -793,4 +793,112 @@ Utils.GetValueAndUnitFromString = function(text)
     return string.match(text, "%d+"), string.match(text, "%a+")
 end
 
+Utils.TryMoveInventoriesLuaItemStacks = function(sourceInventory, targetInventory, dropUnmovedOnGround, ratioToMove)
+    -- Moves the full Lua Item Stacks so handles items with data and other complicated items. Updates the passed in inventory object.
+    local sourceOwner, itemsNotMoved = nil, false
+    if sourceInventory.is_empty() then
+        return itemsNotMoved
+    end
+
+    for index = 1, #sourceInventory do
+        local itemStack = sourceInventory[index]
+        if itemStack.valid_for_read then
+            local toMoveCount = math.ceil(itemStack.count * ratioToMove)
+            local itemStackToMove = Utils.DeepCopy(itemStack)
+            itemStackToMove.count = toMoveCount
+            local movedCount = targetInventory.insert(itemStackToMove)
+            local remaining = itemStack.count - movedCount
+            if movedCount > 0 then
+                itemStack.count = remaining
+            end
+            if remaining > 0 then
+                itemsNotMoved = true
+                if dropUnmovedOnGround then
+                    sourceOwner = sourceOwner or targetInventory.entity_owner
+                    sourceOwner.surface.spill_item_stack(sourceOwner.position, {name = itemStack.name, count = remaining}, true, sourceOwner.force, false)
+                end
+            end
+        end
+    end
+
+    return not itemsNotMoved
+end
+
+Utils.TryTakeGridsItems = function(sourceGrid, targetInventory, dropUnmovedOnGround)
+    -- Can only move the item name and count via API, Facotrio doesn't support putting equipment objects in an inventory. Updates the passed in grid object.
+    local sourceOwner, itemsNotMoved = nil, false
+    for _, equipment in pairs(sourceGrid.equipment) do
+        local moved = targetInventory.insert({name = equipment.name, count = 1})
+        if moved > 0 then
+            sourceGrid.take({equipment = equipment})
+        end
+        if moved == 0 then
+            itemsNotMoved = true
+            if dropUnmovedOnGround then
+                sourceOwner = sourceOwner or targetInventory.entity_owner
+                sourceOwner.surface.spill_item_stack(sourceOwner.position, {name = equipment.name, count = 1}, true, sourceOwner.force, false)
+            end
+        end
+    end
+    return not itemsNotMoved
+end
+
+Utils.TryInsertInventoryContents = function(contents, targetInventory, dropUnmovedOnGround, ratioToMove)
+    -- Just takes a list of item names and counts that you get from the inventory.get_contents(). Updates the passed in contents object.
+    if contents == nil then
+        return
+    end
+    local sourceOwner, itemsNotMoved = nil, false
+    for name, count in pairs(contents) do
+        local toMove = math.ceil(count * ratioToMove)
+        local moved = targetInventory.insert({name = name, count = toMove})
+        local remaining = count - moved
+        if moved > 0 then
+            contents[name] = remaining
+        end
+        if remaining > 0 then
+            itemsNotMoved = true
+            if dropUnmovedOnGround then
+                sourceOwner = sourceOwner or targetInventory.entity_owner
+                sourceOwner.surface.spill_item_stack(sourceOwner.position, {name = name, count = remaining}, true, sourceOwner.force, false)
+            end
+        end
+    end
+    return not itemsNotMoved
+end
+
+Utils.TryInsertSimpleItems = function(contents, targetInventory, dropUnmovedOnGround, ratioToMove)
+    -- Takes a table of SimpleItemStack and inserts them in to an inventory. Updates the passed in contents object.
+    if contents == nil or #contents == 0 then
+        return
+    end
+    local sourceOwner, itemsNotMoved = nil, false
+    for index, simpleItemStack in pairs(contents) do
+        local toMove = math.ceil(simpleItemStack.count * ratioToMove)
+        local moved = targetInventory.insert({name = simpleItemStack.name, count = toMove, health = simpleItemStack.health, durability = simpleItemStack.durablilty, ammo = simpleItemStack.ammo})
+        local remaining = simpleItemStack.count - moved
+        if moved > 0 then
+            contents[index].count = remaining
+        end
+        if remaining > 0 then
+            itemsNotMoved = true
+            if dropUnmovedOnGround then
+                sourceOwner = sourceOwner or targetInventory.entity_owner
+                sourceOwner.surface.spill_item_stack(sourceOwner.position, {name = simpleItemStack.name, count = remaining}, true, sourceOwner.force, false)
+            end
+        end
+    end
+    return not itemsNotMoved
+end
+
+Utils.GetBuilderInventory = function(builder)
+    if builder.is_player() then
+        return builder.get_main_inventory()
+    elseif builder.type ~= nil and builder.type == "construction-robot" then
+        return builder.get_inventory(defines.inventory.robot_cargo)
+    else
+        return builder
+    end
+end
+
 return Utils
