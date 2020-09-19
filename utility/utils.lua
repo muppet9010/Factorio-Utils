@@ -282,6 +282,14 @@ function Utils.FuzzyCompareDoubles(num1, logic, num2)
     end
 end
 
+function Utils.IsTableEmpty(table)
+    if table == nil or next(table) == nil then
+        return true
+    else
+        return false
+    end
+end
+
 function Utils.GetTableNonNilLength(table)
     local count = 0
     for _ in pairs(table) do
@@ -899,6 +907,40 @@ Utils.GetBuilderInventory = function(builder)
     else
         return builder
     end
+end
+
+Utils.EmptyRotatedSprite = function()
+    return {
+        direction_count = 1,
+        filename = "__core__/graphics/empty.png",
+        width = 1,
+        height = 1
+    }
+end
+
+Utils.TrackBestFuelCount = function(trackingTable, itemName, itemCount)
+    --[[
+        The "trackingTable" argument should be an empty table created in the calling function. It should be passed in to each calling of this function to track the best fuel.
+        The function returns true when the fuel is a new best and false when its not. Returns nil if the item isn't a fuel type.
+        This function will set trackingTable to have the below entry. Query these keys in calling function:
+            trackingTable {
+                fuelName = STRING,
+                fuelCount = INT,
+                fuelValue = INT,
+            }
+    --]]
+    local itemPrototype = game.item_prototypes[itemName]
+    local fuelValue = itemPrototype.fuel_value
+    if fuelValue == nil then
+        return nil
+    end
+    if trackingTable.fuelValue == nil or fuelValue > trackingTable.fuelValue then
+        trackingTable.fuelName = itemName
+        trackingTable.fuelCount = itemCount
+        trackingTable.fuelValue = fuelValue
+        return true
+    end
+    return false
 end
 
 return Utils
