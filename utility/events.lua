@@ -15,7 +15,7 @@ MOD.eventFilters = MOD.eventFilters or {}
 -- Called from OnLoad() from each script file. Registers the event in Factorio and the handler function for all event types and custom inputs.
 -- Filtered events have to expect to recieve results outside of their filter. As an event can only be registered one time, with multiple instances the most lienient or merged filters for all instances must be applied.
 -- Returns the eventId, useful for custom event names when you need to store the eventId to return via a remote interface call.
-Events.RegisterHandler = function(eventName, handlerName, handlerFunction, thisFilterName, thisFilterData)
+Events.RegisterHandlerEvent = function(eventName, handlerName, handlerFunction, thisFilterName, thisFilterData)
     if eventName == nil or handlerName == nil or handlerFunction == nil then
         error("Events.RegisterHandler called with missing arguments")
     end
@@ -100,7 +100,7 @@ Events._RegisterEvent = function(eventName, thisFilterName, thisFilterData)
             local currentFilter, currentHandler = script.get_event_filter(eventId), script.get_event_handler(eventId)
             if currentHandler ~= nil and currentFilter == nil then
                 --an event is registered already and has no filter, so already fully lienent.
-                return
+                return eventId
             else
                 --add new filter to any existing old filter and let it be re-applied.
                 filterData = {}
