@@ -1032,6 +1032,41 @@ Utils.TrackBestFuelCount = function(trackingTable, itemName, itemCount)
     return false
 end
 
+Utils.MakeRecipePrototype = function(recipeName, resultItemName, enabled, ingredientLists, energyLists)
+    --[[
+        Takes tables of the various recipe types (normal, expensive and ingredients) and makes the required recipe prototypes from them. Only makes the version if the ingredientsList includes the type. So supplying just energyLists types doesn't make new versions.
+        ingredientLists is a table with optional tables for "normal", "expensive" and "ingredients" tables within them. Often generatered by Utils.GetRecipeIngredientsAddedTogeather().
+        energyLists is a table with optional keys for "normal", "expensive" and "ingredients". The value of the keys is the energy_required value.
+    ]]
+    local recipePrototype = {
+        type = "recipe",
+        name = recipeName
+    }
+    if ingredientLists.ingredients ~= nil then
+        recipePrototype.energy_required = energyLists.ingredients
+        recipePrototype.enabled = enabled
+        recipePrototype.result = resultItemName
+        recipePrototype.ingredients = ingredientLists.ingredients
+    end
+    if ingredientLists.normal ~= nil then
+        recipePrototype.normal = {
+            energy_required = energyLists.normal or energyLists.ingredients,
+            enabled = enabled,
+            result = resultItemName,
+            ingredients = ingredientLists.normal
+        }
+    end
+    if ingredientLists.expensive ~= nil then
+        recipePrototype.expensive = {
+            energy_required = energyLists.expensive or energyLists.ingredients,
+            enabled = enabled,
+            result = resultItemName,
+            ingredients = ingredientLists.expensive
+        }
+    end
+    return recipePrototype
+end
+
 Utils.GetRecipeIngredientsAddedTogeather = function(recipeIngredientHandlingTables)
     --[[
         Is for handling a mix of recipes and ingredient list. Supports recipe ingredients, normal and expensive.
@@ -1101,9 +1136,12 @@ Utils.GetRecipeIngredientsAddedTogeather = function(recipeIngredientHandlingTabl
 end
 
 Utils.GetRecipeAttribute = function(recipe, attributeName, recipeCostType)
-    -- recipeType defaults to the no cost type if not supplied. Values are: "none", "normal" and "expensive".
-    recipeCostType = recipeCostType or "none"
-    if recipeCostType == "none" and recipe[attributeName] ~= nil then
+    --[[
+        Returns the attributeName for the recipeCostType if available, otherwise the inline ingredients version.
+        recipeType defaults to the no cost type if not supplied. Values are: "ingredients", "normal" and "expensive".
+    --]]
+    recipeCostType = recipeCostType or "ingredients"
+    if recipeCostType == "ingredients" and recipe[attributeName] ~= nil then
         return recipe[attributeName]
     elseif recipe[recipeCostType] ~= nil and recipe[recipeCostType][attributeName] ~= nil then
         return recipe[recipeCostType][attributeName]
@@ -1118,6 +1156,49 @@ Utils.GetRecipeAttribute = function(recipe, attributeName, recipeCostType)
     end
 
     return nil
+end
+
+Utils.DoesRecipeResultsIncludeItemName = function(recipePrototype, itemName)
+    for _, recipeBase in pairs({recipePrototype, recipePrototype.normal, recipePrototype.expensive}) do
+        if recipeBase ~= nil then
+            if recipeBase.result ~= nil and recipeBase.result == itemName then
+                return true
+            elseif recipeBase.results ~= nil and Utils.GetTableKeyWithInnerKeyValue(recipeBase.results, "name", itemName) ~= nil then
+                return true
+            end
+        end
+    end
+    return false
+end
+
+Utils.RemoveEntitiesRecipesFromTechnologies = function(entityPrototype, recipes, technolgies)
+    --[[
+        From the provided technology list remove all provided recipes from being unlocked that create an item that can place a given entity prototype.
+        Returns a table of the technologies affected or a blank table if no technologies are affected.
+    ]]
+    local technologiesChanged = {}
+    local placedByItemName
+    if entityPrototype.minable ~= nil and entityPrototype.minable.result ~= nil then
+        placedByItemName = entityPrototype.minable.result
+    else
+        return technologiesChanged
+    end
+    for _, recipePrototype in pairs(recipes) do
+        if Utils.DoesRecipeResultsIncludeItemName(recipePrototype, placedByItemName) then
+            recipePrototype.enabled = false
+            for _, technologyPrototype in pairs(technolgies) do
+                if technologyPrototype.effects ~= nil then
+                    for effectIndex, effect in pairs(technologyPrototype.effects) do
+                        if effect.type == "unlock-recipe" and effect.recipe ~= nil and effect.recipe == recipePrototype.name then
+                            table.remove(technologyPrototype.effects, effectIndex)
+                            table.insert(technologiesChanged, technologyPrototype)
+                        end
+                    end
+                end
+            end
+        end
+    end
+    return technologiesChanged
 end
 
 return Utils
