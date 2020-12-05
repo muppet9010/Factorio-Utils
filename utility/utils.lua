@@ -582,17 +582,6 @@ function Utils.GetRandomEntryFromNormalisedDataSet(dataSet, chancePropertyName)
     return nil
 end
 
-function Utils.DisableSiloScript()
-    -- OnLoad
-    if remote.interfaces["silo_script"] == nil then
-        return
-    end
-    local items = remote.call("silo_script", "get_tracked_items")
-    for itemName in pairs(items) do
-        remote.call("silo_script", "remove_tracked_item", itemName)
-    end
-end
-
 function Utils.DisableWinOnRocket()
     -- OnInit
     if remote.interfaces["silo_script"] == nil then
