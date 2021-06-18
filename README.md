@@ -31,12 +31,20 @@ Utility folder
 VSCode Extensions
 ----------
 
-The VSCode settings file is stored in this folder. Its location for deployment can be found here:
-https://code.visualstudio.com/docs/getstarted/settings#_settings-file-locations
+Copy of VSCode settings file is stored in "VS CODE BITS\vscode extenstions settings". Its location for deployment is: %APPDATA%\Code\User\settings.json
 
 Extensions currently used:
- - Lua Coder Assist: https://marketplace.visualstudio.com/items?itemName=liwangqian.luacoderassist
- - Lua Plus: https://marketplace.visualstudio.com/items?itemName=jep-a.lua-plus
- - Factorio Lua API autocomplete (rather out of date): https://marketplace.visualstudio.com/items?itemName=svizzini.factorio-lua-api-autocomplete
- - Factorio Lua Check RC: https://github.com/Nexela/Factorio-luacheckrc
+ - Lua (code assist): https://marketplace.visualstudio.com/items?itemName=sumneko.lua
+ - vscode-lua (just for simple formatting): https://marketplace.visualstudio.com/items?itemName=trixnz.vscode-lua
+ - lua_tags (just for the luacheck part): https://marketplace.visualstudio.com/items?itemName=changnet.lua-tags
+ - Factorio Lua Check RC files: https://github.com/Nexela/Factorio-luacheckrc
  - Factorio Mod Debug: https://marketplace.visualstudio.com/items?itemName=justarandomgeek.factoriomod-debug
+	- Utils copy of config file at "VS CODE BITS\Per Mod .vscode", put its contents in the mods specific folder in a ".vscode" folder
+ - Setup Factorio lua code assist and autocomplete global settings: https://github.com/justarandomgeek/vscode-factoriomod-debug/blob/master/workspace.md
+	To generate EmmyLua docs for the Factorio API from the JSON docs press Ctrl-Shift-P to open the command palette and run the Factorio: Generate Typedefs command. Open factorio/doc-html/runtime-api.json, and save the generated lua file wherever you like. This will also offer to add it to the library and adjust other configuration for sumneko.lua.
+ - indent-rainbow: https://marketplace.visualstudio.com/items?itemName=oderwat.indent-rainbow
+ - Bracket Pair Colorizer: https://marketplace.visualstudio.com/items?itemName=CoenraadS.bracket-pair-colorizer
+ - GitLens: https://marketplace.visualstudio.com/items?itemName=eamodio.gitlens
+ - compareit: https://marketplace.visualstudio.com/items?itemName=in4margaret.compareit
+ - FactorioSumnekoLuaPlugin (helps autocomplete with Factorio specific oddities):
+	Utils copy is at "VS CODE BITS\Modding Folder Root .vscode", put its contents in the Modding Folder in a ".vscode" folder: https://github.com/JanSharp/FactorioSumnekoLuaPlugin
