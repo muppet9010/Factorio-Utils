@@ -5,6 +5,7 @@ local Utils = require("utility/utils")
 local Events = require("utility/events")
 local EventScheduler = {}
 MOD = MOD or {}
+---@type table<string, function>
 MOD.scheduledEventNames =
     MOD.scheduledEventNames or
     {
@@ -14,17 +15,25 @@ MOD.scheduledEventNames =
         end
     }
 
+---@class ScheduledEvent
+---@field tick Tick
+---@field name string
+---@field instanceId StringOrNumber @Defaults to empty string if none was provided.
+---@field data table @the custom data table that was provided when the event was registered.
+
 --------------------------------------------------------------------------------------------
 --                                    Setup Functions
 ---------------------------------------------------------------------------------------------
 
--- Called from the root of Control.lua
+--- Called from the root of Control.lua
 EventScheduler.RegisterScheduler = function()
     Events.RegisterHandlerEvent(defines.events.on_tick, "EventScheduler._OnSchedulerCycle", EventScheduler._OnSchedulerCycle)
 end
 
--- Called from OnLoad() from each script file.
--- When eventFunction is triggered eventData argument passed: {tick = tick, name = eventName, instanceId = instanceId, data = scheduledFunctionData}
+--- Called from OnLoad() from each script file.
+--- When eventFunction is triggered eventData argument passed: {tick = tick, name = eventName, instanceId = instanceId, data = scheduledFunctionData}
+---@param eventName string
+---@param eventFunction function
 EventScheduler.RegisterScheduledEventType = function(eventName, eventFunction)
     if eventName == nil or eventFunction == nil then
         error("EventScheduler.RegisterScheduledEventType called with missing arguments")
@@ -36,11 +45,23 @@ end
 --                                    Schedule Once Functions
 ---------------------------------------------------------------------------------------------
 
--- Called from OnStartup() or from some other event or trigger to schedule an event.
--- Doesn't have any protection or auto increments any more as wastes UPS.
+--- Called from OnStartup() or from some other event or trigger to schedule an event.
+---@param eventTick Tick|nil @eventTick of nil will be next tick, current or past ticks will fail. eventTick of -1 is a special input for current tick when used by events that run before the Factorio on_tick event, i.e. a custom input (key pressed for action) handler.
+---@param eventName string
+---@param instanceId StringOrNumber|nil @Defaults to empty string if none was provided.
+---@param eventData table|nil @Custom table of data that will be returned to the triggered function when called as the "data" attribute.
 EventScheduler.ScheduleEventOnce = function(eventTick, eventName, instanceId, eventData)
-    if eventName == nil or eventTick == nil then
+    if eventName == nil then
         error("EventScheduler.ScheduleEventOnce called with missing arguments")
+    end
+    local nowTick = game.tick
+    if eventTick == nil then
+        eventTick = nowTick + 1
+    elseif eventTick == -1 then
+        -- Special case for callbacks within same tick.
+        eventTick = game.tick
+    elseif eventTick <= nowTick then
+        error("EventScheduler.ScheduleEventOnce scheduled for in the past. eventName: '" .. tostring(eventName) .. "' instanceId: '" .. tostring(instanceId) .. "'")
     end
     instanceId = instanceId or ""
     eventData = eventData or {}
@@ -53,7 +74,10 @@ EventScheduler.ScheduleEventOnce = function(eventTick, eventName, instanceId, ev
     global.UTILITYSCHEDULEDFUNCTIONS[eventTick][eventName][instanceId] = eventData
 end
 
--- Called whenever required.
+--- Called whenever required.
+---@param targetEventName string
+---@param targetInstanceId StringOrNumber|nil
+---@param targetTick Tick|nil
 EventScheduler.IsEventScheduledOnce = function(targetEventName, targetInstanceId, targetTick)
     if targetEventName == nil then
         error("EventScheduler.IsEventScheduledOnce called with missing arguments")
@@ -65,7 +89,10 @@ EventScheduler.IsEventScheduledOnce = function(targetEventName, targetInstanceId
     return result
 end
 
--- Called whenever required.
+--- Called whenever required.
+---@param targetEventName string
+---@param targetInstanceId StringOrNumber|nil
+---@param targetTick Tick|nil
 EventScheduler.RemoveScheduledOnceEvents = function(targetEventName, targetInstanceId, targetTick)
     if targetEventName == nil then
         error("EventScheduler.RemoveScheduledOnceEvents called with missing arguments")
@@ -73,7 +100,10 @@ EventScheduler.RemoveScheduledOnceEvents = function(targetEventName, targetInsta
     EventScheduler._ParseScheduledOnceEvents(targetEventName, targetInstanceId, targetTick, EventScheduler._RemoveScheduledOnceEventsFromTickEntry)
 end
 
--- Called whenever required.
+--- Called whenever required.
+---@param targetEventName string
+---@param targetInstanceId StringOrNumber|nil
+---@param targetTick Tick|nil
 EventScheduler.GetScheduledOnceEvents = function(targetEventName, targetInstanceId, targetTick)
     if targetEventName == nil then
         error("EventScheduler.GetScheduledOnceEvents called with missing arguments")
@@ -86,7 +116,11 @@ end
 --                                    Schedule For Each Tick Functions
 ---------------------------------------------------------------------------------------------
 
--- Called from OnStartup() or from some other event or trigger to schedule an event to fire every tick from now on until cancelled.
+--- Called from OnStartup() or from some other event or trigger to schedule an event to fire every tick from now on until cancelled.
+--- Good if you need to pass data back with each firing and the event is going to be stopped/started. If its going to run constantly then betetr to just register for the on_tick event handler via the Events utlity class.
+---@param eventName string
+---@param instanceId StringOrNumber|nil @Defaults to empty string if none was provided.
+---@param eventData table|nil @Custom table of data that will be returned to the triggered function when called as the "data" attribute.
 EventScheduler.ScheduleEventEachTick = function(eventName, instanceId, eventData)
     if eventName == nil then
         error("EventScheduler.ScheduleEventEachTick called with missing arguments")
@@ -101,7 +135,9 @@ EventScheduler.ScheduleEventEachTick = function(eventName, instanceId, eventData
     global.UTILITYSCHEDULEDFUNCTIONSPERTICK[eventName][instanceId] = eventData
 end
 
--- Called whenever required.
+--- Called whenever required.
+---@param targetEventName string
+---@param targetInstanceId StringOrNumber|nil
 EventScheduler.IsEventScheduledEachTick = function(targetEventName, targetInstanceId)
     if targetEventName == nil then
         error("EventScheduler.IsEventScheduledEachTick called with missing arguments")
@@ -113,7 +149,9 @@ EventScheduler.IsEventScheduledEachTick = function(targetEventName, targetInstan
     return result
 end
 
--- Called whenever required.
+--- Called whenever required.
+---@param targetEventName string
+---@param targetInstanceId StringOrNumber|nil
 EventScheduler.RemoveScheduledEventFromEachTick = function(targetEventName, targetInstanceId)
     if targetEventName == nil then
         error("EventScheduler.RemoveScheduledEventsFromEachTick called with missing arguments")
@@ -121,7 +159,9 @@ EventScheduler.RemoveScheduledEventFromEachTick = function(targetEventName, targ
     EventScheduler._ParseScheduledEachTickEvents(targetEventName, targetInstanceId, EventScheduler._RemoveScheduledEventFromEachTickList)
 end
 
--- Called whenever required.
+--- Called whenever required.
+---@param targetEventName string
+---@param targetInstanceId StringOrNumber|nil
 EventScheduler.GetScheduledEachTickEvent = function(targetEventName, targetInstanceId)
     if targetEventName == nil then
         error("EventScheduler.GetScheduledEachTickEvent called with missing arguments")
