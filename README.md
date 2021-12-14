@@ -14,11 +14,13 @@ Files in the root are templates I use when starting new mods.
 Utility folder
 -----------
 - colors.lua = A list of standard colors for use across mods.
-- commands.lua = Library functions to help manage adding and handling Facotrio mod commands.
-- event-scheduler.lua = Library to facilitate scheduling functions with data to fire on a future tick.
+- commands.lua = Library functions to help manage adding and handling Factorio commands.
+- emmylua-classes.lua = 
 - events.lua = Library to facilitate multiple functions subscribing to the same script.event in a modular way. Supports custom events and event filters also.
-- setup-events.lua = Library to facilitate multiple functions subscribing to the same bespoke setup events related to vanilla mod setup events (i.e. script.on_init) in a modular way.
-- gui-actions.lua = Library to register and handle GUI actions (button clicks) registering and handling functions in a modular way.
+- event-scheduler.lua = Library to facilitate scheduling functions with data to fire on a future tick.
+- gui-actions-click.lua = Library to register and handle GUI button clicks, allows registering and handling functions in a modular way.
+- gui-actions-closed.lua = Library to register and handle base game GUI types being closed, allows registering and handling functions in a modular way.
+- gui-actions-opened.lua = Library to register and handle base game GUI types being opened, allows registering and handling functions in a modular way.
 - gui-util.lua = Library to support making, storing and accessing GUI elements.
 - interfaces.lua = Library to allow registering functions as interfaces internally within the mod to support modualr mod design.
 - logging.lua = Logging functions.
@@ -26,6 +28,10 @@ Utility folder
 - style-data.lua = Contains the default style prototypes for GUIs I use in mods. WARNING: adds directly to game prototypes and so is not self contained within each mod instance, version mismatch can cause overwriting in rare scenarios.
 - utils.lua = Contains all sorts of odd functions, not limited to area entity killing, to evolution specific biter selection to making test prototypes for testing entity placement in/out of water.
 - version.txt = The version of the utility folder. Incremented with any impacting changes.
+- functions folder - specific functionality libraries:
+	- biome-trees.lua = Functions to get tile (biome) approperiate trees. Supports vanilla and Alien Biomes.
+	- biter-selection.lua = Functions to get evolution approperiate enemy prototypes.
+	- biome-trees-data folder = has internal reference files for the biome-trees functionality.
 
 
 VSCode Extensions
@@ -34,7 +40,7 @@ VSCode Extensions
 Copy of VSCode settings file is stored in "VS CODE BITS\vscode extenstions settings". Its location for deployment is: %APPDATA%\Code\User\settings.json
 
 Extensions currently used:
- - Lua (code assist): https://marketplace.visualstudio.com/items?itemName=sumneko.lua
+ - Lua (code assist): https://marketplace.visualstudio.com/items?itemName=sumneko.lua    documentation: https://github.com/sumneko/lua-language-server/wiki/EmmyLua-Annotations
  - vscode-lua (just for simple formatting): https://marketplace.visualstudio.com/items?itemName=trixnz.vscode-lua
  - lua_tags (just for the luacheck part): https://marketplace.visualstudio.com/items?itemName=changnet.lua-tags
  - Factorio Lua Check RC files: https://github.com/Nexela/Factorio-luacheckrc
