@@ -22,7 +22,6 @@ Utility folder
 - gui-actions-closed.lua = Library to register and handle base game GUI types being closed, allows registering and handling functions in a modular way.
 - gui-actions-opened.lua = Library to register and handle base game GUI types being opened, allows registering and handling functions in a modular way.
 - gui-util.lua = Library to support making, storing and accessing GUI elements.
-- interfaces.lua = Library to allow registering functions as interfaces internally within the mod to support modualr mod design.
 - logging.lua = Logging functions.
 - settings-manager.lua = Library to support using mod settings to acept and array of values for N instances of something. Rather than having to add lots of repeat mod settings entry boxes.
 - style-data.lua = Contains the default style prototypes for GUIs I use in mods. WARNING: adds directly to game prototypes and so is not self contained within each mod instance, version mismatch can cause overwriting in rare scenarios.
@@ -38,6 +37,7 @@ VSCode Extensions
 ----------
 
 Copy of VSCode settings file is stored in "VS CODE BITS\vscode extenstions settings". Its location for deployment is: %APPDATA%\Code\User\settings.json
+The extensions "vscode-lua" and lua_tags" both add in suggestions that duplciate Lua Code Assist, but are lower quality. Unfortunatly I haven't found any way to still utilise their features and disabling these duplciate entries.
 
 Extensions currently used:
  - Lua (code assist): https://marketplace.visualstudio.com/items?itemName=sumneko.lua    documentation: https://github.com/sumneko/lua-language-server/wiki/EmmyLua-Annotations
@@ -51,7 +51,7 @@ Extensions currently used:
  - Factorio Mod Debug: https://marketplace.visualstudio.com/items?itemName=justarandomgeek.factoriomod-debug
 	- Utils copy of config file at "VS CODE BITS\Per Mod .vscode", put its contents in the mods specific folder in a ".vscode" folder
  - Setup Factorio lua code assist and autocomplete global settings: https://github.com/justarandomgeek/vscode-factoriomod-debug/blob/master/workspace.md
-	To generate EmmyLua docs for the Factorio API from the JSON docs press Ctrl-Shift-P to open the command palette and run the Factorio: Generate Typedefs command. Open factorio/doc-html/runtime-api.json, and save the generated lua file wherever you like. This will also offer to add it to the library and adjust other configuration for sumneko.lua.
+	To generate EmmyLua docs for the Factorio API from the JSON docs press Ctrl-Shift-P to open the command palette and run the Factorio: Generate Typedefs command. Open factorio/doc-html/runtime-api.json, and save the generated lua file in to the Factorio installation root folder. This will also offer to add it to the library and adjust other configuration for sumneko.lua.
  - indent-rainbow: https://marketplace.visualstudio.com/items?itemName=oderwat.indent-rainbow
  - Bracket Pair Colorizer: https://marketplace.visualstudio.com/items?itemName=CoenraadS.bracket-pair-colorizer
  - GitLens: https://marketplace.visualstudio.com/items?itemName=eamodio.gitlens

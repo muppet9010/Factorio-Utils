@@ -115,7 +115,8 @@
     "Lua.workspace.library": [
         "e:\\Home\\Projects\\Factorio Modding\\runtime-api.lua",
         "c:\\FactorioModding\\data",
-        "c:\\FactorioModding\\data\\core\\lualib"
+        "c:\\FactorioModding\\data\\core\\lualib",
+        "c:\\FactorioModding\\runtime-api.lua"
     ],
     "Lua.workspace.preloadFileSize": 999999999,
     "gitlens.hovers.currentLine.details": false,
@@ -144,8 +145,9 @@
     "lua.targetVersion": "5.2",
     "lua.format.lineWidth": 999999,
     "lua.format.indentCount": 4,
-    "Lua.completion.callSnippet": "Both",
+    "Lua.completion.callSnippet": "Replace",
     "Lua.diagnostics.workspaceDelay": 1000,
     "Lua.hover.fieldInfer": 5000,
     "Lua.intelliSense.searchDepth": 5,
+    "bracketPairColorizer.depreciation-notice": false,
 }
