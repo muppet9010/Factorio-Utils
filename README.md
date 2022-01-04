@@ -44,14 +44,11 @@ Extensions currently used:
  - vscode-lua (just for simple formatting): https://marketplace.visualstudio.com/items?itemName=trixnz.vscode-lua
  - lua_tags (just for the luacheck part): https://marketplace.visualstudio.com/items?itemName=changnet.lua-tags
  - Factorio Lua Check RC files: https://github.com/Nexela/Factorio-luacheckrc
-	- Add to the end of the ".luacheck.rc" file the below so it doens't object to Muppet Utils files:
-		do -- Muppet Utils additions
-			files['**/style-data.lua'].std = STD_DATA
-		end
+	- Make the changes post file download as defined in "Factorio Lua Check RC Changes".
  - Factorio Mod Debug: https://marketplace.visualstudio.com/items?itemName=justarandomgeek.factoriomod-debug
 	- Utils copy of config file at "VS CODE BITS\Per Mod .vscode", put its contents in the mods specific folder in a ".vscode" folder
  - Setup Factorio lua code assist and autocomplete global settings: https://github.com/justarandomgeek/vscode-factoriomod-debug/blob/master/workspace.md
-	To generate EmmyLua docs for the Factorio API from the JSON docs press Ctrl-Shift-P to open the command palette and run the Factorio: Generate Typedefs command. Open factorio/doc-html/runtime-api.json, and save the generated lua file in to the Factorio installation root folder. This will also offer to add it to the library and adjust other configuration for sumneko.lua.
+	- To generate EmmyLua docs for the Factorio API from the JSON docs press Ctrl-Shift-P to open the command palette and run the Factorio: Generate Typedefs command. Open factorio/doc-html/runtime-api.json, and save the generated lua file in to the Factorio installation root folder. This will also offer to add it to the library and adjust other configuration for sumneko.lua.
  - indent-rainbow: https://marketplace.visualstudio.com/items?itemName=oderwat.indent-rainbow
  - Bracket Pair Colorizer: https://marketplace.visualstudio.com/items?itemName=CoenraadS.bracket-pair-colorizer
  - GitLens: https://marketplace.visualstudio.com/items?itemName=eamodio.gitlens
