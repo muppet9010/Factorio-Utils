@@ -1,17 +1,34 @@
--- Random utility functions that don't fit in to any other category.
+--- Random utility functions that don't fit in to any other category.
+--- These functions won't include input validation as in most cases its a waste of UPS.
 
 local Utils = {}
 local factorioUtil = require("__core__/lualib/util")
+local PrototypeAttributes = require("utility/prototype-attributes")
 
--- Copies a table and all of its children all the way down.
+local math_min, math_max, math_floor, math_ceil, math_sqrt, math_abs, math_random, math_exp, math_rad, math_cos, math_sin = math.min, math.max, math.floor, math.ceil, math.sqrt, math.abs, math.random, math.exp, math.rad, math.cos, math.sin
+
+--- Copies a table and all of its children all the way down.
 ---@type fun(object:table):table
 Utils.DeepCopy = factorioUtil.table.deepcopy
 
--- Takes an array of tables and returns a new table with copies of their contents. Merges children when they are tables togeather, but non table data types will have the latest value as the result.
+--- Takes an array of tables and returns a new table with copies of their contents. Merges children when they are tables togeather, but non table data types will have the latest value as the result.
 ---@type fun(tables:table[]):table
-Utils.TableMerge = factorioUtil.merge
+Utils.TableMergeCopies = factorioUtil.merge
 
--- Uses unit number if both support it, otherwise has to compare a lot of attributes to try and work out if they are the same base entity. Assumes the entity won't ever move or change.
+--- Takes an array of tables and returns a new table with references to their top level contents. Does a shallow merge, so just the top level key/values. Last duplicate key's value processed will be the final result.
+---@param sourceTables table[]
+---@return table mergedTable
+Utils.TableMergeOrigionalsShallow = function(sourceTables)
+    local mergedTable = {}
+    for _, sourceTable in pairs(sourceTables) do
+        for k in pairs(sourceTable) do
+            mergedTable[k] = sourceTable[k]
+        end
+    end
+    return mergedTable
+end
+
+--- Uses unit number if both support it, otherwise has to compare a lot of attributes to try and work out if they are the same base entity. Assumes the entity won't ever move or change.
 ---@param entity1 LuaEntity
 ---@param entity2 LuaEntity
 Utils.Are2EntitiesTheSame = function(entity1, entity2)
@@ -47,10 +64,10 @@ end
 ---@param surface LuaSurface
 ---@param positionedBoundingBox BoundingBox
 ---@param collisionBoxOnlyEntities boolean
----@param onlyForceAffected? LuaForce
+---@param onlyForceAffected? LuaForce|null
 ---@param onlyDestructible boolean
 ---@param onlyKillable boolean
----@param entitiesExcluded? LuaEntity[]
+---@param entitiesExcluded? LuaEntity[]|null
 ---@return table<int, LuaEntity>
 Utils.ReturnAllObjectsInArea = function(surface, positionedBoundingBox, collisionBoxOnlyEntities, onlyForceAffected, onlyDestructible, onlyKillable, entitiesExcluded)
     local entitiesFound, filteredEntitiesFound = surface.find_entities(positionedBoundingBox), {}
@@ -83,11 +100,11 @@ end
 
 ---@param surface LuaSurface
 ---@param positionedBoundingBox BoundingBox
----@param killerEntity? LuaEntity
+---@param killerEntity? LuaEntity|null
 ---@param collisionBoxOnlyEntities boolean
 ---@param onlyForceAffected boolean
----@param entitiesExcluded? LuaEntity[]
----@param killerForce? LuaForce
+---@param entitiesExcluded? LuaEntity[]|null
+---@param killerForce? LuaForce|null
 Utils.KillAllKillableObjectsInArea = function(surface, positionedBoundingBox, killerEntity, collisionBoxOnlyEntities, onlyForceAffected, entitiesExcluded, killerForce)
     if killerForce == nil then
         killerForce = "neutral"
@@ -103,10 +120,10 @@ end
 
 ---@param surface LuaSurface
 ---@param positionedBoundingBox BoundingBox
----@param killerEntity? LuaEntity
+---@param killerEntity? LuaEntity|null
 ---@param onlyForceAffected boolean
----@param entitiesExcluded? LuaEntity[]
----@param killerForce? LuaForce
+---@param entitiesExcluded? LuaEntity[]|null
+---@param killerForce? LuaForce|null
 Utils.KillAllObjectsInArea = function(surface, positionedBoundingBox, killerEntity, onlyForceAffected, entitiesExcluded, killerForce)
     if killerForce == nil then
         killerForce = "neutral"
@@ -128,7 +145,7 @@ end
 ---@param positionedBoundingBox BoundingBox
 ---@param collisionBoxOnlyEntities boolean
 ---@param onlyForceAffected boolean
----@param entitiesExcluded? LuaEntity[]
+---@param entitiesExcluded? LuaEntity[]|null
 Utils.DestroyAllKillableObjectsInArea = function(surface, positionedBoundingBox, collisionBoxOnlyEntities, onlyForceAffected, entitiesExcluded)
     for k, entity in pairs(Utils.ReturnAllObjectsInArea(surface, positionedBoundingBox, collisionBoxOnlyEntities, onlyForceAffected, true, true, entitiesExcluded)) do
         entity.destroy({dp_cliff_correction = true, raise_destroy = true})
@@ -138,10 +155,43 @@ end
 ---@param surface LuaSurface
 ---@param positionedBoundingBox BoundingBox
 ---@param onlyForceAffected boolean
----@param entitiesExcluded? LuaEntity[]
+---@param entitiesExcluded? LuaEntity[]|null
 Utils.DestroyAllObjectsInArea = function(surface, positionedBoundingBox, onlyForceAffected, entitiesExcluded)
     for k, entity in pairs(Utils.ReturnAllObjectsInArea(surface, positionedBoundingBox, false, onlyForceAffected, false, false, entitiesExcluded)) do
         entity.destroy({dp_cliff_correction = true, raise_destroy = true})
+    end
+end
+
+--- Kills any carriages that would prevent the rail from being removed. If a carriage is not destructable make it so, so it can be killed normally and appear in death stats, etc.
+---@param railEntity LuaEntity
+---@param killForce LuaForce
+---@param killerCauseEntity LuaEntity
+---@param surface LuaSurface
+Utils.DestroyCarriagesOnRailEntity = function(railEntity, killForce, killerCauseEntity, surface)
+    -- Check if any carriage prevents the rail from being removed before just killing all carriages within the rails collision boxes as this is more like vanilla behaviour.
+    if not railEntity.can_be_destroyed() then
+        local railEntityCollisionBox = PrototypeAttributes.GetAttribute(PrototypeAttributes.PrototypeTypes.entity, railEntity.name, "collision_box")
+        local positionedCollisionBox = Utils.ApplyBoundingBoxToPosition(railEntity.position, railEntityCollisionBox, railEntity.orientation)
+        local carriagesFound = surface.find_entities_filtered {area = positionedCollisionBox, type = {"locomotive", "cargo-wagon", "fluid-wagon", "artillery-wagon"}}
+        for _, carriage in pairs(carriagesFound) do
+            -- If the carriage is currently not destructable make it so, so we can kill it normally.
+            if not carriage.destructible then
+                carriage.destructible = true
+            end
+            Utils.EntityDie(carriage, killForce, killerCauseEntity)
+        end
+        if railEntity.type == "curved-rail" then
+            railEntityCollisionBox = PrototypeAttributes.GetAttribute(PrototypeAttributes.PrototypeTypes.entity, railEntity.name, "secondary_collision_box")
+            positionedCollisionBox = Utils.ApplyBoundingBoxToPosition(railEntity.position, railEntityCollisionBox, railEntity.orientation)
+            carriagesFound = surface.find_entities_filtered {area = positionedCollisionBox, type = {"locomotive", "cargo-wagon", "fluid-wagon", "artillery-wagon"}}
+            for _, carriage in pairs(carriagesFound) do
+                -- If the carriage is currently not destructable make it so, so we can kill it normally.
+                if not carriage.destructible then
+                    carriage.destructible = true
+                end
+                Utils.EntityDie(carriage, killForce, killerCauseEntity)
+            end
+        end
     end
 end
 
@@ -262,7 +312,7 @@ end
 ---@param pos Position
 ---@return ChunkPosition
 Utils.GetChunkPositionForTilePosition = function(pos)
-    return {x = math.floor(pos.x / 32), y = math.floor(pos.y / 32)}
+    return {x = math_floor(pos.x / 32), y = math_floor(pos.y / 32)}
 end
 
 ---@param chunkPos ChunkPosition
@@ -281,25 +331,25 @@ Utils.RotatePositionAround0 = function(orientation, position)
         return position
     elseif orientation == 0.25 then
         return {
-            x = 0 - position.y,
+            x = -position.y,
             y = position.x
         }
     elseif orientation == 0.5 then
         return {
-            x = 0 - position.x,
-            y = 0 - position.y
+            x = -position.x,
+            y = -position.y
         }
     elseif orientation == 0.75 then
         return {
             x = position.y,
-            y = 0 - position.x
+            y = -position.x
         }
     end
 
     -- Handle any non cardinal direction orientation.
-    local rad = math.rad(orientation * 360)
-    local cosValue = math.cos(rad)
-    local sinValue = math.sin(rad)
+    local rad = math_rad(orientation * 360)
+    local cosValue = math_cos(rad)
+    local sinValue = math_sin(rad)
     local rotatedX = (position.x * cosValue) - (position.y * sinValue)
     local rotatedY = (position.x * sinValue) + (position.y * cosValue)
     return {x = rotatedX, y = rotatedY}
@@ -335,21 +385,30 @@ Utils.RotateOffsetAroundPosition = function(orientation, offset, position)
     end
 
     -- Handle any non cardinal direction orientation.
-    local rad = math.rad(orientation * 360)
-    local cosValue = math.cos(rad)
-    local sinValue = math.sin(rad)
+    local rad = math_rad(orientation * 360)
+    local cosValue = math_cos(rad)
+    local sinValue = math_sin(rad)
     local rotatedX = (position.x * cosValue) - (position.y * sinValue)
     local rotatedY = (position.x * sinValue) + (position.y * cosValue)
     return {x = position.x + rotatedX, y = position.y + rotatedY}
 end
 
 --- Rotates the directionToRotate by a direction difference from the referenceDirection to the appliedDirection. Useful for rotating entities direction in proportion to a parent's direction change from known direction.
+--- Should be done locally if called frequently.
 ---@param directionToRotate defines.direction
 ---@param referenceDirection defines.direction
 ---@param appliedDirection defines.direction
 Utils.RotateDirectionByDirection = function(directionToRotate, referenceDirection, appliedDirection)
     local directionDif = appliedDirection - referenceDirection
-    return Utils.LoopIntValueWithinRange(directionToRotate + directionDif, 0, 7)
+    local directionValue = directionToRotate + directionDif
+    -- Hard coded copy of Utils.LoopIntValueWithinRange().
+    if directionValue > 7 then
+        return 0 - (7 - directionValue) - 1
+    elseif directionValue < 0 then
+        return 7 + (directionValue - 7) + 1
+    else
+        return directionValue
+    end
 end
 
 ---@param point1 Position
@@ -443,20 +502,20 @@ Utils.IsCollisionBoxPopulated = function(collisionBox)
 end
 
 Utils.LogisticEquation = function(index, height, steepness)
-    return height / (1 + math.exp(steepness * (index - 0)))
+    return height / (1 + math_exp(steepness * (index - 0)))
 end
 
 Utils.ExponentialDecayEquation = function(index, multiplier, scale)
-    return multiplier * math.exp(-index * scale)
+    return multiplier * math_exp(-index * scale)
 end
 
 Utils.RoundNumberToDecimalPlaces = function(num, numDecimalPlaces)
     local result
     if numDecimalPlaces ~= nil and numDecimalPlaces > 0 then
         local mult = 10 ^ numDecimalPlaces
-        result = math.floor(num * mult + 0.5) / mult
+        result = math_floor(num * mult + 0.5) / mult
     else
-        result = math.floor(num + 0.5)
+        result = math_floor(num + 0.5)
     end
     if result == "nan" then
         result = 0
@@ -479,7 +538,7 @@ Utils.LoopIntValueWithinRange = function(value, min, max)
     end
 end
 
--- This treats the min and max values as equal when looping: max - 0.1, max/min, min + 0.1. Depending on starting input value you get either the min or max value at the border.
+--- This treats the min and max values as equal when looping: max - 0.1, max/min, min + 0.1. Depending on starting input value you get either the min or max value at the border.
 ---@param value number
 ---@param min number
 ---@param max number
@@ -494,7 +553,8 @@ Utils.LoopFloatValueWithinRange = function(value, min, max)
     end
 end
 
--- This treats the min and max values as equal when looping: max - 0.1, max/min, min + 0.1. But maxExclusive will give the minInclusive value. So maxExclsuive can never be returned.
+--- This treats the min and max values as equal when looping: max - 0.1, max/min, min + 0.1. But maxExclusive will give the minInclusive value. So maxExclsuive can never be returned.
+--- Should be done locally if called frequently.
 ---@param value number
 ---@param minInclusive number
 ---@param maxExclusive number
@@ -509,21 +569,86 @@ Utils.LoopFloatValueWithinRangeMaxExclusive = function(value, minInclusive, maxE
     end
 end
 
--- return the passed in number clamped to within the max and min limits.
+--- Return the passed in number clamped to within the max and min limits inclusively.
 ---@param value number
 ---@param min number
 ---@param max number
 ---@return number
 Utils.clampNumber = function(value, min, max)
-    return math.min(math.max(value, min), max)
+    return math_min(math_max(value, min), max)
+end
+
+--- Takes a orientation (0-1) and returns a direction (int 0-7).
+--- Should be done locally if called frequently.
+---@param orientation RealOrientation @ Will be rounded to the nearest cardinal or intercardinal direction.
+---@return defines.direction
+Utils.OrientationToDirection = function(orientation)
+    local directionValue = Utils.RoundNumberToDecimalPlaces(orientation * 8, 0)
+    -- Hard coded copy of Utils.LoopIntValueWithinRange().
+    if directionValue > 7 then
+        return 0 - (7 - directionValue) - 1
+    elseif directionValue < 0 then
+        return 7 + (directionValue - 7) + 1
+    else
+        return directionValue
+    end
+end
+
+--- Takes a direction (int 0-7) and returns an orientation (0-1).
+--- Should be done locally if called frequently.
+---@param directionValue defines.direction
+---@return RealOrientation
+Utils.DirectionToOrientation = function(directionValue)
+    return directionValue / 8
+end
+
+--- A dictionary of directionValue key's (0-7) to their direction name (label's of defines.direction).
+Utils.DirectionValueToName = {
+    [0] = "north",
+    [1] = "northeast",
+    [2] = "east",
+    [3] = "southeast",
+    [4] = "south",
+    [5] = "southwest",
+    [6] = "west",
+    [7] = "northwest"
+}
+
+--- Takes a direction input value and if it's greater/less than the allowed orientation range it loops it back within the range.
+---@param directionValue defines.direction @ A number from 0-7.
+---@return defines.direction
+Utils.LoopDirectionValue = function(directionValue)
+    -- Hard coded copy of Utils.LoopIntValueWithinRange().
+    if directionValue > 7 then
+        return 0 - (7 - directionValue) - 1
+    elseif directionValue < 0 then
+        return 7 + (directionValue - 7) + 1
+    else
+        return directionValue
+    end
+end
+
+--- Takes an orientation input value and if it's greater/less than the allowed orientation range it loops it back within the range.
+--- Should be done locally if called frequently.
+---@param orientationValue RealOrientation
+---@return RealOrientation
+Utils.LoopOrientationValue = function(orientationValue)
+    -- Hard coded copy of Utils.LoopFloatValueWithinRangeMaxExclusive().
+    if orientationValue >= 1 then
+        return 0 + (orientationValue - 1)
+    elseif orientationValue < 0 then
+        return 1 - (orientationValue - 0)
+    else
+        return orientationValue
+    end
 end
 
 Utils.HandleFloatNumberAsChancedValue = function(value)
-    local intValue = math.floor(value)
+    local intValue = math_floor(value)
     local partialValue = value - intValue
     local chancedValue = intValue
     if partialValue ~= 0 then
-        local rand = math.random()
+        local rand = math_random()
         if rand >= partialValue then
             chancedValue = chancedValue + 1
         end
@@ -643,7 +768,7 @@ Utils.CalculateTilesUnderPositionedBoundingBox = function(positionedBoundingBox)
     local tiles = {}
     for x = positionedBoundingBox.left_top.x, positionedBoundingBox.right_bottom.x do
         for y = positionedBoundingBox.left_top.y, positionedBoundingBox.right_bottom.y do
-            table.insert(tiles, {x = math.floor(x), y = math.floor(y)})
+            table.insert(tiles, {x = math_floor(x), y = math_floor(y)})
         end
     end
     return tiles
@@ -654,10 +779,9 @@ end
 ---@param pos2 Position
 ---@return number @ is inheriently a positive number.
 Utils.GetDistance = function(pos1, pos2)
-    -- Don't do any valid checks as called so frequently, big UPS wastage.
     local dx = pos1.x - pos2.x
     local dy = pos1.y - pos2.y
-    return math.sqrt(dx * dx + dy * dy)
+    return math_sqrt(dx * dx + dy * dy)
 end
 
 -- Gets the distance between a single axis of 2 positions.
@@ -666,8 +790,7 @@ end
 ---@param axis Axis
 ---@return number @ is inheriently a positive number.
 Utils.GetDistanceSingleAxis = function(pos1, pos2, axis)
-    -- Don't do any valid checks as called so frequently, big UPS wastage.
-    return math.abs(pos1[axis] - pos2[axis])
+    return math_abs(pos1[axis] - pos2[axis])
 end
 
 -- Returns the offset for the first position in relation to the second position.
@@ -706,7 +829,7 @@ end
 
 ---@param position Position
 ---@param boundingBox BoundingBox
----@param safeTiling? boolean @ If enabled the boundingbox can be tiled without risk of an entity on the border being in 2 result sets, i.e. for use on each chunk.
+---@param safeTiling? boolean|null @ If enabled the boundingbox can be tiled without risk of an entity on the border being in 2 result sets, i.e. for use on each chunk.
 ---@return boolean
 Utils.IsPositionInBoundingBox = function(position, boundingBox, safeTiling)
     if safeTiling == nil or not safeTiling then
@@ -724,6 +847,9 @@ Utils.IsPositionInBoundingBox = function(position, boundingBox, safeTiling)
     end
 end
 
+--- Returns the item name for the provided entity.
+---@param entity LuaEntity
+---@return string
 Utils.GetEntityReturnedToInventoryName = function(entity)
     if entity.prototype.mineable_properties ~= nil and entity.prototype.mineable_properties.products ~= nil and #entity.prototype.mineable_properties.products > 0 then
         return entity.prototype.mineable_properties.products[1].name
@@ -732,6 +858,9 @@ Utils.GetEntityReturnedToInventoryName = function(entity)
     end
 end
 
+--- Makes a list of the input table's keys in their current order.
+---@param aTable table
+---@return StringOrNumber[]
 Utils.TableKeyToArray = function(aTable)
     local newArray = {}
     for key in pairs(aTable) do
@@ -740,6 +869,7 @@ Utils.TableKeyToArray = function(aTable)
     return newArray
 end
 
+--- Makes a comma seperated text string from a table's keys. Includes spaces after each comma.
 ---@param aTable table @ doesn't support commas in values or nested tables. Really for logging.
 Utils.TableKeyToCommaString = function(aTable)
     local newString = ""
@@ -756,6 +886,7 @@ Utils.TableKeyToCommaString = function(aTable)
     return newString
 end
 
+--- Makes a comma seperated text string from a table's values. Includes spaces after each comma.
 ---@param aTable table @ doesn't support commas in values or nested tables. Really for logging.
 Utils.TableValueToCommaString = function(aTable)
     local newString = ""
@@ -774,8 +905,8 @@ end
 
 -- Stringify a table in to a JSON text string. Options to make it pretty printable.
 ---@param targetTable table
----@param name? string @ If provided will appear as a "name:JSONData" output.
----@param singleLineOutput? boolean @ If provided and true removes all lines and spacing from the output.
+---@param name? string|null @ If provided will appear as a "name:JSONData" output.
+---@param singleLineOutput? boolean|null @ If provided and true removes all lines and spacing from the output.
 ---@return string
 Utils.TableContentsToJSON = function(targetTable, name, singleLineOutput)
     singleLineOutput = singleLineOutput or false
@@ -885,8 +1016,8 @@ end
 
 ---@param theTable table
 ---@param value StringOrNumber
----@param returnMultipleResults? boolean @ Can return a single result (returnMultipleResults = false/nil) or a list of results (returnMultipleResults = true)
----@param isValueAList? boolean @ Can have innerValue as a string/number (isValueAList = false/nil) or as a list of strings/numbers (isValueAList = true)
+---@param returnMultipleResults? boolean|null @ Can return a single result (returnMultipleResults = false/nil) or a list of results (returnMultipleResults = true)
+---@param isValueAList? boolean|null @ Can have innerValue as a string/number (isValueAList = false/nil) or as a list of strings/numbers (isValueAList = true)
 ---@return StringOrNumber[] @ table of keys.
 Utils.GetTableKeyWithValue = function(theTable, value, returnMultipleResults, isValueAList)
     local keysFound = {}
@@ -913,8 +1044,8 @@ end
 ---@param theTable table
 ---@param innerKey StringOrNumber
 ---@param innerValue StringOrNumber
----@param returnMultipleResults? boolean @ Can return a single result (returnMultipleResults = false/nil) or a list of results (returnMultipleResults = true)
----@param isValueAList? boolean @ Can have innerValue as a string/number (isValueAList = false/nil) or as a list of strings/numbers (isValueAList = true)
+---@param returnMultipleResults? boolean|null @ Can return a single result (returnMultipleResults = false/nil) or a list of results (returnMultipleResults = true)
+---@param isValueAList? boolean|null @ Can have innerValue as a string/number (isValueAList = false/nil) or as a list of strings/numbers (isValueAList = true)
 ---@return StringOrNumber[] @ table of keys.
 Utils.GetTableKeyWithInnerKeyValue = function(theTable, innerKey, innerValue, returnMultipleResults, isValueAList)
     local keysFound = {}
@@ -941,8 +1072,8 @@ end
 ---@param theTable table
 ---@param innerKey StringOrNumber
 ---@param innerValue StringOrNumber
----@param returnMultipleResults? boolean @ Can return a single result (returnMultipleResults = false/nil) or a list of results (returnMultipleResults = true)
----@param isValueAList? boolean @ Can have innerValue as a string/number (isValueAList = false/nil) or as a list of strings/numbers (isValueAList = true)
+---@param returnMultipleResults? boolean|null @ Can return a single result (returnMultipleResults = false/nil) or a list of results (returnMultipleResults = true)
+---@param isValueAList? boolean|null @ Can have innerValue as a string/number (isValueAList = false/nil) or as a list of strings/numbers (isValueAList = true)
 ---@return table[] @ table of values, which must be a table to have an inner key/value.
 Utils.GetTableValueWithInnerKeyValue = function(theTable, innerKey, innerValue, returnMultipleResults, isValueAList)
     local valuesFound = {}
@@ -991,7 +1122,7 @@ Utils.TableInnerValueToKey = function(refTable, innerValueAttributeName)
 end
 
 Utils.GetRandomFloatInRange = function(lower, upper)
-    return lower + math.random() * (upper - lower)
+    return lower + math_random() * (upper - lower)
 end
 
 Utils.WasCreativeModeInstantDeconstructionUsed = function(event)
@@ -1024,7 +1155,7 @@ Utils.NormaliseChanceList = function(dataSet, chancePropertyName, skipFillingEmp
 end
 
 Utils.GetRandomEntryFromNormalisedDataSet = function(dataSet, chancePropertyName)
-    local random = math.random()
+    local random = math_random()
     local chanceRangeLow = 0
     local chanceRangeHigh
     for _, v in pairs(dataSet) do
@@ -1102,15 +1233,15 @@ Utils.DisplayTimeOfTicks = function(inputTicks, displayLargestTimeUnit, displayS
     local negativeSign = ""
     if inputTicks < 0 then
         negativeSign = "-"
-        inputTicks = 0 - inputTicks
+        inputTicks = -inputTicks
     end
-    local hours = math.floor(inputTicks / 216000)
+    local hours = math_floor(inputTicks / 216000)
     local displayHours = Utils.PadNumberToMinimumDigits(hours, 2)
     inputTicks = inputTicks - (hours * 216000)
-    local minutes = math.floor(inputTicks / 3600)
+    local minutes = math_floor(inputTicks / 3600)
     local displayMinutes = Utils.PadNumberToMinimumDigits(minutes, 2)
     inputTicks = inputTicks - (minutes * 3600)
-    local seconds = math.floor(inputTicks / 60)
+    local seconds = math_floor(inputTicks / 60)
     local displaySeconds = Utils.PadNumberToMinimumDigits(seconds, 2)
 
     if displayLargestTimeUnit == nil or displayLargestTimeUnit == "" or displayLargestTimeUnit == "auto" then
@@ -1211,7 +1342,7 @@ end
 
 --- Tries to converts a non boolean to a boolean value.
 ---@param text string|int|boolean @ The input to check.
----@return boolean|nil @ If successful converted then the boolean of the value, or nil if not a convertable input.
+---@return boolean|null @ If successful converted then the boolean of the value, or nil if not a convertable input.
 Utils.ToBoolean = function(text)
     if text == nil then
         return nil
@@ -1242,10 +1373,10 @@ Utils.ToBoolean = function(text)
 end
 
 Utils.RandomLocationInRadius = function(centrePos, maxRadius, minRadius)
-    local angle = math.random(0, 360)
+    local angle = math_random(0, 360)
     minRadius = minRadius or 0
     local radiusMultiplier = maxRadius - minRadius
-    local distance = minRadius + (math.random() * radiusMultiplier)
+    local distance = minRadius + (math_random() * radiusMultiplier)
     return Utils.GetPositionForAngledDistance(centrePos, distance, angle)
 end
 
@@ -1253,10 +1384,10 @@ Utils.GetPositionForAngledDistance = function(startingPos, distance, angle)
     if angle < 0 then
         angle = 360 + angle
     end
-    local angleRad = math.rad(angle)
+    local angleRad = math_rad(angle)
     local newPos = {
-        x = (distance * math.sin(angleRad)) + startingPos.x,
-        y = (distance * -math.cos(angleRad)) + startingPos.y
+        x = (distance * math_sin(angleRad)) + startingPos.x,
+        y = (distance * -math_cos(angleRad)) + startingPos.y
     }
     return newPos
 end
@@ -1279,9 +1410,9 @@ Utils.FindWhereLineCrossesCircle = function(radius, slope, yIntercept)
     if delta < 0 then
         return nil, nil
     else
-        local x1 = (-B + math.sqrt(delta)) / (2 * A)
+        local x1 = (-B + math_sqrt(delta)) / (2 * A)
 
-        local x2 = (-B - math.sqrt(delta)) / (2 * A)
+        local x2 = (-B - math_sqrt(delta)) / (2 * A)
 
         local y1 = slope * x1 + yIntercept
 
@@ -1298,8 +1429,8 @@ Utils.FindWhereLineCrossesCircle = function(radius, slope, yIntercept)
 end
 
 Utils.IsPositionWithinCircled = function(circleCenter, radius, position)
-    local deltaX = math.abs(position.x - circleCenter.x)
-    local deltaY = math.abs(position.y - circleCenter.y)
+    local deltaX = math_abs(position.x - circleCenter.x)
+    local deltaY = math_abs(position.y - circleCenter.y)
     if deltaX + deltaY <= radius then
         return true
     elseif deltaX > radius then
@@ -1333,7 +1464,7 @@ Utils.TryMoveInventoriesLuaItemStacks = function(sourceInventory, targetInventor
     for index = 1, #sourceInventory do
         local itemStack = sourceInventory[index]
         if itemStack.valid_for_read then
-            local toMoveCount = math.ceil(itemStack.count * ratioToMove)
+            local toMoveCount = math_ceil(itemStack.count * ratioToMove)
             local itemStackToMove = Utils.DeepCopy(itemStack)
             itemStackToMove.count = toMoveCount
             local movedCount = targetInventory.insert(itemStackToMove)
@@ -1394,7 +1525,7 @@ Utils.TryInsertInventoryContents = function(contents, targetInventory, dropUnmov
         ratioToMove = 1
     end
     for name, count in pairs(contents) do
-        local toMove = math.ceil(count * ratioToMove)
+        local toMove = math_ceil(count * ratioToMove)
         local moved = targetInventory.insert({name = name, count = toMove})
         local remaining = count - moved
         if moved > 0 then
@@ -1425,7 +1556,7 @@ Utils.TryInsertSimpleItems = function(contents, targetInventory, dropUnmovedOnGr
         ratioToMove = 1
     end
     for index, simpleItemStack in pairs(contents) do
-        local toMove = math.ceil(simpleItemStack.count * ratioToMove)
+        local toMove = math_ceil(simpleItemStack.count * ratioToMove)
         local moved = targetInventory.insert({name = simpleItemStack.name, count = toMove, health = simpleItemStack.health, durability = simpleItemStack.durablilty, ammo = simpleItemStack.ammo})
         local remaining = simpleItemStack.count - moved
         if moved > 0 then
@@ -1469,7 +1600,7 @@ Utils.GetRenderPlayersForcesFromActioner = function(actioner)
     end
 end
 
----@param repeat_count? int @ Defaults to 1 if not provided
+---@param repeat_count? int|null @ Defaults to 1 if not provided
 ---@return Sprite
 Utils.EmptyRotatedSprite = function(repeat_count)
     return {
@@ -1492,7 +1623,7 @@ end
 ---@param trackingTable table @ Reference to an existing table that the function will populate.
 ---@param itemName string
 ---@param itemCount uint
----@return boolean|nil @ Returns true when the fuel is a new best and false when its not. Returns nil if the item isn't a fuel type.
+---@return boolean|null @ Returns true when the fuel is a new best and false when its not. Returns nil if the item isn't a fuel type.
 Utils.TrackBestFuelCount = function(trackingTable, itemName, itemCount)
     local itemPrototype = game.item_prototypes[itemName]
     local fuelValue = itemPrototype.fuel_value
@@ -1591,7 +1722,7 @@ Utils.GetRecipeIngredientsAddedTogeather = function(recipeIngredientHandlingTabl
                 ratioMultiplier = 1
             end
             for _, details in pairs(ingredients) do
-                local name, count = details[1] or details.name, math.ceil((details[2] or details.amount) * ratioMultiplier)
+                local name, count = details[1] or details.name, math_ceil((details[2] or details.amount) * ratioMultiplier)
                 if handling == "add" then
                     ingredientsList[name] = (ingredientsList[name] or 0) + count
                 elseif handling == "subtract" then
@@ -1702,42 +1833,10 @@ Utils.StringTrim = function(text)
     return string.match(text, "^()%s*$") and "" or string.match(text, "^%s*(.*%S)")
 end
 
--- Takes a orientation (0-1) and returns a direction (int 0-7).
----@param orientation RealOrientation @ Will be rounded to the nearest cardinal or intercardinal direction.
----@return defines.direction
-Utils.OrientationToDirection = function(orientation)
-    return Utils.LoopIntValueWithinRange(Utils.RoundNumberToDecimalPlaces(orientation * 8, 0), 0, 7)
-end
-
--- Takes a direction (int 0-7) and returns an orientation (0-1).
----@param directionValue defines.direction
----@return RealOrientation
-Utils.DirectionToOrientation = function(directionValue)
-    return directionValue / 8
-end
-
----@param directionValue defines.direction
----@return string
-Utils.DirectionValueToName = function(directionValue)
-    local names = {[0] = "north", [1] = "northeast", [2] = "east", [3] = "southeast", [4] = "south", [5] = "southwest", [6] = "west", [7] = "northwest"}
-    return names[directionValue]
-end
-
----@param directionValue defines.direction
----@return defines.direction
-Utils.LoopDirectionValue = function(directionValue)
-    return Utils.LoopIntValueWithinRange(directionValue, 0, 7)
-end
-
----@param orientationValue RealOrientation
----@return RealOrientation
-Utils.LoopOrientationValue = function(orientationValue)
-    return Utils.LoopFloatValueWithinRangeMaxExclusive(orientationValue, 0, 1)
-end
-
+-- Kills an entity and handles the optional arguments as Facotrio API doesn't accept nil arguments.
 ---@param entity LuaEntity
 ---@param killerForce LuaForce
----@param killerCauseEntity? LuaEntity
+---@param killerCauseEntity? LuaEntity|null
 Utils.EntityDie = function(entity, killerForce, killerCauseEntity)
     if killerCauseEntity ~= nil then
         entity.die(killerForce, killerCauseEntity)
@@ -1748,8 +1847,10 @@ end
 
 Utils.MaxTrainStopLimit = 4294967295 ---@type uint
 
+--- Returns a luaObject if its valid, else nil. Convientent for inline usage when rarely called.
+--- Should be done locally if called frequently.
 ---@param luaObject LuaBaseClass
----@return LuaBaseClass|nil
+---@return LuaBaseClass|null
 Utils.ReturnValidLuaObjectOrNil = function(luaObject)
     if luaObject == nil or not luaObject.valid then
         return nil
@@ -1758,6 +1859,8 @@ Utils.ReturnValidLuaObjectOrNil = function(luaObject)
     end
 end
 
+--- Gets the carriage at the head (leading) the train in its current direction.
+--- Should be done locally if called frequently.
 ---@param train LuaTrain
 ---@param isFrontStockLeading boolean @ If the trains speed is > 0 then pass in true, if speed < 0 then pass in false.
 ---@return LuaEntity
@@ -1767,6 +1870,295 @@ Utils.GetLeadingCarriageOfTrain = function(train, isFrontStockLeading)
     else
         return train.back_stock
     end
+end
+
+--- Checks the locomtive for its current fuel and returns it's prototype. Checks fuel inventories if nothing is currently burning.
+---@param loco LuaEntity
+---@return LuaItemPrototype|null currentFuelPrototype @ Will be nil if there's no current fuel in the locomotive.
+Utils.GetLocomotivesCurrentFuelPrototype = function(loco)
+    local loco_burner = loco.burner
+
+    -- Check any currently burning fuel inventory first.
+    local currentFuelItem = loco_burner.currently_burning
+    if currentFuelItem ~= nil then
+        return currentFuelItem
+    end
+
+    -- Check the fuel inventories as this will be burnt next.
+    local burner_inventory = loco_burner.inventory
+    local currentFuelStack
+    for i = 1, #burner_inventory do
+        currentFuelStack = burner_inventory[i] ---@type LuaItemStack
+        if currentFuelStack ~= nil and currentFuelStack.valid_for_read then
+            return currentFuelStack.prototype
+        end
+    end
+
+    -- No fuel found.
+    return nil
+end
+
+---@param railEntityType string @ Prototype name.
+---@return double
+Utils.GetRailEntityLength = function(railEntityType)
+    if railEntityType == "straight-rail" then
+        return 2
+    elseif railEntityType == "curved-rail" then
+        return 7.842081225095
+    else
+        error("not valid rail type: " .. railEntityType)
+    end
+end
+
+---@class Utils_TrainSpeedCalculationData @ Data the Utils functions need to calculate and estimate its future speed, time to cover distance, etc.
+---@field trainWeight double @ The total weight of the train.
+---@field trainFrictionForce double @ The total friction force of the train.
+---@field trainWeightedFrictionForce double @ The train's friction force divided by train weight.
+---@field locomotiveAccelerationPower double @ The max raw acceleration power per tick the train can add.
+---@field trainAirResistanceReductionMultiplier double @ The air resistance of the train (lead carriage in current direction).
+---@field maxSpeed double @ The max speed the train can achieve.
+---@field trainRawBrakingForce double @ The total braking force of the train ignoring any force bonus percentage from LuaForce.train_braking_force_bonus.
+---@field forwardFacingLocoCount uint @ The number of locomotives facing forwards. Used when recalcultaing locomotiveAccelerationPower.
+
+---@class Utils_TrainCarriageData @ Data array of cached details on a train's carriages. Allows only obtaining required data once per carriage. Only populate carriage data when required.
+---@field entity LuaEntity
+---@field prototypeName? string|null
+---@field faceingFrontOfTrain? boolean|null @ If the carriage is facing the front of the train. If true then carriage speed and orientation is the same as the train's.
+
+--- Get the data other Utils functions need for calculating and estimating; a trains future speed, time to cover distance, etc.
+--- This is only accurate while the train is heading in the same direction as when this data was gathered and requires the train to be moving.
+--- Assumes all forward facing locomotives have the same fuel as the first one found. If no fuel is found in any locomotive then a default value of 1 is used and the return "noFuelFound" will indicate this,
+--- Either train_carriages or trainCarriagesDataArray needs to be provided.
+---@param train LuaTrain
+---@param train_speed double @ Must not be 0 (stationary train).
+---@param train_carriages? LuaEntity[]|null @ If provided the carriage data will be obtained as needed, but not cached.
+---@param trainCarriagesDataArray? Utils_TrainCarriageData[]|null @ If provided and it doesn't include the required data it will be obtained and added in to the cache table.
+---@return Utils_TrainSpeedCalculationData trainSpeedCalculationData
+---@return boolean noFuelFound @ TRUE if no fuel was found in any forward moving locomotive. Generally FALSE is returned when all is normal.
+Utils.GetTrainSpeedCalculationData = function(train, train_speed, train_carriages, trainCarriagesDataArray)
+    if train_speed == 0 then
+        -- We can't work out what way is forward for counting locomotives that can assist with acceleration.
+        error("Utils.GetTrainSpeedCalculationData() doesn't work for 0 speed train")
+    end
+
+    local trainWeight = train.weight
+
+    ---@type Utils_TrainSpeedCalculationData
+    local trainData = {
+        trainWeight = trainWeight
+    }
+
+    local trainFrictionForce, forwardFacingLocoCount, fuelAccelerationBonus, trainRawBrakingForce = 0, 0, nil, 0
+    local trainMovingForwards = train_speed > 0
+
+    -- Work out initial data based on what carriage data type has been passed in.
+    local carriageCount
+    if trainCarriagesDataArray ~= nil then
+        carriageCount = #trainCarriagesDataArray
+    else
+        carriageCount = #train_carriages
+    end
+
+    -- Work out which way to iterate down the train's carriage array. Starting with the lead carriage.
+    local minCarriageIndex, maxCarriageIndex, carriageIterator
+    if trainMovingForwards then
+        minCarriageIndex, maxCarriageIndex, carriageIterator = 1, carriageCount, 1
+    elseif not trainMovingForwards then
+        minCarriageIndex, maxCarriageIndex, carriageIterator = carriageCount, 1, -1
+    end
+
+    local firstCarriage = true
+    local carriageEntity  ---@type LuaEntity
+    local carriageCachedData  ---@type Utils_TrainCarriageData|null
+    local carriage_name  ---@type string
+    local carriage_faceingFrontOfTrain  ---@type boolean
+    for currentSourceTrainCarriageIndex = minCarriageIndex, maxCarriageIndex, carriageIterator do
+        if trainCarriagesDataArray ~= nil then
+            ---@type Utils_TrainCarriageData
+            carriageCachedData = trainCarriagesDataArray[currentSourceTrainCarriageIndex]
+            carriage_name = carriageCachedData.prototypeName
+            if carriage_name == nil then
+                -- Data not known so obtain and cache.
+                carriage_name = carriageCachedData.entity.name
+                carriageCachedData.prototypeName = carriage_name
+            end
+        else
+            carriageEntity = train_carriages[currentSourceTrainCarriageIndex]
+            carriage_name = carriageEntity.name
+        end
+
+        trainFrictionForce = trainFrictionForce + PrototypeAttributes.GetAttribute(PrototypeAttributes.PrototypeTypes.entity, carriage_name, "friction_force")
+        trainRawBrakingForce = trainRawBrakingForce + PrototypeAttributes.GetAttribute(PrototypeAttributes.PrototypeTypes.entity, carriage_name, "braking_force")
+
+        if firstCarriage then
+            firstCarriage = false
+            trainData.trainAirResistanceReductionMultiplier = 1 - (PrototypeAttributes.GetAttribute(PrototypeAttributes.PrototypeTypes.entity, carriage_name, "air_resistance") / (trainWeight / 1000))
+            -- Have to get the right max speed as they're not identical at runtime even if the train is symetrical.
+            if trainMovingForwards then
+                trainData.maxSpeed = train.max_forward_speed
+            elseif not trainMovingForwards then
+                trainData.maxSpeed = train.max_backward_speed
+            end
+        end
+
+        if carriage_name == "locomotive" then
+            if trainCarriagesDataArray ~= nil then
+                carriage_faceingFrontOfTrain = carriageCachedData.faceingFrontOfTrain
+                if carriage_faceingFrontOfTrain == nil then
+                    -- Data not known so obtain and cache.
+                    if carriageCachedData.entity.speed == train_speed then
+                        carriage_faceingFrontOfTrain = trainMovingForwards
+                    else
+                        carriage_faceingFrontOfTrain = not trainMovingForwards
+                    end
+                    carriageCachedData.faceingFrontOfTrain = carriage_faceingFrontOfTrain
+                end
+            else
+                if carriageEntity.speed == train_speed then
+                    carriage_faceingFrontOfTrain = trainMovingForwards
+                else
+                    carriage_faceingFrontOfTrain = not trainMovingForwards
+                end
+            end
+
+            -- Only process locomotives that are powering the trains movement.
+            if trainMovingForwards == carriage_faceingFrontOfTrain then
+                -- Count all forward moving loco's. Just assume they all have the same fuel to avoid inspecting each one.
+                forwardFacingLocoCount = forwardFacingLocoCount + 1
+
+                -- Just get fuel from one forward facing loco that has fuel. Have to check the inventory as the train ill be breaking for the signal theres no currently burning.
+                if fuelAccelerationBonus == nil then
+                    local carriage = carriageEntity or carriageCachedData.entity
+                    local currentFuelPrototype = Utils.GetLocomotivesCurrentFuelPrototype(carriage)
+                    if currentFuelPrototype ~= nil then
+                        -- No benefit to using PrototypeAttributes.GetAttribute() as we'd have to get the prototypeName to load from the cache each time and theres only 1 attribute we want in this case.
+                        fuelAccelerationBonus = currentFuelPrototype.fuel_acceleration_multiplier
+                    end
+                end
+            end
+        end
+    end
+
+    trainData.trainFrictionForce = trainFrictionForce
+    trainData.trainWeightedFrictionForce = (trainFrictionForce / trainWeight)
+    trainData.forwardFacingLocoCount = forwardFacingLocoCount
+    trainData.locomotiveAccelerationPower = 10 * forwardFacingLocoCount * ((fuelAccelerationBonus or 1) / trainWeight)
+    trainData.trainRawBrakingForce = trainRawBrakingForce
+
+    local noFuelFound = false
+    if fuelAccelerationBonus == nil then
+        noFuelFound = true
+    end
+
+    return trainData, noFuelFound
+end
+
+--- Calculates the speed of a train for 1 tick as if accelerating. This doesn't match vanilla trains perfectly, but is very close with vanilla trains and accounts for everything known accurately. From https://wiki.factorio.com/Locomotive
+-- Often this is copied in to code inline for repeated calling.
+---@param trainData Utils_TrainSpeedCalculationData
+---@param initialSpeedAbsolute double
+---@return number absoluteSpeed
+Utils.CalculateAcceleratingTrainSpeedForSingleTick = function(trainData, initialSpeedAbsolute)
+    return math_min(((initialSpeedAbsolute + trainData.locomotiveAccelerationPower) - trainData.trainWeightedFrictionForce) * trainData.trainAirResistanceReductionMultiplier, trainData.maxSpeed)
+end
+
+--- Estimates how long an accelerating train takes to cover a distance, but doesn't limit for max train speeds at all. Approximately accounts for air resistence, but final value will be a little off.
+--- Note: none of the train speed/ticks/distance estimation functions give quite the same results as each other.
+---@param trainData Utils_TrainSpeedCalculationData
+---@param initialSpeedAbsolute double
+---@param distance double
+---@return Tick ticks @ Rounded up.
+Utils.EstimateAcceleratingTrainTicksToCoverDistance = function(trainData, initialSpeedAbsolute, distance)
+    local initialSpeedAirResistence = (1 - trainData.trainAirResistanceReductionMultiplier) * initialSpeedAbsolute
+    local acceleration = trainData.locomotiveAccelerationPower - trainData.trainWeightedFrictionForce - initialSpeedAirResistence
+    local ticks = math_ceil((math_sqrt(2 * acceleration * distance + (initialSpeedAbsolute ^ 2)) - initialSpeedAbsolute) / acceleration)
+    return ticks
+end
+
+--- Estimates train speed and distance covered after set number of ticks. Approximately accounts for air resistence, but final value will be a little off.
+--- Note: none of the train speed/ticks/distance estimation functions give quite the same results as each other.
+---@param trainData Utils_TrainSpeedCalculationData
+---@param initialSpeedAbsolute double
+---@param ticks Tick
+---@return double finalSpeedAbsolute
+---@return double distanceCovered
+Utils.EstimateAcceleratingTrainSpeedAndDistanceForTicks = function(trainData, initialSpeedAbsolute, ticks)
+    local initialSpeedAirResistence = (1 - trainData.trainAirResistanceReductionMultiplier) * initialSpeedAbsolute
+    local acceleration = trainData.locomotiveAccelerationPower - trainData.trainWeightedFrictionForce - initialSpeedAirResistence
+    local newSpeedAbsolute = math_min(initialSpeedAbsolute + (acceleration * ticks), trainData.maxSpeed)
+    local distanceTravelled = (ticks * initialSpeedAbsolute) + (((newSpeedAbsolute - initialSpeedAbsolute) * ticks) / 2)
+    return newSpeedAbsolute, distanceTravelled
+end
+
+--- Estimate how long it takes in ticks and distance for a train to accelerate from a starting speed to a final speed.
+---@param trainData Utils_TrainSpeedCalculationData
+---@param initialSpeedAbsolute double
+---@param requiredSpeedAbsolute double
+---@return Tick ticksTaken @ Rounded up.
+---@return double distanceCovered
+Utils.EstimateAcceleratingTrainTicksAndDistanceFromInitialToFinalSpeed = function(trainData, initialSpeedAbsolute, requiredSpeedAbsolute)
+    local initialSpeedAirResistence = (1 - trainData.trainAirResistanceReductionMultiplier) * initialSpeedAbsolute
+    local acceleration = trainData.locomotiveAccelerationPower - trainData.trainWeightedFrictionForce - initialSpeedAirResistence
+    local ticks = math_ceil((requiredSpeedAbsolute - initialSpeedAbsolute) / acceleration)
+    local distance = (ticks * initialSpeedAbsolute) + (((requiredSpeedAbsolute - initialSpeedAbsolute) * ticks) / 2)
+    return ticks, distance
+end
+
+--- Estimate how fast a train can go a distance while starting and ending the distance with the same speed, so it accelerates and brakes over the distance.
+---@param trainData Utils_TrainSpeedCalculationData
+---@param initialSpeedAbsolute double
+---@param distance double
+---@param forcesBrakingForceBonus double @ The force's train_braking_force_bonus.
+---@return Tick ticks @ Rounded up.
+Utils.EstimateTrainTicksToCoverDistanceWithSameStartAndEndSpeed = function(trainData, initialSpeedAbsolute, distance, forcesBrakingForceBonus)
+    local initialSpeedAirResistence = (1 - trainData.trainAirResistanceReductionMultiplier) * initialSpeedAbsolute
+    local acceleration = trainData.locomotiveAccelerationPower - trainData.trainWeightedFrictionForce - initialSpeedAirResistence
+    local accelerationDistanceFormula = (math_sqrt(2 * acceleration * distance + (initialSpeedAbsolute ^ 2)) - initialSpeedAbsolute) / acceleration
+    local trainForceBrakingForce = trainData.trainRawBrakingForce + (trainData.trainRawBrakingForce * forcesBrakingForceBonus)
+    local tickBrakingReduction = (trainForceBrakingForce + trainData.trainFrictionForce) / trainData.trainWeight
+    local brakingDistanceFormula = (math_sqrt(2 * tickBrakingReduction * distance + (initialSpeedAbsolute ^ 2)) - initialSpeedAbsolute) / tickBrakingReduction
+    local ticks = math_ceil(accelerationDistanceFormula + brakingDistanceFormula)
+    return ticks
+end
+
+--- Calculates the braking distance and ticks for a train at a given speed to brake to a required speed.
+---@param trainData Utils_TrainSpeedCalculationData
+---@param initialSpeedAbsolute double
+---@param requiredSpeedAbsolute double
+---@param forcesBrakingForceBonus double @ The force's train_braking_force_bonus.
+---@return Tick ticksToStop @ Rounded up.
+---@return double breakingDistance
+Utils.CalculateBrakingTrainDistanceAndTimeFromInitialToFinalSpeed = function(trainData, initialSpeedAbsolute, requiredSpeedAbsolute, forcesBrakingForceBonus)
+    local speedToDropAbsolute = initialSpeedAbsolute - requiredSpeedAbsolute
+    local trainForceBrakingForce = trainData.trainRawBrakingForce + (trainData.trainRawBrakingForce * forcesBrakingForceBonus)
+    local ticksToStop = math_ceil(speedToDropAbsolute / ((trainForceBrakingForce + trainData.trainFrictionForce) / trainData.trainWeight))
+    local breakingDistance = (ticksToStop * requiredSpeedAbsolute) + ((ticksToStop / 2.0) * speedToDropAbsolute)
+    return ticksToStop, breakingDistance
+end
+
+--- Calculates the train speed if it brakes for a time period.
+---@param trainData Utils_TrainSpeedCalculationData
+---@param currentSpeedAbsolute double
+---@param forcesBrakingForceBonus double @ The force's train_braking_force_bonus.
+---@param ticksToBrake Tick
+---@return double newSpeedAbsolute
+Utils.CalculateBrakingTrainSpeedForTime = function(trainData, currentSpeedAbsolute, forcesBrakingForceBonus, ticksToBrake)
+    local trainForceBrakingForce = trainData.trainRawBrakingForce + (trainData.trainRawBrakingForce * forcesBrakingForceBonus)
+    local tickBrakingReduction = (trainForceBrakingForce + trainData.trainFrictionForce) / trainData.trainWeight
+    local newSpeedAbsolute = currentSpeedAbsolute - (tickBrakingReduction * ticksToBrake)
+    return newSpeedAbsolute
+end
+
+--- Estimate a trains intial speed at the start of a stopping distance.
+---@param trainData Utils_TrainSpeedCalculationData
+---@param distance double
+---@param forcesBrakingForceBonus double @ The force's train_braking_force_bonus.
+---@return double initialAbsoluteSpeed
+Utils.CalculateBrakingTrainInitialSpeedWhenStoppedOverDistance = function(trainData, distance, forcesBrakingForceBonus)
+    local trainForceBrakingForce = trainData.trainRawBrakingForce + (trainData.trainRawBrakingForce * forcesBrakingForceBonus)
+    local tickBrakingReduction = (trainForceBrakingForce + trainData.trainFrictionForce) / trainData.trainWeight
+    local initialAbsoluteSpeed = math_sqrt(2 * tickBrakingReduction * distance)
+    return initialAbsoluteSpeed
 end
 
 return Utils

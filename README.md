@@ -40,7 +40,7 @@ Copy of VSCode settings file is stored in "VS CODE BITS\vscode extenstions setti
 The extensions "vscode-lua" and lua_tags" both add in suggestions that duplciate Lua Code Assist, but are lower quality. Unfortunatly I haven't found any way to still utilise their features and disabling these duplciate entries.
 
 Extensions currently used:
- - Lua (code assist): https://marketplace.visualstudio.com/items?itemName=sumneko.lua    documentation: https://github.com/sumneko/lua-language-server/wiki/EmmyLua-Annotations
+ - Lua (code assist) - version: 2.5.6 (later doesn't like core Facotrio files or the plugin we add): https://marketplace.visualstudio.com/items?itemName=sumneko.lua    documentation: https://github.com/sumneko/lua-language-server/wiki/EmmyLua-Annotations
  - vscode-lua (just for simple formatting): https://marketplace.visualstudio.com/items?itemName=trixnz.vscode-lua
  - lua_tags (just for the luacheck part): https://marketplace.visualstudio.com/items?itemName=changnet.lua-tags
  - Factorio Lua Check RC files: https://github.com/Nexela/Factorio-luacheckrc
