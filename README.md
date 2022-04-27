@@ -41,7 +41,7 @@ The extensions "vscode-lua" and lua_tags" both add in suggestions that duplciate
 
 Extensions currently used:
  - Lua (code assist): https://marketplace.visualstudio.com/items?itemName=sumneko.lua    documentation: https://github.com/sumneko/lua-language-server/wiki/EmmyLua-Annotations
- - TRIALLING NOT USED - vscode-lua (just for simple formatting): https://marketplace.visualstudio.com/items?itemName=trixnz.vscode-lua
+ - vscode-lua (just for simple formatting): https://marketplace.visualstudio.com/items?itemName=trixnz.vscode-lua
  - TRIALLING NOT USED - lua_tags (just for the luacheck part): https://marketplace.visualstudio.com/items?itemName=changnet.lua-tags
  - TRIALLING NOT USED - Factorio Lua Check RC files: https://github.com/Nexela/Factorio-luacheckrc
 	- Make the changes post file download as defined in "Factorio Lua Check RC Changes".
