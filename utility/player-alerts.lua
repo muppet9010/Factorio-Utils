@@ -6,15 +6,15 @@
 --
 
 local PlayerAlerts = {}
-local Events = require("utility/events")
---local Utils = require("utility/utils")
+local Events = require("utility.events")
+--local Utils = require("utility.utils")
 
 ---@class UtilityPlayerAlerts_ForceAlertObject @ The cached details of an alert applied to all players on a force. Used to track the alerts and remove them, but also to allow adding/removing from players as they join/leave a force.
 ---@field id Id @ Id of the alert object.
 ---@field force LuaForce @ The force that this alert applies to.
 ---@field alertEntity LuaEntity @ The entity the alert targets.
 ---@field alertPrototypeName string
----@field alertPosition Position
+---@field alertPosition MapPosition
 ---@field alertSurface LuaSurface
 ---@field alertSignalId SignalID
 ---@field alertMessage LocalisedString
@@ -25,6 +25,7 @@ local Events = require("utility/events")
 --------------------------------------------------------------------------------------------
 
 --- Called from the root of Control.lua
+---
 --- Only needs to be called once by the mod.
 PlayerAlerts.RegisterPlayerAlerts = function()
     Events.RegisterHandlerEvent(defines.events.on_player_joined_game, "PlayerAlerts._OnPlayerJoinedGame", PlayerAlerts._OnPlayerJoinedGame)

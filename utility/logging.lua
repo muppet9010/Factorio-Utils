@@ -1,10 +1,11 @@
--- Logging functions.
+--- Logging functions.
+--- Requires the utility "constants" file to be populated within the root of the mod.
 
 local Logging = {}
 local Constants = require("constants")
-local Utils = require("utility/utils")
+local Utils = require("utility.utils")
 
----@param position Position
+---@param position MapPosition
 ---@return string
 Logging.PositionToString = function(position)
     if position == nil then
@@ -209,7 +210,7 @@ end
 
 --- Writes out sequential numbers at the set position. Used as a visial debugging tool.
 ---@param targetSurface LuaSurface
----@param targetPosition LuaEntity|Position
+---@param targetPosition LuaEntity|MapPosition
 Logging.WriteOutNumberedMarker = function(targetSurface, targetPosition)
     global.numberedCount = global.numberedCount or 1
     rendering.draw_text {
@@ -217,7 +218,9 @@ Logging.WriteOutNumberedMarker = function(targetSurface, targetPosition)
         surface = targetSurface,
         target = targetPosition,
         color = {r = 1, g = 0, b = 0, a = 1},
-        scale_with_zoom = true
+        scale_with_zoom = true,
+        alignment = "center",
+        vertical_alignment = "bottom"
     }
     global.numberedCount = global.numberedCount + 1
 end
