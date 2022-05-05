@@ -40,7 +40,7 @@ Copy of VSCode settings file is stored in "VS CODE BITS\vscode extenstions setti
 The extensions "vscode-lua" and lua_tags" both add in suggestions that duplciate Lua Code Assist, but are lower quality. Unfortunatly I haven't found any way to still utilise their features and disabling these duplciate entries.
 
 Extensions currently used:
- - Lua (code assist): https://marketplace.visualstudio.com/items?itemName=sumneko.lua    documentation: https://github.com/sumneko/lua-language-server/wiki/EmmyLua-Annotations
+ - Lua (code assist - current (v3.2.2) or legacy (v2.6.8): https://marketplace.visualstudio.com/items?itemName=sumneko.lua    documentation: https://github.com/sumneko/lua-language-server/wiki/EmmyLua-Annotations
  - vscode-lua (just for simple formatting): https://marketplace.visualstudio.com/items?itemName=trixnz.vscode-lua
  - TRIALLING NOT USED - lua_tags (just for the luacheck part): https://marketplace.visualstudio.com/items?itemName=changnet.lua-tags
  - TRIALLING NOT USED - Factorio Lua Check RC files: https://github.com/Nexela/Factorio-luacheckrc
@@ -50,7 +50,6 @@ Extensions currently used:
  - Setup Factorio lua code assist and autocomplete global settings: https://github.com/justarandomgeek/vscode-factoriomod-debug/blob/master/workspace.md
 	- To generate EmmyLua docs for the Factorio API from the JSON docs press Ctrl-Shift-P to open the command palette and run the "Factorio: Generate Typedefs" command. Open factorio/doc-html/runtime-api.json, and save the generated lua file in to the Factorio installation root folder. This will also offer to add it to the library and adjust other configuration for sumneko.lua.
  - indent-rainbow: https://marketplace.visualstudio.com/items?itemName=oderwat.indent-rainbow
- - Bracket Pair Colorizer: https://marketplace.visualstudio.com/items?itemName=CoenraadS.bracket-pair-colorizer
  - GitLens: https://marketplace.visualstudio.com/items?itemName=eamodio.gitlens
  - compareit: https://marketplace.visualstudio.com/items?itemName=in4margaret.compareit
  - FactorioSumnekoLuaPlugin (helps autocomplete with Factorio specific oddities):
