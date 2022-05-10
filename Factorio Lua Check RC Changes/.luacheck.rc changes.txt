@@ -1,3 +1,6 @@
+- Add some ignores to the ignore rules list at the top of the file in the "IGNORE" variable:
+	'542'		---  Ignores empty IF ELSE branches. I sometimes use them on complicated code to help readability.
+
 - Add some data stage MOD globals to stds.factorio_data after the read_globals table:
 		-- Muppet Utils - generic global object to store mod data in during unique data stages.
 		globals = {

@@ -106,14 +106,14 @@
         "circuit_connector_definitions",
         "universal_connector_template",
         "__DebugAdapter",
-        "__Profiler"
+        "__Profiler",
+        "ourConnectionPoint"
     ],
     "Lua.runtime.version": "Lua 5.2",
     "Lua.diagnostics.disable": [
         "lowercase-global"
     ],
     "Lua.workspace.library": [
-        "e:\\Home\\Projects\\Factorio Modding\\runtime-api.lua",
         "c:\\FactorioModding\\data",
         "c:\\FactorioModding\\data\\core\\lualib",
         "c:\\FactorioModding\\runtime-api.lua"
@@ -150,4 +150,17 @@
     "Lua.hover.fieldInfer": 5000,
     "Lua.intelliSense.searchDepth": 5,
     "bracketPairColorizer.depreciation-notice": false,
+    "Lua.completion.autoRequire": false,
+    "security.workspace.trust.untrustedFiles": "open",
+    "gitlens.codeLens.enabled": false,
+    "Lua.workspace.ignoreDir": [
+        ".vscode",
+        "c:\\FactorioModding\\data\\base\\scenarios\\pvp.lua"
+    ],
+    "update.enableWindowsBackgroundUpdates": false,
+    "update.mode": "manual",
+    "bracket-pair-colorizer-2.depreciation-notice": false,
+    "lua.luacheckPath": "luacheck",
+    "luachecker.enable": false,
+    "lua.preferLuaCheckErrors": true,
 }
