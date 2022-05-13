@@ -37,20 +37,27 @@ VSCode Extensions
 ----------
 
 Copy of VSCode settings file is stored in "VS CODE BITS\vscode extenstions settings". Its location for deployment is: %APPDATA%\Code\User\settings.json
-The extensions "vscode-lua" and lua_tags" both add in suggestions that duplciate Lua Code Assist, but are lower quality. Unfortunatly I haven't found any way to still utilise their features and disabling these duplciate entries.
+The extensions "vscode-lua" and lua_tags" both add in suggestions that duplicate Lua Code Assist, but are lower quality. Unfortunatly I haven't found any way to still utilise their features and disabling these duplicate entries.
 
 Extensions currently used:
- - Lua (code assist): https://marketplace.visualstudio.com/items?itemName=sumneko.lua    documentation: https://github.com/sumneko/lua-language-server/wiki/EmmyLua-Annotations
- - vscode-lua (just for simple formatting): https://marketplace.visualstudio.com/items?itemName=trixnz.vscode-lua
- - TRIALLING NOT USED - lua_tags (just for the luacheck part): https://marketplace.visualstudio.com/items?itemName=changnet.lua-tags
- - TRIALLING NOT USED - Factorio Lua Check RC files: https://github.com/Nexela/Factorio-luacheckrc
-	- Make the changes post file download as defined in "Factorio Lua Check RC Changes".
+ - Lua (code assist - current (v3.2.2) or legacy (v2.6.8): https://marketplace.visualstudio.com/items?itemName=sumneko.lua    documentation: https://github.com/sumneko/lua-language-server/wiki/EmmyLua-Annotations
+ - vscode-lua (just for simple formatting and LuaCheck): https://marketplace.visualstudio.com/items?itemName=trixnz.vscode-lua:
+	1: Set its Luacheck Path setting to "luacheck". This will find the PATH variable we add later.
+ - LuaCheck - I couldn't get LuaCheck to install, so I just used some pre-built files that I knew worked from another extension:
+	1: Get the luacheck.exe file from this overly comphrensive extension (I used to use it): https://github.com/changnet/lua-tags/tree/master/luacheck
+	2: Create a new folder called LuaCheck on the PC (i.e. C:\Program Files\LuaCheck) and put the file in it.
+	3: Grant all users modify permission to the folder.
+	4: Add the folder to the system's (not user's) Path variable.
+ - Factorio Lua Check RC files: https://github.com/Nexela/Factorio-luacheckrc
+	1: Download the .luacheckrc file and defines-parser.lua file and put in the root of the Factorio Modding folder (or in the root of each mod's folder).
+	2: Make the changes post file download as defined in "Factorio Lua Check RC Changes".
+ - (NOT USED AS VSCODE-LUA CAN DO IT) lua-luachecker (just for the luacheck part): https://marketplace.visualstudio.com/items?itemName=jjkim.lua-luachecker
+	1: In its settings turn off the Lua Linter as this duplicates other Lua extensions warnings.
  - Factorio Mod Debug: https://marketplace.visualstudio.com/items?itemName=justarandomgeek.factoriomod-debug
 	- Utils copy of config file at "VS CODE BITS\Per Mod .vscode", put its contents in the mods specific folder in a ".vscode" folder
  - Setup Factorio lua code assist and autocomplete global settings: https://github.com/justarandomgeek/vscode-factoriomod-debug/blob/master/workspace.md
 	- To generate EmmyLua docs for the Factorio API from the JSON docs press Ctrl-Shift-P to open the command palette and run the "Factorio: Generate Typedefs" command. Open factorio/doc-html/runtime-api.json, and save the generated lua file in to the Factorio installation root folder. This will also offer to add it to the library and adjust other configuration for sumneko.lua.
  - indent-rainbow: https://marketplace.visualstudio.com/items?itemName=oderwat.indent-rainbow
- - Bracket Pair Colorizer: https://marketplace.visualstudio.com/items?itemName=CoenraadS.bracket-pair-colorizer
  - GitLens: https://marketplace.visualstudio.com/items?itemName=eamodio.gitlens
  - compareit: https://marketplace.visualstudio.com/items?itemName=in4margaret.compareit
  - FactorioSumnekoLuaPlugin (helps autocomplete with Factorio specific oddities):
