@@ -7,7 +7,6 @@
 
 local PlayerAlerts = {}
 local Events = require("utility.events")
---local Utils = require("utility.utils")
 
 ---@class UtilityPlayerAlerts_ForceAlertObject @ The cached details of an alert applied to all players on a force. Used to track the alerts and remove them, but also to allow adding/removing from players as they join/leave a force.
 ---@field id Id @ Id of the alert object.
@@ -39,7 +38,7 @@ end
 
 --- Add a custom alert to all players on the specific force.
 ---@param force LuaForce
----@param alertId? Id|null @ A globally unique Id that we will use to track duplicate requests for the same alert. If nil is provided a sequential number shall be affixed to "auto" as the Id.
+---@param alertId? Id|nil @ A globally unique Id that we will use to track duplicate requests for the same alert. If nil is provided a sequential number shall be affixed to "auto" as the Id.
 ---@param alertEntity LuaEntity
 ---@param alertSignalId SignalID
 ---@param alertMessage LocalisedString
@@ -177,7 +176,7 @@ end
 
 --- Returns a force's alerts Factorio global table if it exists.
 ---@param forceIndex Id @ the index of the LuaForce.
----@return table<Id, UtilityPlayerAlerts_ForceAlertObject>|null forceAlerts @ nil if no alerts for this force.
+---@return table<Id, UtilityPlayerAlerts_ForceAlertObject>|nil forceAlerts @ nil if no alerts for this force.
 PlayerAlerts._GetForceAlerts = function(forceIndex)
     if global.UTILITYPLAYERALERTS == nil or global.UTILITYPLAYERALERTS.forceAlertsByForce == nil then
         return nil
@@ -188,7 +187,7 @@ end
 
 --- Returns a force's specific alert from the Factorio global table if it exists.
 ---@param alertId Id
----@return UtilityPlayerAlerts_ForceAlertObject|null forceAlert
+---@return UtilityPlayerAlerts_ForceAlertObject|nil forceAlert
 PlayerAlerts._GetForceAlert = function(alertId)
     if global.UTILITYPLAYERALERTS == nil or global.UTILITYPLAYERALERTS.forceAlertsByAlert == nil then
         return nil
