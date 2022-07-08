@@ -40,7 +40,7 @@ Copy of VSCode settings file is stored in "VS CODE BITS\vscode extenstions setti
 The extensions "vscode-lua" and lua_tags" both add in suggestions that duplicate Lua Code Assist, but are lower quality. Unfortunatly I haven't found any way to still utilise their features and disabling these duplicate entries.
 
 Extensions currently used:
- - Lua (code assist - older VS Code (1.66.2) works well with recent (v3.2.2) or legacy (v2.6.8), current VS Code (1.67.2) works well with most recent (v3.2.4): https://marketplace.visualstudio.com/items?itemName=sumneko.lua    documentation: https://github.com/sumneko/lua-language-server/wiki/EmmyLua-Annotations
+ - Lua (class type definitions): https://marketplace.visualstudio.com/items?itemName=sumneko.lua    documentation: https://github.com/sumneko/lua-language-server/wiki/EmmyLua-Annotations
  - vscode-lua (just for simple formatting and LuaCheck): https://marketplace.visualstudio.com/items?itemName=trixnz.vscode-lua:
 	1: Set its Luacheck Path setting to "luacheck". This will find the PATH variable we add later.
  - LuaCheck - I couldn't get LuaCheck to install, so I just used some pre-built files that I knew worked from another extension:
@@ -51,12 +51,10 @@ Extensions currently used:
  - Factorio Lua Check RC files: https://github.com/Nexela/Factorio-luacheckrc
 	1: Download the .luacheckrc file and defines-parser.lua file and put in the root of the Factorio Modding folder (or in the root of each mod's folder).
 	2: Make the changes post file download as defined in "Factorio Lua Check RC Changes".
- - (NOT USED AS VSCODE-LUA CAN DO IT) lua-luachecker (just for the luacheck part): https://marketplace.visualstudio.com/items?itemName=jjkim.lua-luachecker
-	1: In its settings turn off the Lua Linter as this duplicates other Lua extensions warnings.
  - Factorio Mod Debug: https://marketplace.visualstudio.com/items?itemName=justarandomgeek.factoriomod-debug
 	- Utils copy of config files at "VS CODE BITS\Per Mod .vscode", put its contents in the mods specific folder in a ".vscode" folder
  - Setup Factorio lua code assist and autocomplete global settings: https://github.com/justarandomgeek/vscode-factoriomod-debug/blob/master/workspace.md
-	- To generate EmmyLua docs for the Factorio API from the JSON docs press Ctrl-Shift-P to open the command palette and run the "Factorio: Generate Typedefs" command. Open factorio/doc-html/runtime-api.json, and save the generated lua file in to the Factorio installation root folder. This will also offer to add it to the library and adjust other configuration for sumneko.lua.
+	- To generate EmmyLua docs for the Factorio API from the JSON docs press use the Factorio version selector on the status bar (bottom of VSCode) and browse to the exe. Select it and manually enter its Factorio version. This will create the docs in the root of the Factorio folder in a new folder (based on our global extension settings).
  - indent-rainbow: https://marketplace.visualstudio.com/items?itemName=oderwat.indent-rainbow
  - GitLens: https://marketplace.visualstudio.com/items?itemName=eamodio.gitlens
  - compareit: https://marketplace.visualstudio.com/items?itemName=in4margaret.compareit

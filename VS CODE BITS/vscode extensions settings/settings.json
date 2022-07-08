@@ -85,38 +85,14 @@
     "gitlens.hovers.currentLine.over": "line",
     "editor.semanticHighlighting.enabled": true,
     "Lua.telemetry.enable": false,
-    "Lua.diagnostics.globals": [
-        "game",
-        "script",
-        "remote",
-        "commands",
-        "settings",
-        "rcon",
-        "rendering",
-        "global",
-        "log",
-        "defines",
-        "data",
-        "mods",
-        "serpent",
-        "table_size",
-        "bit32",
-        "util",
-        "localised_print",
-        "circuit_connector_definitions",
-        "universal_connector_template",
-        "__DebugAdapter",
-        "__Profiler",
-        "ourConnectionPoint"
-    ],
-    "Lua.runtime.version": "Lua 5.2",
     "Lua.diagnostics.disable": [
-        "lowercase-global"
+        "lowercase-global",
+        "different-requires"
     ],
     "Lua.workspace.library": [
         "c:\\FactorioModding\\data",
         "c:\\FactorioModding\\data\\core\\lualib",
-        "c:\\FactorioModding\\runtime-api.lua"
+        "c:\\FactorioModding\\runtime-api"
     ],
     "Lua.workspace.preloadFileSize": 999999999,
     "gitlens.hovers.currentLine.details": false,
@@ -163,4 +139,7 @@
     "lua.luacheckPath": "luacheck",
     "luachecker.enable": false,
     "lua.preferLuaCheckErrors": true,
+    "Lua.workspace.maxPreload": 99999999,
+    "Lua.diagnostics.ignoredFiles": "Disable",
+    "factorio.workspace.library": "c:\\FactorioModding\\runtime-api"
 }

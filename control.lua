@@ -23,7 +23,8 @@ script.on_configuration_changed(OnStartup)
 script.on_event(defines.events.on_runtime_mod_setting_changed, OnSettingChanged)
 script.on_load(OnLoad)
 
--- Mod wide function interface table creation. Means EmmyLua can support it and saves on UPS cost of old Interface function middelayer.
+MOD = MOD or {}
+--- Mod wide function interface table creation. Means EmmyLua can support it and saves on UPS cost of old Interface function middelayer.
 ---@class InternalInterfaces
 MOD.Interfaces = MOD.Interfaces or {} ---@type table<string, function>
 --[[
