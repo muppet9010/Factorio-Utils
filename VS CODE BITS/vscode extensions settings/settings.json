@@ -129,10 +129,6 @@
     "Lua.completion.autoRequire": false,
     "security.workspace.trust.untrustedFiles": "open",
     "gitlens.codeLens.enabled": false,
-    "Lua.workspace.ignoreDir": [
-        ".vscode",
-        "c:\\FactorioModding\\data\\base\\scenarios\\pvp.lua"
-    ],
     "update.enableWindowsBackgroundUpdates": false,
     "update.mode": "manual",
     "bracket-pair-colorizer-2.depreciation-notice": false,
@@ -141,5 +137,32 @@
     "lua.preferLuaCheckErrors": true,
     "Lua.workspace.maxPreload": 99999999,
     "Lua.diagnostics.ignoredFiles": "Disable",
-    "factorio.workspace.library": "c:\\FactorioModding\\runtime-api"
+    "factorio.workspace.library": "c:\\FactorioModding\\runtime-api",
+    "Lua.runtime.version": "Lua 5.2",
+    "Lua.completion.workspaceWord": false,
+    "extensions.autoUpdate": false,
+    "Lua.runtime.builtin": {
+        "math": "default"
+    },
+    "Lua.hint.setType": true,
+    "Lua.diagnostics.neededFileStatus": {},
+    "Lua.diagnostics.libraryFiles": "Disable",
+    "Lua.diagnostics.groupFileStatus": {
+        "ambiguity": "Any",
+        "await": "Any",
+        "codestyle": "None",
+        "duplicate": "Any",
+        "global": "Any",
+        "luadoc": "Any",
+        "redefined": "Any",
+        "strict": "Any",
+        "strong": "Fallback",
+        "type-check": "Any",
+        "unbalanced": "Any",
+        "unused": "Any"
+    },
+    "Lua.diagnostics.groupSeverity": {},
+    "Lua.hint.arrayIndex": "Enable",
+    "diffEditor.ignoreTrimWhitespace": false,
+    "Lua.hover.expandAlias": false
 }
