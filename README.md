@@ -55,6 +55,7 @@ Extensions currently used:
 	- Utils copy of config files at "VS CODE BITS\Per Mod .vscode", put its contents in the mods specific folder in a ".vscode" folder
  - Setup Factorio lua code assist and autocomplete global settings: https://github.com/justarandomgeek/vscode-factoriomod-debug/blob/master/workspace.md
 	- To generate EmmyLua docs for the Factorio API from the JSON docs press use the Factorio version selector on the status bar (bottom of VSCode) and browse to the exe. Select it and manually enter its Factorio version. This will create the docs in the root of the Factorio folder in a new folder (based on our global extension settings).
+	- After creating the API docs open the `runtime-api-builtin.lua` and change the `double` and `int` to be alias and not class. All the others should be class (controlled by extension setting at default).
  - indent-rainbow: https://marketplace.visualstudio.com/items?itemName=oderwat.indent-rainbow
  - GitLens: https://marketplace.visualstudio.com/items?itemName=eamodio.gitlens
  - compareit: https://marketplace.visualstudio.com/items?itemName=in4margaret.compareit
