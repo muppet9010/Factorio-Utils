@@ -6,11 +6,11 @@
 local RandomChance = {}
 local math_floor, math_random = math.floor, math.random
 
---- Takes a number and returns an integer of the value with any partial integer value being converted to a chance of +1.
+--- Takes a number and returns an int of the value with any partial int value being converted to a chance of +1 included in the returned result.
 ---
 --- i.e. 5.3 as input will return 5 30% of the time and 6 the other 70% of the time.
 ---@param value double
----@return integer
+---@return int
 RandomChance.HandleFloatNumberAsChancedValue = function(value)
     local intValue = math_floor(value)
     local partialValue = value - intValue
@@ -41,15 +41,16 @@ RandomChance.NormaliseChanceList = function(dataSet, chancePropertyName, skipFil
         multiplier = 1 / totalChance
     end
     for _, v in pairs(dataSet) do
+        ---@cast v table<string, number> @ This isn't strictly true, but must be for the chancePropertyName field.
         v[chancePropertyName] = v[chancePropertyName] * multiplier
     end
     return dataSet
 end
 
 --- Looks over a table of chanced events and selects one randomly based on a named chance key's value. Requires the table to be normalised to a total chance of no greater than 1. A total of less than 1 chance can result in no event being selected.
----@param dataSet table
+---@param dataSet table[]
 ---@param chancePropertyName string
----@return any
+---@return any|nil
 RandomChance.GetRandomEntryFromNormalisedDataSet = function(dataSet, chancePropertyName)
     local random = math_random()
     local chanceRangeLow = 0
