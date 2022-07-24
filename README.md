@@ -59,7 +59,7 @@ Extensions currently used:
  - GitLens: https://marketplace.visualstudio.com/items?itemName=eamodio.gitlens
  - compareit: https://marketplace.visualstudio.com/items?itemName=in4margaret.compareit
  - FactorioSumnekoLuaPlugin (helps autocomplete with Factorio specific oddities):
-	1: Download the goit repo from: https://github.com/JanSharp/FactorioSumnekoLuaPlugin
+	1: Download the git repo from: https://github.com/JanSharp/FactorioSumnekoLuaPlugin
 	2: Get the contents of the downloaded Zip/folder. Where the README.md is.
 	3: In the root of the shared Factorio modding source folder, the folder each of your mods source code folders live in.
 	4: Create a new folder structure: ".vscode" / "lua"

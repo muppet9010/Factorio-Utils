@@ -92,7 +92,8 @@
     "Lua.workspace.library": [
         "c:\\FactorioModding\\data",
         "c:\\FactorioModding\\data\\core\\lualib",
-        "c:\\FactorioModding\\runtime-api"
+        "c:\\FactorioModding\\runtime-api",
+        "c:\\FactorioModding\\factorio-api"
     ],
     "Lua.workspace.preloadFileSize": 999999999,
     "gitlens.hovers.currentLine.details": false,
@@ -142,7 +143,7 @@
     "Lua.completion.workspaceWord": false,
     "extensions.autoUpdate": false,
     "Lua.runtime.builtin": {
-        "math": "default"
+        "math": "enable"
     },
     "Lua.hint.setType": true,
     "Lua.diagnostics.neededFileStatus": {},
@@ -156,13 +157,15 @@
         "luadoc": "Any",
         "redefined": "Any",
         "strict": "Any",
-        "strong": "Fallback",
+        "strong": "Any",
         "type-check": "Any",
         "unbalanced": "Any",
         "unused": "Any"
     },
     "Lua.diagnostics.groupSeverity": {},
     "Lua.hint.arrayIndex": "Enable",
-    "diffEditor.ignoreTrimWhitespace": false,
+    "Lua.misc.parameters": [
+        "--develop=false"
+    ],
     "Lua.hover.expandAlias": false
 }
