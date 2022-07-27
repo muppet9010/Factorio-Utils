@@ -21,7 +21,6 @@ VSCode Extensions
 ----------
 
 Copy of VSCode settings file is stored in "VS CODE BITS\vscode extenstions settings". It's location for deployment is: %APPDATA%\Code\User\settings.json
-The extensions "vscode-lua" and lua_tags" both add in suggestions that duplicate Lua Code Assist, but are lower quality. Unfortunatly I haven't found any way to still utilise their features and disabling these duplicate entries.
 
 Extensions currently used:
  - Lua (class type definitions): https://marketplace.visualstudio.com/items?itemName=sumneko.lua    documentation: https://github.com/sumneko/lua-language-server/wiki/EmmyLua-Annotations
@@ -49,6 +48,9 @@ Extensions currently used:
 	4: Create a new folder structure: ".vscode" / "lua"
 	5: Put the downloaded contents inside the lua folder created. So you end up with: [MY FACTORIO MODS]/.vscode/lua/README.md
 	6: In VSCode set the "sumneko.lua" extensions "Plugin" setting to the shared source folder root and path you creaed: ../.vscode/lua/plugin.lua
+ - Factorio API (data stage typedefs): https://github.com/Nexela/factorio-api
+	1: Download the repo and put the files in a created folder: C:\FactorioModding\factorio-api
+	2: Add the folder to Sumneko (per workspace not per user) library paths: setting name "Library", path to add: C:\FactorioModding\factorio-api
  - Code Spell Checker: https://marketplace.visualstudio.com/items?itemName=streetsidesoftware.code-spell-checker
 	1: most settings are in the user's VS code settings. This includes the path to where it expects the custom dictionaries to be.
 	2: In the root of the shared Factorio modding source folder (same as FactorioSumnekoLuaPlugin), have a ".vscode" folder.
