@@ -167,5 +167,66 @@
     "Lua.misc.parameters": [
         "--develop=false"
     ],
-    "Lua.hover.expandAlias": false
+    "Lua.hover.expandAlias": false,
+    "Lua.type.castNumberToInteger": false,
+    "Lua.semantic.keyword": true,
+    "html.format.wrapLineLength": 0,
+    "cSpell.enableFiletypes": [
+        "lua"
+    ],
+    "cSpell.customDictionaries": {
+        "missing-words": {
+            "name": "missing-words",
+            "path": "../../.vscode/cspell/missing-words.txt",
+            "addWords": true,
+            "scope": "user"
+        },
+        "factorio-dictionary": {
+            "name": "factorio-dictionary",
+            "path": "../../.vscode/cspell/factorio-dictionary.txt",
+            "addWords": true,
+            "scope": "user"
+        },
+        "english-gb-us": {
+            "name": "english-gb-us",
+            "path": "../../.vscode/cspell/english-gb-us.txt",
+            "addWords": false,
+            "scope": "user"
+        },
+        "colors": {
+            "name": "colors",
+            "path": "../../.vscode/cspell/colors.txt",
+            "addWords": false,
+            "scope": "user"
+        },
+        "utility-library": {
+            "name": "utility-library",
+            "path": "../../.vscode/cspell/utility-library.txt",
+            "addWords": false,
+            "scope": "user"
+        },
+    },
+    "cSpell.ignoreWords": [
+        "eoraptor",
+        "bilka",
+        "earendel"
+    ],
+    "cSpell.spellCheckOnlyWorkspaceFiles": true,
+    "cSpell.language": "en-GB",
+    "cSpell.flagWords": [
+        "armour",
+        "colour",
+        "centre"
+    ],
+    "cSpell.ignorePaths": [
+        "package-lock.json",
+        "node_modules",
+        "vscode-extension",
+        ".git/objects",
+        ".vscode",
+        ".vscode-insiders",
+        "**/settings.json",
+        "**/token-styling",
+        "**/textmate-colors"
+    ],
 }

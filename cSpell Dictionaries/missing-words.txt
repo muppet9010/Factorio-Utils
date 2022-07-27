@@ -1,0 +1,10 @@
+Sumneko
+teleportable
+toggleable
+cooldown
+uints
+pathing
+pathfind
+errored
+respawn
+localised
