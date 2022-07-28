@@ -37,34 +37,6 @@
     "problems.decorations.enabled": true,
     "editor.acceptSuggestionOnEnter": "off",
     "editor.tabCompletion": "on",
-    "LuaCoderAssist.debug": false,
-    "LuaCoderAssist.luaparse.luaversion": 5.2,
-    "LuaCoderAssist.luacheck.enable": true,
-    "LuaCoderAssist.luacheck.automaticOption": false,
-    "LuaCoderAssist.luacheck.onTyping": true,
-    "LuaCoderAssist.luacheck.onSave": true,
-    "LuaCoderAssist.luacheck.keepAfterClosed": false,
-    "LuaCoderAssist.luacheck.fileSizeLimit": 500,
-    "LuaCoderAssist.luacheck.options": [],
-    "LuaCoderAssist.luacheck.globals": [],
-    "LuaCoderAssist.luacheck.ignore": [],
-    "LuaCoderAssist.luacheck.jobs": 1,
-    "LuaCoderAssist.luacheck.std": [],
-    "LuaCoderAssist.ldoc.authorInFunctionLevel": false,
-    "LuaCoderAssist.format.lineWidth": 999999,
-    "LuaCoderAssist.format.quotemark": "double",
-    "LuaCoderAssist.ldoc.authorName": "Nexela",
-    "LuaCoderAssist.metric.enable": false,
-    "LuaCoderAssist.search.filters": [],
-    "LuaCoderAssist.search.externalPaths": [
-        "c:\\lua\\luarocks\\systree\\share\\lua\\5.2",
-        "c:\\lua\\luarocks\\lua",
-    ],
-    "LuaCoderAssist.preloads": [
-        "c:\\lua\\luarocks\\systree\\share\\lua\\5.2"
-    ],
-    "bracketPairColorizer.showBracketsInGutter": true,
-    "bracketPairColorizer.showBracketsInRuler": true,
     "todo-tree.regex": "((\\-\\-)\\s*(TODO|todo|Todo|FIXME)+|(\\-\\-\\s*!))",
     "todo-tree.showInExplorer": false,
     "todo-tree.defaultHighlight": {
@@ -99,24 +71,10 @@
     "gitlens.hovers.currentLine.details": false,
     "gitlens.hovers.currentLine.changes": false,
     "gitlens.hovers.currentLine.enabled": false,
-    "LuaCoderAssist.completion.autoInsertParameters": false,
     "Lua.runtime.plugin": "../.vscode/lua/plugin.lua",
-    "LuaCoderAssist.symbol.showAnonymousFunction": false,
-    "LuaCoderAssist.enable": false,
-    "luahelper.colors.Enable": false,
-    "luahelper.format.errShow": false,
-    "lua-tags.checkOnFileOpen": true,
-    "lua-tags.luaVersion": "5.2",
-    "lua-tags.luaCheckRc": "../.luacheckrc",
-    "luahelper.reference.incudeDefine": false,
-    "lua-tags.checkExclude": [],
-    "lua-tags.excludeDir": [
-        "*"
-    ],
-    "lua-tags.maxFileSize": 0,
     "Lua.hover.enumsLimit": 10,
     "[lua]": {
-        "editor.defaultFormatter": "trixnz.vscode-lua"
+        "editor.defaultFormatter": "sumneko.lua"
     },
     "vscode-lua-format.configPath": "E:\\Home\\Projects\\Factorio Modding\\.lua-format",
     "lua.targetVersion": "5.2",
@@ -126,15 +84,12 @@
     "Lua.diagnostics.workspaceDelay": 1000,
     "Lua.hover.fieldInfer": 5000,
     "Lua.intelliSense.searchDepth": 5,
-    "bracketPairColorizer.depreciation-notice": false,
     "Lua.completion.autoRequire": false,
     "security.workspace.trust.untrustedFiles": "open",
     "gitlens.codeLens.enabled": false,
     "update.enableWindowsBackgroundUpdates": false,
     "update.mode": "manual",
-    "bracket-pair-colorizer-2.depreciation-notice": false,
     "lua.luacheckPath": "luacheck",
-    "luachecker.enable": false,
     "lua.preferLuaCheckErrors": true,
     "Lua.workspace.maxPreload": 99999999,
     "Lua.diagnostics.ignoredFiles": "Disable",
@@ -229,4 +184,11 @@
         "**/token-styling",
         "**/textmate-colors"
     ],
+    "editor.defaultFormatter": "sumneko.lua",
+    "[jsonc]": {
+        "editor.defaultFormatter": "vscode.json-language-features"
+    },
+    "Lua.format.defaultConfig": {
+        "max_line_length": "99999999"
+    },
 }
