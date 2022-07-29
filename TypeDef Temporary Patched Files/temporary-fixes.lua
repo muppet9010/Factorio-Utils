@@ -14,6 +14,8 @@ local LuaSurface = {
     get_tile = function(x, y) end,
 }
 
+-- REMOVED ALL OF THE LITERAL TYPES AS THEY ARE IN BUILTIN NOW.
+
 ---@class RealOrientation
 ---@operator unm:RealOrientation
 ---@operator mod:RealOrientation

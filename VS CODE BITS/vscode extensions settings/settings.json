@@ -58,7 +58,6 @@
     "editor.semanticHighlighting.enabled": true,
     "Lua.telemetry.enable": false,
     "Lua.diagnostics.disable": [
-        "lowercase-global",
         "different-requires"
     ],
     "Lua.workspace.library": [
@@ -77,9 +76,6 @@
         "editor.defaultFormatter": "sumneko.lua"
     },
     "vscode-lua-format.configPath": "E:\\Home\\Projects\\Factorio Modding\\.lua-format",
-    "lua.targetVersion": "5.2",
-    "lua.format.lineWidth": 999999,
-    "lua.format.indentCount": 4,
     "Lua.completion.callSnippet": "Replace",
     "Lua.diagnostics.workspaceDelay": 1000,
     "Lua.hover.fieldInfer": 5000,
@@ -89,8 +85,6 @@
     "gitlens.codeLens.enabled": false,
     "update.enableWindowsBackgroundUpdates": false,
     "update.mode": "manual",
-    "lua.luacheckPath": "luacheck",
-    "lua.preferLuaCheckErrors": true,
     "Lua.workspace.maxPreload": 99999999,
     "Lua.diagnostics.ignoredFiles": "Disable",
     "factorio.workspace.library": "c:\\FactorioModding\\runtime-api",
@@ -100,7 +94,6 @@
     "Lua.runtime.builtin": {
         "math": "enable"
     },
-    "Lua.hint.setType": true,
     "Lua.diagnostics.neededFileStatus": {},
     "Lua.diagnostics.libraryFiles": "Disable",
     "Lua.diagnostics.groupFileStatus": {
@@ -118,7 +111,6 @@
         "unused": "Any"
     },
     "Lua.diagnostics.groupSeverity": {},
-    "Lua.hint.arrayIndex": "Enable",
     "Lua.misc.parameters": [
         "--develop=false"
     ],
@@ -191,4 +183,6 @@
     "Lua.format.defaultConfig": {
         "max_line_length": "99999999"
     },
+    "cSpell.suggestionMenuType": "quickFix",
+    "cSpell.suggestionNumChanges": 5
 }
