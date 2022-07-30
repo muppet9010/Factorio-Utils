@@ -184,5 +184,8 @@
         "max_line_length": "99999999"
     },
     "cSpell.suggestionMenuType": "quickFix",
-    "cSpell.suggestionNumChanges": 5
+    "cSpell.suggestionNumChanges": 5,
+    "cSpell.spellCheckDelayMs": 1000,
+    "cSpell.minWordLength": 2,
+    "cSpell.logLevel": "Information"
 }

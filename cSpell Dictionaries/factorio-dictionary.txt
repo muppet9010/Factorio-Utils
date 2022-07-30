@@ -1,15 +1,20 @@
 autoplace
+cryogun
 deepwater
+elem
 factorio
 Freeplay
-RCON
-spidertron
-rawxpcall
+listbox
+lualib
 mipmap
 mipmaps
-lualib
-textfield
 progressbar
 radiobutton
-listbox
-elem
+rawxpcall
+RCON
+spidertron
+textfield
+
+Kwh # unit of power.
+
+zzz # Used in the `order` field for putting things at the end of item/entity GUI lists.
