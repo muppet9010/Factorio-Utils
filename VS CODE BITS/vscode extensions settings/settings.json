@@ -156,7 +156,8 @@
     "cSpell.ignoreWords": [
         "eoraptor",
         "bilka",
-        "earendel"
+        "earendel",
+        "Xorimuth"
     ],
     "cSpell.spellCheckOnlyWorkspaceFiles": true,
     "cSpell.language": "en-GB",
@@ -187,5 +188,6 @@
     "cSpell.suggestionNumChanges": 5,
     "cSpell.spellCheckDelayMs": 1000,
     "cSpell.minWordLength": 2,
-    "cSpell.logLevel": "Information"
+    "cSpell.logLevel": "Information",
+    "Lua.hint.arrayIndex": "Enable"
 }

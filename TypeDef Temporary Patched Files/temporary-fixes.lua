@@ -1,5 +1,8 @@
 ---@meta
 
+
+
+
 ---@class LuaSurface
 local LuaSurface = {
     ---Get the tile at a given position.
@@ -11,10 +14,20 @@ local LuaSurface = {
     ---@param y int
     ---@return LuaTile
     ---@overload fun(position: TilePosition): LuaTile
-    get_tile = function(x, y) end,
+    get_tile = function(x, y) end
 }
 
--- REMOVED ALL OF THE LITERAL TYPES AS THEY ARE IN BUILTIN NOW.
+
+-- Just add the minimal attributes I need for Utils.
+---@class MinableProperties
+---@field result string
+
+-- Just add the minimal attributes I need for Utils.
+---@class ModifierPrototype
+---@field type string
+---@field recipe string
+
+
 
 ---@class RealOrientation
 ---@operator unm:RealOrientation
