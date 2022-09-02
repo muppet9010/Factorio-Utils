@@ -1,4 +1,4 @@
-# For the Colors library list. Coppied from the source website ia excel.
+# For the Colors library list. Copied from the source website ia excel.
 # The Gray's changed to Grey as per Color class.
 aliceblue
 antiquewhite

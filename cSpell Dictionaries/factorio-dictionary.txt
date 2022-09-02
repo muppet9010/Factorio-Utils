@@ -13,8 +13,16 @@ radiobutton
 rawxpcall
 RCON
 spidertron
+spidertrons
 textfield
+roboport
+roboports
+wube
+blueprintable
+deconstructable
 
 Kwh # unit of power.
 
 zzz # Used in the `order` field for putting things at the end of item/entity GUI lists.
+
+bigass # name of explosion

@@ -8,3 +8,11 @@ pathfind
 errored
 respawn
 localised
+TBC # To Be Confirmed
+casted
+dedupe
+deduped
+deduping
+QOL # Quality Of Life
+desynchronisation
+desynchronisations

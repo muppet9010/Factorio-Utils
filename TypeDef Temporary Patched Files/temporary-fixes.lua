@@ -1,8 +1,5 @@
 ---@meta
 
-
-
-
 ---@class LuaSurface
 local LuaSurface = {
     ---Get the tile at a given position.
@@ -14,8 +11,9 @@ local LuaSurface = {
     ---@param y int
     ---@return LuaTile
     ---@overload fun(position: TilePosition): LuaTile
-    get_tile = function(x, y) end
+    get_tile = function(x, y) end,
 }
+
 
 
 -- Just add the minimal attributes I need for Utils.
@@ -26,6 +24,29 @@ local LuaSurface = {
 ---@class ModifierPrototype
 ---@field type string
 ---@field recipe string
+
+-- Just add the minimal attributes I need for Utils.
+---@class Animation
+---@field draw_as_glow? boolean
+---@field layers? Animation[]
+---@field hr_version Animation
+---@field filename? string
+---@field stripes? Stripe[]
+
+-- Just add the minimal attributes I need for Utils.
+---@class Sprite
+---@field hr_version? Sprite
+
+-- Just add the minimal attributes I need for Utils.
+---@alias AnimationVariations Animation|Animation[]
+
+-- Just add the minimal attributes I need for Utils.
+---@class Stripe
+---@field filename? string
+
+-- Just add the minimal attributes I need for Utils.
+---@class DamagePrototype
+---@field type string
 
 
 
