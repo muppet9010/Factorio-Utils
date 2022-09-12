@@ -20,6 +20,8 @@ roboports
 wube
 blueprintable
 deconstructable
+nauvis # The default surface/planet.
+img # Used by Factorio text printing for defining an image name to show in the text.
 
 Kwh # unit of power.
 

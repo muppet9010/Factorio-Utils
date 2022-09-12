@@ -16,3 +16,7 @@ deduping
 QOL # Quality Of Life
 desynchronisation
 desynchronisations
+desync # Desynchronisation
+desyncs # Desynchronisations
+MP # Multi player
+SP # Single Player

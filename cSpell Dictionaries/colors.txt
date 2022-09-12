@@ -139,3 +139,10 @@ white
 whitesmoke
 yellow
 yellowgreen
+
+
+
+
+
+
+lightred # Old color name used in old Utility version.
