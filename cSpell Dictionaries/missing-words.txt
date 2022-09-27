@@ -20,3 +20,7 @@ desync # Desynchronisation
 desyncs # Desynchronisations
 MP # Multi player
 SP # Single Player
+reserver
+reservable
+hotbar
+postback

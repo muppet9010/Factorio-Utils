@@ -21,10 +21,14 @@ wube
 blueprintable
 deconstructable
 nauvis # The default surface/planet.
-img # Used by Factorio text printing for defining an image name to show in the text.
+hitbox
+bigass # name of explosion
+shiftings # used for artillery wagon prototype field names.
+respawned
 
 Kwh # unit of power.
 
 zzz # Used in the `order` field for putting things at the end of item/entity GUI lists.
+img # Used by Factorio text printing for defining an image name to show in the text.
 
-bigass # name of explosion
+typelist # used in by the Sumneko Lua plugin by JanSharp.
