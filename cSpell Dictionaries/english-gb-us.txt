@@ -18,3 +18,5 @@ targetting # Just wrong in allowed default words.
 
 behavior
 behaviors
+
+hotfixes
