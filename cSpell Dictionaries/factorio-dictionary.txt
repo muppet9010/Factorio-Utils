@@ -3,7 +3,7 @@ cryogun
 deepwater
 elem
 factorio
-Freeplay
+freeplay
 listbox
 lualib
 mipmap
@@ -24,7 +24,7 @@ nauvis # The default surface/planet.
 hitbox
 bigass # name of explosion
 shiftings # used for artillery wagon prototype field names.
-respawned
+compilatron
 
 Kwh # unit of power.
 

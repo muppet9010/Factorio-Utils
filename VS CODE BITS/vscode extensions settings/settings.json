@@ -60,12 +60,6 @@
     "Lua.diagnostics.disable": [
         "different-requires"
     ],
-    "Lua.workspace.library": [
-        "c:\\FactorioModding\\data",
-        "c:\\FactorioModding\\data\\core\\lualib",
-        "c:\\FactorioModding\\runtime-api",
-        "c:\\FactorioModding\\factorio-api"
-    ],
     "Lua.workspace.preloadFileSize": 999999999,
     "gitlens.hovers.currentLine.details": false,
     "gitlens.hovers.currentLine.changes": false,
@@ -112,26 +106,29 @@
     },
     "Lua.diagnostics.groupSeverity": {},
     "Lua.misc.parameters": [
-        "--develop=false"
+        "--develop=false",
+        "--loglevel=warn"
     ],
     "Lua.hover.expandAlias": false,
     "Lua.type.castNumberToInteger": false,
     "Lua.semantic.keyword": true,
     "html.format.wrapLineLength": 0,
     "cSpell.enableFiletypes": [
-        "lua"
+        "lua",
+        "factorio-locale",
+        "factorio-changelog"
     ],
     "cSpell.customDictionaries": {
         "missing-words": {
             "name": "missing-words",
             "path": "../../.vscode/cspell/missing-words.txt",
-            "addWords": true,
+            "addWords": false,
             "scope": "user"
         },
         "factorio-dictionary": {
             "name": "factorio-dictionary",
             "path": "../../.vscode/cspell/factorio-dictionary.txt",
-            "addWords": true,
+            "addWords": false,
             "scope": "user"
         },
         "english-gb-us": {
@@ -152,19 +149,20 @@
             "addWords": false,
             "scope": "user"
         },
+        "workspace-dictionary": {
+            "name": "workspace-dictionary",
+            "path": "./.vscode/cspell/workspace-dictionary.txt",
+            "addWords": true,
+            "scope": "user"
+        }
     },
-    "cSpell.ignoreWords": [
-        "eoraptor",
-        "bilka",
-        "earendel",
-        "Xorimuth"
-    ],
     "cSpell.spellCheckOnlyWorkspaceFiles": true,
     "cSpell.language": "en-GB",
     "cSpell.flagWords": [
         "armour",
         "colour",
-        "centre"
+        "centre",
+        "behaviour"
     ],
     "cSpell.ignorePaths": [
         "package-lock.json",
@@ -189,5 +187,16 @@
     "cSpell.spellCheckDelayMs": 1000,
     "cSpell.minWordLength": 2,
     "cSpell.logLevel": "Information",
-    "Lua.hint.arrayIndex": "Enable"
+    "Lua.hint.arrayIndex": "Enable",
+    "cSpell.allowedSchemas": [
+        "file",
+        "gist",
+        "sftp",
+        "untitled",
+        "vscode-notebook-cell",
+        "vscode-scm",
+        "vscode-userdata",
+        "text"
+    ],
+    "window.newWindowDimensions": "offset",
 }

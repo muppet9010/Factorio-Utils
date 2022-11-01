@@ -3,6 +3,7 @@ teleportable
 toggleable
 cooldown
 uints
+pathed
 pathing
 pathfind
 errored
@@ -24,3 +25,10 @@ reserver
 reservable
 hotbar
 postback
+hotfixes
+repathing
+repathed
+repath
+anyway
+anyways
+respawned
