@@ -5,12 +5,13 @@
 
     These styles are intended to be called by gui-util which will handle adding the version number to the end of style names.
 
-    This file is now version controlled to avoid conflicts with different versions used by different mods.
+    This file is now version controlled to avoid conflicts with different versions used by different mods. Only needs to be updated if it breaks backwards compatibility, As every mod will run the prototype generation process and add/overwrite all of its style types.
 
     Require the file and call GeneratePrototypes() in data.lua:
         require("utility.lists.style-data").GeneratePrototypes()
 
     Require the file and obtain the MuppetStyles dictionary in any usage scenarios (lua files) to get autocomplete list of all the styles and their options. Saves having to remember them or check which options are available in this source code.
+    Note: the MuppetStyles don't include the version in their names as the GUI utilities inject this at run time and handle the font version numbers.. However the MuppetFonts's do include a hardcoded version number as when they are used directly (i.e. in LuaRendering) they need to be explicit.
         local MuppetStyles = require("utility.lists.style-data").MuppetStyles
         local MuppetFonts = require("utility.lists.style-data").MuppetFonts
     If a sub field is available in the autocomplete list then one must be selected, otherwise you will end up with a blank style at runtime. For this reason (and simplicity) the margin, padding and other optional settings are just a single string with each combination covered.
@@ -107,7 +108,16 @@ StyleData.GeneratePrototypes = function()
             { "_contentInnerDark_shadowRisen", { base = { position = { 34, 0 }, corner_size = 8 }, shadow = frameShadowRisen() }, 0, 2 },
             { "_contentInnerLight", { base = { position = { 0, 17 }, corner_size = 8 } }, 0, 0 },
             { "_contentInnerLight_shadowSunken", { base = { position = { 0, 17 }, corner_size = 8 }, shadow = frameShadowSunken() }, 2, 0 },
-            { "_contentInnerLight_shadowRisen", { base = { position = { 0, 17 }, corner_size = 8 }, shadow = frameShadowRisen() }, 0, 2 }
+            { "_contentInnerLight_shadowRisen", { base = { position = { 0, 17 }, corner_size = 8 }, shadow = frameShadowRisen() }, 0, 2 },
+            { "_brightGreen", { base = { position = { 102, 17 }, corner_size = 8 } }, 0, 0 },
+            { "_brightGreen_shadowSunken", { base = { position = { 102, 17 }, corner_size = 8 }, shadow = frameShadowSunken() }, 2, 0 },
+            { "_brightGreen_shadowRisen", { base = { position = { 102, 17 }, corner_size = 8 }, shadow = frameShadowRisen() }, 0, 2 },
+            { "_brightRed", { base = { position = { 136, 17 }, corner_size = 8 } }, 0, 0 },
+            { "_brightRed_shadowSunken", { base = { position = { 136, 17 }, corner_size = 8 }, shadow = frameShadowSunken() }, 2, 0 },
+            { "_brightRed_shadowRisen", { base = { position = { 136, 17 }, corner_size = 8 }, shadow = frameShadowRisen() }, 0, 2 },
+            { "_brightOrange", { base = { position = { 34, 17 }, corner_size = 8 } }, 0, 0 },
+            { "_brightOrange_shadowSunken", { base = { position = { 34, 17 }, corner_size = 8 }, shadow = frameShadowSunken() }, 2, 0 },
+            { "_brightOrange_shadowRisen", { base = { position = { 34, 17 }, corner_size = 8 }, shadow = frameShadowRisen() }, 0, 2 },
         }
     ) do
         local graphicEmmyLuaName = string.sub(graphic[1], 2)
@@ -214,6 +224,7 @@ StyleData.GeneratePrototypes = function()
             { "", {} },
             { "_frame", { default_graphical_set = { base = { position = { 0, 0 }, corner_size = 8 }, shadow = { position = { 440, 24 }, corner_size = 8, draw_type = "outer" } } } },
             { "_noBorder", { default_graphical_set = {}, hovered_graphical_set = {}, clicked_graphical_set = {} } },
+            { "_noBorderHover", { default_graphical_set = {}, clicked_graphical_set = {} } },
             { "_frameCloseButtonClickable", { default_graphical_set = { base = { position = { 0, 0 }, corner_size = 8 }, shadow = { position = { 440, 24 }, corner_size = 8, draw_type = "outer" } }, padding = -6, width = 16, height = 16 } }
         }
     ) do
@@ -223,8 +234,8 @@ StyleData.GeneratePrototypes = function()
             local styleNameVersion = styleName .. StyleData.styleVersion
             defaultStyle[styleNameVersion] = {
                 type = "button_style",
-                width = size[2] --[[@as uint|nil]] ,
-                height = size[2] --[[@as uint|nil]] ,
+                width = size[2] --[[@as uint?]] ,
+                height = size[2] --[[@as uint?]] ,
                 margin = 0,
                 padding = 0
             }
@@ -335,6 +346,7 @@ StyleData.GeneratePrototypes = function()
         end
     end
 
+    --- The extra fonts must be set manually as styling.
     ---@type Prototype.Font[]
     local muppetFonts = {
         {
@@ -390,6 +402,60 @@ StyleData.GeneratePrototypes = function()
             name = "muppet_large_bold" .. StyleData.styleVersion,
             from = "default-bold",
             size = 18
+        },
+        {
+            type = "font",
+            name = "muppet_huge" .. StyleData.styleVersion,
+            from = "default",
+            size = 36
+        },
+        {
+            type = "font",
+            name = "muppet_huge_semibold" .. StyleData.styleVersion,
+            from = "default-semibold",
+            size = 36
+        },
+        {
+            type = "font",
+            name = "muppet_huge_bold" .. StyleData.styleVersion,
+            from = "default-bold",
+            size = 36
+        },
+        {
+            type = "font",
+            name = "muppet_massive" .. StyleData.styleVersion,
+            from = "default",
+            size = 60
+        },
+        {
+            type = "font",
+            name = "muppet_massive_semibold" .. StyleData.styleVersion,
+            from = "default-semibold",
+            size = 60
+        },
+        {
+            type = "font",
+            name = "muppet_massive_bold" .. StyleData.styleVersion,
+            from = "default-bold",
+            size = 60
+        },
+        {
+            type = "font",
+            name = "muppet_gigantic" .. StyleData.styleVersion,
+            from = "default",
+            size = 100
+        },
+        {
+            type = "font",
+            name = "muppet_gigantic_semibold" .. StyleData.styleVersion,
+            from = "default-semibold",
+            size = 100
+        },
+        {
+            type = "font",
+            name = "muppet_gigantic_bold" .. StyleData.styleVersion,
+            from = "default-bold",
+            size = 100
         }
     }
     data:extend(muppetFonts)
@@ -407,8 +473,10 @@ StyleData.GeneratePrototypes = function()
 
         -- Write out the font data to the log for all the fonts we generated.
         text = text .. "\r\n" .. "---@class UtilityGuiStyle_MuppetFonts" .. "\r\n" .. "StyleData.MuppetFonts = {" .. "\r\n"
+        local fontListName
         for _, font in pairs(muppetFonts) do
-            text = text .. font.name .. ' = "' .. font.name .. '", ' .. "\r\n"
+            fontListName = string.gsub(font.name, StyleData.styleVersion, "")
+            text = text .. fontListName .. ' = "' .. font.name .. '", ' .. "\r\n"
         end
         text = text .. "}" .. "\r\n\r\n\r\n"
 
@@ -446,7 +514,7 @@ StyleData.MuppetStyles = {
             ["marginTL"] = "muppet_flow_horizontal_marginTL",
             ["marginTL_spaced"] = "muppet_flow_horizontal_marginTL_spaced",
             ["marginTL_paddingBR"] = "muppet_flow_horizontal_marginTL_paddingBR",
-            ["marginTL_paddingBR_spaced"] = "muppet_flow_horizontal_marginTL_paddingBR_spaced"
+            ["marginTL_paddingBR_spaced"] = "muppet_flow_horizontal_marginTL_paddingBR_spaced",
         },
         vertical = {
             ["plain"] = "muppet_flow_vertical",
@@ -456,88 +524,142 @@ StyleData.MuppetStyles = {
             ["marginTL"] = "muppet_flow_vertical_marginTL",
             ["marginTL_spaced"] = "muppet_flow_vertical_marginTL_spaced",
             ["marginTL_paddingBR"] = "muppet_flow_vertical_marginTL_paddingBR",
-            ["marginTL_paddingBR_spaced"] = "muppet_flow_vertical_marginTL_paddingBR_spaced"
-        }
+            ["marginTL_paddingBR_spaced"] = "muppet_flow_vertical_marginTL_paddingBR_spaced",
+        },
     },
     frame = {
         main = {
             ["plain"] = "muppet_frame_main",
             ["paddingBR"] = "muppet_frame_main_paddingBR",
             ["marginTL"] = "muppet_frame_main_marginTL",
-            ["marginTL_paddingBR"] = "muppet_frame_main_marginTL_paddingBR"
+            ["marginTL_paddingBR"] = "muppet_frame_main_marginTL_paddingBR",
         },
         main_shadowSunken = {
             ["plain"] = "muppet_frame_main_shadowSunken",
             ["paddingBR"] = "muppet_frame_main_shadowSunken_paddingBR",
             ["marginTL"] = "muppet_frame_main_shadowSunken_marginTL",
-            ["marginTL_paddingBR"] = "muppet_frame_main_shadowSunken_marginTL_paddingBR"
+            ["marginTL_paddingBR"] = "muppet_frame_main_shadowSunken_marginTL_paddingBR",
         },
         main_shadowRisen = {
             ["plain"] = "muppet_frame_main_shadowRisen",
             ["paddingBR"] = "muppet_frame_main_shadowRisen_paddingBR",
             ["marginTL"] = "muppet_frame_main_shadowRisen_marginTL",
-            ["marginTL_paddingBR"] = "muppet_frame_main_shadowRisen_marginTL_paddingBR"
+            ["marginTL_paddingBR"] = "muppet_frame_main_shadowRisen_marginTL_paddingBR",
         },
         content = {
             ["plain"] = "muppet_frame_content",
             ["paddingBR"] = "muppet_frame_content_paddingBR",
             ["marginTL"] = "muppet_frame_content_marginTL",
-            ["marginTL_paddingBR"] = "muppet_frame_content_marginTL_paddingBR"
+            ["marginTL_paddingBR"] = "muppet_frame_content_marginTL_paddingBR",
         },
         content_shadowSunken = {
             ["plain"] = "muppet_frame_content_shadowSunken",
             ["paddingBR"] = "muppet_frame_content_shadowSunken_paddingBR",
             ["marginTL"] = "muppet_frame_content_shadowSunken_marginTL",
-            ["marginTL_paddingBR"] = "muppet_frame_content_shadowSunken_marginTL_paddingBR"
+            ["marginTL_paddingBR"] = "muppet_frame_content_shadowSunken_marginTL_paddingBR",
         },
         content_shadowRisen = {
             ["plain"] = "muppet_frame_content_shadowRisen",
             ["paddingBR"] = "muppet_frame_content_shadowRisen_paddingBR",
             ["marginTL"] = "muppet_frame_content_shadowRisen_marginTL",
-            ["marginTL_paddingBR"] = "muppet_frame_content_shadowRisen_marginTL_paddingBR"
+            ["marginTL_paddingBR"] = "muppet_frame_content_shadowRisen_marginTL_paddingBR",
         },
         contentInnerDark = {
             ["plain"] = "muppet_frame_contentInnerDark",
             ["paddingBR"] = "muppet_frame_contentInnerDark_paddingBR",
             ["marginTL"] = "muppet_frame_contentInnerDark_marginTL",
-            ["marginTL_paddingBR"] = "muppet_frame_contentInnerDark_marginTL_paddingBR"
+            ["marginTL_paddingBR"] = "muppet_frame_contentInnerDark_marginTL_paddingBR",
         },
         contentInnerDark_shadowSunken = {
             ["plain"] = "muppet_frame_contentInnerDark_shadowSunken",
             ["paddingBR"] = "muppet_frame_contentInnerDark_shadowSunken_paddingBR",
             ["marginTL"] = "muppet_frame_contentInnerDark_shadowSunken_marginTL",
-            ["marginTL_paddingBR"] = "muppet_frame_contentInnerDark_shadowSunken_marginTL_paddingBR"
+            ["marginTL_paddingBR"] = "muppet_frame_contentInnerDark_shadowSunken_marginTL_paddingBR",
         },
         contentInnerDark_shadowRisen = {
             ["plain"] = "muppet_frame_contentInnerDark_shadowRisen",
             ["paddingBR"] = "muppet_frame_contentInnerDark_shadowRisen_paddingBR",
             ["marginTL"] = "muppet_frame_contentInnerDark_shadowRisen_marginTL",
-            ["marginTL_paddingBR"] = "muppet_frame_contentInnerDark_shadowRisen_marginTL_paddingBR"
+            ["marginTL_paddingBR"] = "muppet_frame_contentInnerDark_shadowRisen_marginTL_paddingBR",
         },
         contentInnerLight = {
             ["plain"] = "muppet_frame_contentInnerLight",
             ["paddingBR"] = "muppet_frame_contentInnerLight_paddingBR",
             ["marginTL"] = "muppet_frame_contentInnerLight_marginTL",
-            ["marginTL_paddingBR"] = "muppet_frame_contentInnerLight_marginTL_paddingBR"
+            ["marginTL_paddingBR"] = "muppet_frame_contentInnerLight_marginTL_paddingBR",
         },
         contentInnerLight_shadowSunken = {
             ["plain"] = "muppet_frame_contentInnerLight_shadowSunken",
             ["paddingBR"] = "muppet_frame_contentInnerLight_shadowSunken_paddingBR",
             ["marginTL"] = "muppet_frame_contentInnerLight_shadowSunken_marginTL",
-            ["marginTL_paddingBR"] = "muppet_frame_contentInnerLight_shadowSunken_marginTL_paddingBR"
+            ["marginTL_paddingBR"] = "muppet_frame_contentInnerLight_shadowSunken_marginTL_paddingBR",
         },
         contentInnerLight_shadowRisen = {
             ["plain"] = "muppet_frame_contentInnerLight_shadowRisen",
             ["paddingBR"] = "muppet_frame_contentInnerLight_shadowRisen_paddingBR",
             ["marginTL"] = "muppet_frame_contentInnerLight_shadowRisen_marginTL",
-            ["marginTL_paddingBR"] = "muppet_frame_contentInnerLight_shadowRisen_marginTL_paddingBR"
-        }
+            ["marginTL_paddingBR"] = "muppet_frame_contentInnerLight_shadowRisen_marginTL_paddingBR",
+        },
+        brightGreen = {
+            ["plain"] = "muppet_frame_brightGreen",
+            ["paddingBR"] = "muppet_frame_brightGreen_paddingBR",
+            ["marginTL"] = "muppet_frame_brightGreen_marginTL",
+            ["marginTL_paddingBR"] = "muppet_frame_brightGreen_marginTL_paddingBR",
+        },
+        brightGreen_shadowSunken = {
+            ["plain"] = "muppet_frame_brightGreen_shadowSunken",
+            ["paddingBR"] = "muppet_frame_brightGreen_shadowSunken_paddingBR",
+            ["marginTL"] = "muppet_frame_brightGreen_shadowSunken_marginTL",
+            ["marginTL_paddingBR"] = "muppet_frame_brightGreen_shadowSunken_marginTL_paddingBR",
+        },
+        brightGreen_shadowRisen = {
+            ["plain"] = "muppet_frame_brightGreen_shadowRisen",
+            ["paddingBR"] = "muppet_frame_brightGreen_shadowRisen_paddingBR",
+            ["marginTL"] = "muppet_frame_brightGreen_shadowRisen_marginTL",
+            ["marginTL_paddingBR"] = "muppet_frame_brightGreen_shadowRisen_marginTL_paddingBR",
+        },
+        brightRed = {
+            ["plain"] = "muppet_frame_brightRed",
+            ["paddingBR"] = "muppet_frame_brightRed_paddingBR",
+            ["marginTL"] = "muppet_frame_brightRed_marginTL",
+            ["marginTL_paddingBR"] = "muppet_frame_brightRed_marginTL_paddingBR",
+        },
+        brightRed_shadowSunken = {
+            ["plain"] = "muppet_frame_brightRed_shadowSunken",
+            ["paddingBR"] = "muppet_frame_brightRed_shadowSunken_paddingBR",
+            ["marginTL"] = "muppet_frame_brightRed_shadowSunken_marginTL",
+            ["marginTL_paddingBR"] = "muppet_frame_brightRed_shadowSunken_marginTL_paddingBR",
+        },
+        brightRed_shadowRisen = {
+            ["plain"] = "muppet_frame_brightRed_shadowRisen",
+            ["paddingBR"] = "muppet_frame_brightRed_shadowRisen_paddingBR",
+            ["marginTL"] = "muppet_frame_brightRed_shadowRisen_marginTL",
+            ["marginTL_paddingBR"] = "muppet_frame_brightRed_shadowRisen_marginTL_paddingBR",
+        },
+        brightOrange = {
+            ["plain"] = "muppet_frame_brightOrange",
+            ["paddingBR"] = "muppet_frame_brightOrange_paddingBR",
+            ["marginTL"] = "muppet_frame_brightOrange_marginTL",
+            ["marginTL_paddingBR"] = "muppet_frame_brightOrange_marginTL_paddingBR",
+        },
+        brightOrange_shadowSunken = {
+            ["plain"] = "muppet_frame_brightOrange_shadowSunken",
+            ["paddingBR"] = "muppet_frame_brightOrange_shadowSunken_paddingBR",
+            ["marginTL"] = "muppet_frame_brightOrange_shadowSunken_marginTL",
+            ["marginTL_paddingBR"] = "muppet_frame_brightOrange_shadowSunken_marginTL_paddingBR",
+        },
+        brightOrange_shadowRisen = {
+            ["plain"] = "muppet_frame_brightOrange_shadowRisen",
+            ["paddingBR"] = "muppet_frame_brightOrange_shadowRisen_paddingBR",
+            ["marginTL"] = "muppet_frame_brightOrange_shadowRisen_marginTL",
+            ["marginTL_paddingBR"] = "muppet_frame_brightOrange_shadowRisen_marginTL_paddingBR",
+        },
     },
     scroll = {
         ["plain"] = "muppet_scroll",
         ["paddingBR"] = "muppet_scroll_paddingBR",
         ["marginTL"] = "muppet_scroll_marginTL",
-        ["marginTL_paddingBR"] = "muppet_scroll_marginTL_paddingBR"
+        ["marginTL_paddingBR"] = "muppet_scroll_marginTL_paddingBR",
     },
     table = {
         ["plain"] = "muppet_table",
@@ -571,12 +693,12 @@ StyleData.MuppetStyles = {
         ["marginTL_paddingBR_cellPadded"] = "muppet_table_marginTL_paddingBR_cellPadded",
         ["marginTL_paddingBR_cellPadded_horizontalSpaced"] = "muppet_table_marginTL_paddingBR_cellPadded_horizontalSpaced",
         ["marginTL_paddingBR_cellPadded_verticalSpaced"] = "muppet_table_marginTL_paddingBR_cellPadded_verticalSpaced",
-        ["marginTL_paddingBR_cellPadded_verticalSpaced_horizontalSpaced"] = "muppet_table_marginTL_paddingBR_cellPadded_verticalSpaced_horizontalSpaced"
+        ["marginTL_paddingBR_cellPadded_verticalSpaced_horizontalSpaced"] = "muppet_table_marginTL_paddingBR_cellPadded_verticalSpaced_horizontalSpaced",
     },
     sprite = {
         ["32"] = "muppet_sprite_32",
         ["48"] = "muppet_sprite_48",
-        ["64"] = "muppet_sprite_64"
+        ["64"] = "muppet_sprite_64",
     },
     spriteButton = {
         ["plain"] = "muppet_sprite_button",
@@ -600,13 +722,20 @@ StyleData.MuppetStyles = {
         ["noBorder_32"] = "muppet_sprite_button_noBorder_32",
         ["noBorder_48"] = "muppet_sprite_button_noBorder_48",
         ["noBorder_64"] = "muppet_sprite_button_noBorder_64",
+        ["noBorderHover"] = "muppet_sprite_button_noBorderHover",
+        ["noBorderHover_mod"] = "muppet_sprite_button_noBorderHover_mod",
+        ["noBorderHover_smallText"] = "muppet_sprite_button_noBorderHover_smallText",
+        ["noBorderHover_clickable"] = "muppet_sprite_button_noBorderHover_clickable",
+        ["noBorderHover_32"] = "muppet_sprite_button_noBorderHover_32",
+        ["noBorderHover_48"] = "muppet_sprite_button_noBorderHover_48",
+        ["noBorderHover_64"] = "muppet_sprite_button_noBorderHover_64",
         ["frameCloseButtonClickable"] = "muppet_sprite_button_frameCloseButtonClickable",
         ["frameCloseButtonClickable_mod"] = "muppet_sprite_button_frameCloseButtonClickable_mod",
         ["frameCloseButtonClickable_smallText"] = "muppet_sprite_button_frameCloseButtonClickable_smallText",
         ["frameCloseButtonClickable_clickable"] = "muppet_sprite_button_frameCloseButtonClickable_clickable",
         ["frameCloseButtonClickable_32"] = "muppet_sprite_button_frameCloseButtonClickable_32",
         ["frameCloseButtonClickable_48"] = "muppet_sprite_button_frameCloseButtonClickable_48",
-        ["frameCloseButtonClickable_64"] = "muppet_sprite_button_frameCloseButtonClickable_64"
+        ["frameCloseButtonClickable_64"] = "muppet_sprite_button_frameCloseButtonClickable_64",
     },
     button = {
         small = {
@@ -645,7 +774,7 @@ StyleData.MuppetStyles = {
             ["bold_noBorder"] = "muppet_button_text_small_bold_noBorder",
             ["bold_noBorder_paddingSides"] = "muppet_button_text_small_bold_noBorder_paddingSides",
             ["bold_noBorder_paddingNone"] = "muppet_button_text_small_bold_noBorder_paddingNone",
-            ["bold_noBorder_paddingTight"] = "muppet_button_text_small_bold_noBorder_paddingTight"
+            ["bold_noBorder_paddingTight"] = "muppet_button_text_small_bold_noBorder_paddingTight",
         },
         medium = {
             ["plain"] = "muppet_button_text_medium",
@@ -683,7 +812,7 @@ StyleData.MuppetStyles = {
             ["bold_noBorder"] = "muppet_button_text_medium_bold_noBorder",
             ["bold_noBorder_paddingSides"] = "muppet_button_text_medium_bold_noBorder_paddingSides",
             ["bold_noBorder_paddingNone"] = "muppet_button_text_medium_bold_noBorder_paddingNone",
-            ["bold_noBorder_paddingTight"] = "muppet_button_text_medium_bold_noBorder_paddingTight"
+            ["bold_noBorder_paddingTight"] = "muppet_button_text_medium_bold_noBorder_paddingTight",
         },
         large = {
             ["plain"] = "muppet_button_text_large",
@@ -721,8 +850,8 @@ StyleData.MuppetStyles = {
             ["bold_noBorder"] = "muppet_button_text_large_bold_noBorder",
             ["bold_noBorder_paddingSides"] = "muppet_button_text_large_bold_noBorder_paddingSides",
             ["bold_noBorder_paddingNone"] = "muppet_button_text_large_bold_noBorder_paddingNone",
-            ["bold_noBorder_paddingTight"] = "muppet_button_text_large_bold_noBorder_paddingTight"
-        }
+            ["bold_noBorder_paddingTight"] = "muppet_button_text_large_bold_noBorder_paddingTight",
+        },
     },
     label = {
         text = {
@@ -744,7 +873,7 @@ StyleData.MuppetStyles = {
                 ["bold_paddingSides"] = "muppet_label_text_small_bold_paddingSides",
                 ["bold_marginTL"] = "muppet_label_text_small_bold_marginTL",
                 ["bold_marginTL_paddingBR"] = "muppet_label_text_small_bold_marginTL_paddingBR",
-                ["bold_marginTL_paddingSides"] = "muppet_label_text_small_bold_marginTL_paddingSides"
+                ["bold_marginTL_paddingSides"] = "muppet_label_text_small_bold_marginTL_paddingSides",
             },
             medium = {
                 ["plain"] = "muppet_label_text_medium",
@@ -764,7 +893,7 @@ StyleData.MuppetStyles = {
                 ["bold_paddingSides"] = "muppet_label_text_medium_bold_paddingSides",
                 ["bold_marginTL"] = "muppet_label_text_medium_bold_marginTL",
                 ["bold_marginTL_paddingBR"] = "muppet_label_text_medium_bold_marginTL_paddingBR",
-                ["bold_marginTL_paddingSides"] = "muppet_label_text_medium_bold_marginTL_paddingSides"
+                ["bold_marginTL_paddingSides"] = "muppet_label_text_medium_bold_marginTL_paddingSides",
             },
             large = {
                 ["plain"] = "muppet_label_text_large",
@@ -784,8 +913,8 @@ StyleData.MuppetStyles = {
                 ["bold_paddingSides"] = "muppet_label_text_large_bold_paddingSides",
                 ["bold_marginTL"] = "muppet_label_text_large_bold_marginTL",
                 ["bold_marginTL_paddingBR"] = "muppet_label_text_large_bold_marginTL_paddingBR",
-                ["bold_marginTL_paddingSides"] = "muppet_label_text_large_bold_marginTL_paddingSides"
-            }
+                ["bold_marginTL_paddingSides"] = "muppet_label_text_large_bold_marginTL_paddingSides",
+            },
         },
         heading = {
             small = {
@@ -806,7 +935,7 @@ StyleData.MuppetStyles = {
                 ["bold_paddingSides"] = "muppet_label_heading_small_bold_paddingSides",
                 ["bold_marginTL"] = "muppet_label_heading_small_bold_marginTL",
                 ["bold_marginTL_paddingBR"] = "muppet_label_heading_small_bold_marginTL_paddingBR",
-                ["bold_marginTL_paddingSides"] = "muppet_label_heading_small_bold_marginTL_paddingSides"
+                ["bold_marginTL_paddingSides"] = "muppet_label_heading_small_bold_marginTL_paddingSides",
             },
             medium = {
                 ["plain"] = "muppet_label_heading_medium",
@@ -826,7 +955,7 @@ StyleData.MuppetStyles = {
                 ["bold_paddingSides"] = "muppet_label_heading_medium_bold_paddingSides",
                 ["bold_marginTL"] = "muppet_label_heading_medium_bold_marginTL",
                 ["bold_marginTL_paddingBR"] = "muppet_label_heading_medium_bold_marginTL_paddingBR",
-                ["bold_marginTL_paddingSides"] = "muppet_label_heading_medium_bold_marginTL_paddingSides"
+                ["bold_marginTL_paddingSides"] = "muppet_label_heading_medium_bold_marginTL_paddingSides",
             },
             large = {
                 ["plain"] = "muppet_label_heading_large",
@@ -846,29 +975,38 @@ StyleData.MuppetStyles = {
                 ["bold_paddingSides"] = "muppet_label_heading_large_bold_paddingSides",
                 ["bold_marginTL"] = "muppet_label_heading_large_bold_marginTL",
                 ["bold_marginTL_paddingBR"] = "muppet_label_heading_large_bold_marginTL_paddingBR",
-                ["bold_marginTL_paddingSides"] = "muppet_label_heading_large_bold_marginTL_paddingSides"
-            }
-        }
+                ["bold_marginTL_paddingSides"] = "muppet_label_heading_large_bold_marginTL_paddingSides",
+            },
+        },
     },
     textbox = {
         ["plain"] = "muppet_textbox",
         ["paddingBR"] = "muppet_textbox_paddingBR",
         ["marginTL"] = "muppet_textbox_marginTL",
-        ["marginTL_paddingBR"] = "muppet_textbox_marginTL_paddingBR"
-    }
+        ["marginTL_paddingBR"] = "muppet_textbox_marginTL_paddingBR",
+    },
 }
 
 ---@class UtilityGuiStyle_MuppetFonts
 StyleData.MuppetFonts = {
-    muppet_small_1_1_0 = "muppet_small_1_1_0",
-    muppet_small_semibold_1_1_0 = "muppet_small_semibold_1_1_0",
-    muppet_small_bold_1_1_0 = "muppet_small_bold_1_1_0",
-    muppet_medium_1_1_0 = "muppet_medium_1_1_0",
-    muppet_medium_semibold_1_1_0 = "muppet_medium_semibold_1_1_0",
-    muppet_medium_bold_1_1_0 = "muppet_medium_bold_1_1_0",
-    muppet_large_1_1_0 = "muppet_large_1_1_0",
-    muppet_large_semibold_1_1_0 = "muppet_large_semibold_1_1_0",
-    muppet_large_bold_1_1_0 = "muppet_large_bold_1_1_0"
+    muppet_small = "muppet_small_1_1_0",
+    muppet_small_semibold = "muppet_small_semibold_1_1_0",
+    muppet_small_bold = "muppet_small_bold_1_1_0",
+    muppet_medium = "muppet_medium_1_1_0",
+    muppet_medium_semibold = "muppet_medium_semibold_1_1_0",
+    muppet_medium_bold = "muppet_medium_bold_1_1_0",
+    muppet_large = "muppet_large_1_1_0",
+    muppet_large_semibold = "muppet_large_semibold_1_1_0",
+    muppet_large_bold = "muppet_large_bold_1_1_0",
+    muppet_huge = "muppet_huge_1_1_0",
+    muppet_huge_semibold = "muppet_huge_semibold_1_1_0",
+    muppet_huge_bold = "muppet_huge_bold_1_1_0",
+    muppet_massive = "muppet_massive_1_1_0",
+    muppet_massive_semibold = "muppet_massive_semibold_1_1_0",
+    muppet_massive_bold = "muppet_massive_bold_1_1_0",
+    muppet_gigantic = "muppet_gigantic_1_1_0",
+    muppet_gigantic_semibold_ = "muppet_gigantic_semibold_1_1_0",
+    muppet_gigantic_bold = "muppet_gigantic_bold_1_1_0",
 }
 
 return StyleData

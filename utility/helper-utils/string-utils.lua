@@ -28,7 +28,7 @@ StringUtils.SplitStringOnCharactersToList = function(text, splitCharacters)
         phrase = string_match(phrase, "^()%s*$") and "" or string_match(phrase, "^%s*(.*%S)")
 
         if phrase ~= nil and phrase ~= "" then
-            table.insert(list, phrase)
+            list[#list + 1] = phrase
         end
     end
     return list
@@ -88,10 +88,18 @@ end
 ---@param requiredLength uint
 ---@return string paddedNumber
 StringUtils.PadNumberToMinimumDigits = function(number, requiredLength)
+	local negativeNumber
+    if number < 0 then
+        negativeNumber = true
+        number = 0 - number
+    end
     local numberString = tostring(number)
     local shortBy = requiredLength - string_len(numberString)
     for i = 1, shortBy do
         numberString = "0" .. numberString
+    end
+    if negativeNumber then
+        numberString = "-" .. numberString
     end
     return numberString
 end
@@ -116,8 +124,8 @@ end
 
 --- Display time in a string broken down to hour, minute and second. With the range of time units configurable.
 ---@param inputTicks int
----@param displayLargestTimeUnit 'auto'|'hour'|'minute'|'second'
----@param displaySmallestTimeUnit 'auto'|'hour'|'minute'|'second'
+---@param displayLargestTimeUnit "auto"|"hour"|"minute"|"second"
+---@param displaySmallestTimeUnit "auto"|"hour"|"minute"|"second"
 StringUtils.DisplayTimeOfTicks = function(inputTicks, displayLargestTimeUnit, displaySmallestTimeUnit)
     if inputTicks == nil then
         return ""

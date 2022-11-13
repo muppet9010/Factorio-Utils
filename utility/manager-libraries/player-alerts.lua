@@ -40,7 +40,7 @@ end
 
 --- Add a custom alert to all players on the specific force.
 ---@param force LuaForce
----@param alertId? UtilityPlayerAlerts_AlertId|nil # A globally unique Id that we will use to track duplicate requests for the same alert. If nil is provided a sequential number shall be affixed to "auto" as the Id.
+---@param alertId? UtilityPlayerAlerts_AlertId # A globally unique Id that we will use to track duplicate requests for the same alert. If nil is provided a sequential number shall be affixed to "auto" as the Id.
 ---@param alertEntity LuaEntity
 ---@param alertSignalId SignalID
 ---@param alertMessage LocalisedString
@@ -99,9 +99,7 @@ PlayerAlerts.RemoveCustomAlertFromForce = function(force, alertId)
     -- Remove the alert from all players.
     for _, player in pairs(force.players) do
         -- When the alerting entity becomes invalid the player alert will automatically vanish after a few seconds. So we can just skip removing it and just tidy up the state data as usual. Also no way to filter to just our alert without the entity being valid.
-        if player.valid then
-            PlayerAlerts._RemoveAlertFromPlayer(forceAlert, player)
-        end
+        PlayerAlerts._RemoveAlertFromPlayer(forceAlert, player)
     end
 
     -- Remove the alert from the force's global object.
@@ -138,12 +136,12 @@ PlayerAlerts._RemoveAlertFromPlayer = function(forceAlert, player)
         }
     else
         player.remove_alert {
-            prototype = forceAlert.alertPrototypeName --[[@as LuaEntityPrototype]] , -- Force typed work around for bug: https://forums.factorio.com/viewtopic.php?f=7&t=102860 -- TODO: this should be the prototype not the name now as per 1.1.62. Although name seems to still work (undocumented legacy reasons?) Need to test before updating to use the prototype though and check the prototype is still valid before use.
+            prototype = forceAlert.alertPrototypeName,
             position = forceAlert.alertPosition,
             surface = forceAlert.alertSurface,
             type = defines.alert_type.custom,
             icon = forceAlert.alertSignalId,
-            message = forceAlert.alertMessage
+            message = forceAlert.alertMessage,
         }
     end
 end
@@ -178,7 +176,7 @@ end
 
 --- Returns a force's alerts Factorio global table if it exists.
 ---@param forceIndex uint # the index of the LuaForce.
----@return table<uint, UtilityPlayerAlerts_ForceAlertObject>|nil forceAlerts # nil if no alerts for this force.
+---@return table<UtilityPlayerAlerts_AlertId, UtilityPlayerAlerts_ForceAlertObject>? forceAlerts # nil if no alerts for this force.
 PlayerAlerts._GetForceAlerts = function(forceIndex)
     if global.UTILITYPLAYERALERTS == nil or global.UTILITYPLAYERALERTS.forceAlertsByForce == nil then
         return nil
@@ -189,7 +187,7 @@ end
 
 --- Returns a force's specific alert from the Factorio global table if it exists.
 ---@param alertId UtilityPlayerAlerts_AlertId
----@return UtilityPlayerAlerts_ForceAlertObject|nil forceAlert
+---@return UtilityPlayerAlerts_ForceAlertObject? forceAlert
 PlayerAlerts._GetForceAlert = function(alertId)
     if global.UTILITYPLAYERALERTS == nil or global.UTILITYPLAYERALERTS.forceAlertsByAlert == nil then
         return nil
@@ -199,7 +197,7 @@ PlayerAlerts._GetForceAlert = function(alertId)
 end
 
 --- Called when a player joins a game.
----@param event on_player_joined_game
+---@param event EventData.on_player_joined_game
 PlayerAlerts._OnPlayerJoinedGame = function(event)
     local player = game.get_player(event.player_index)
     if player == nil then
@@ -220,7 +218,7 @@ PlayerAlerts._OnPlayerJoinedGame = function(event)
 end
 
 --- Called when a player changes forces either individually or when 2 forces are merged and this is called once for every player in the old force.
----@param event on_player_changed_force
+---@param event EventData.on_player_changed_force
 PlayerAlerts._OnPlayerChangedForce = function(event)
     local player = game.get_player(event.player_index)
     if player == nil then
@@ -247,7 +245,7 @@ PlayerAlerts._OnPlayerChangedForce = function(event)
 end
 
 --- Called when 2 forces are merging together. Is triggered before each player on the old force has PlayerAlerts._OnPlayerChangedForce() triggered.
----@param event on_forces_merging
+---@param event EventData.on_forces_merging
 PlayerAlerts._OnForcesMerging = function(event)
     local removedForce_index, mergedForce, mergedForce_index = event.source.index, event.destination, event.destination.index
 

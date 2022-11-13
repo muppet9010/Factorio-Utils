@@ -1,4 +1,4 @@
---- Logging functions.
+--- Logging and debugging functions.
 --- Requires the utility "constants" file to be populated within the root of the mod.
 
 local LoggingUtils = {} ---@class Utility_LoggingUtils
@@ -33,7 +33,7 @@ end
 --- For use in direct error handling.
 --- If in data stage can't print to screen. Also when in game during tick 0 can't print to screen. Either use the EventScheduler.GamePrint to do this or handle it another way at usage time.
 ---@param text string
----@param recordToModLog? boolean|nil # Defaults to false. Normally only used to avoid duplicating function calling of LoggingUtils.ModLog().
+---@param recordToModLog? boolean # Defaults to false. Normally only used to avoid duplicating function calling of LoggingUtils.ModLog().
 LoggingUtils.LogPrintError = function(text, recordToModLog)
     if game ~= nil then
         game.print(tostring(text), Colors.errorMessage)
@@ -48,7 +48,7 @@ end
 --- For use in direct error handling.
 --- If in data stage can't print to screen. Also when in game during tick 0 can't print to screen. Either use the EventScheduler.GamePrint to do this or handle it another way at usage time.
 ---@param text string
----@param recordToModLog? boolean|nil # Defaults to false. Normally only used to avoid duplicating function calling of LoggingUtils.ModLog().
+---@param recordToModLog? boolean # Defaults to false. Normally only used to avoid duplicating function calling of LoggingUtils.ModLog().
 LoggingUtils.LogPrintWarning = function(text, recordToModLog)
     if game ~= nil then
         game.print(tostring(text), Colors.warningMessage)
@@ -63,15 +63,19 @@ end
 --- For use in bespoke situations (and pre LogPrintError).
 --- If in data stage can't print to screen. Also when in game during tick 0 can't print to screen. Either use the EventScheduler.GamePrint to do this or handle it another way at usage time.
 ---@param text string
----@param enabled? boolean|nil # Defaults to True. Allows code to not require lots of `if` in calling functions.
----@param textColor? Color|nil # Defaults to Factorio white.
----@param recordToModLog? boolean|nil # Defaults to false. Normally only used to avoid duplicating function calling of LoggingUtils.ModLog().
+---@param enabled? boolean # Defaults to True. Allows code to not require lots of `if` in calling functions.
+---@param textColor? Color # Defaults to Factorio white.
+---@param recordToModLog? boolean # Defaults to false. Normally only used to avoid duplicating function calling of LoggingUtils.ModLog().
 LoggingUtils.LogPrint = function(text, enabled, textColor, recordToModLog)
     if enabled ~= nil and not enabled then
         return
     end
     if game ~= nil then
-        game.print(tostring(text), textColor)
+        if textColor == nil then
+            game.print(tostring(text))
+        else
+            game.print(tostring(text), textColor)
+        end
     end
     log(tostring(text))
     if recordToModLog then
@@ -84,7 +88,7 @@ end
 --- If in data stage can't write to mod's custom log file.
 ---@param text string
 ---@param writeToScreen boolean
----@param enabled? boolean|nil # Defaults to True.
+---@param enabled? boolean # Defaults to True.
 LoggingUtils.ModLog = function(text, writeToScreen, enabled)
     if enabled ~= nil and not enabled then
         return
@@ -114,38 +118,25 @@ LoggingUtils._RecordToModsLog = function(text)
     game.write_file(Constants.LogFileName, tostring(text) .. "\r\n", true)
 end
 
--- Runs the function in a wrapper that will log detailed information should an error occur. Is used to provide a debug release of a mod with enhanced error logging. Will slow down real world usage and so shouldn't be used for general releases.
--- CODE NOTE: JustARandomGeek doesn't believe that the ".instrument" check is needed for the control hook and the presence of the __DebugAdapter variable is enough. Check if this function is used ever again.
+--- Runs the function in a wrapper that will log detailed information should an error occur. Will be slower than straight code running, so should be used with consideration and not just to avoid testing code.
+--- Doesn't support returning values to caller as can't do this for unknown argument count.
+--- Only produces correct stack traces in regular Factorio, not in debugger as this adds extra lines to the stacktrace.
 ---@param functionRef function,
 ---@param ... any
+---@return string? errorMessage # An error message string if an error occurred.
+---@return string? fullErrorDetails # The full error, stacktrace and arguments as a text string for writing to a file. Only populated if an error occurred.
 LoggingUtils.RunFunctionAndCatchErrors = function(functionRef, ...)
-    -- Doesn't support returning values to caller as can't do this for unknown argument count.
-    -- Uses a random number in file name to try and avoid overlapping errors in real game. If save is reloaded and nothing different done by player will be the same result however.
-
-    -- If the debug adapter with instrument mode (control hook) is active just run the function and end as no need to log to file anything. As the logging write out is slow in debugger. Just runs the function normally and return any results.
-    if __DebugAdapter ~= nil and __DebugAdapter.instrument then
-        functionRef(...)
-        return
-    end
-
     local args = { ... } ---@type any[]
 
-    -- Is in debug mode so catch any errors and log state data.
-    -- Only produces correct stack traces in regular Factorio, not in debugger as this adds extra lines to the stacktrace.
     ---@type boolean, UtilityLogging_RunFunctionAndCatchErrors_ErrorObject
     local success, errorObject = xpcall(functionRef, LoggingUtils._RunFunctionAndCatchErrors_ErrorHandlerFunction, ...)
     if success then
         return
     else
-        local logFileName = Constants.ModName .. " - error details - " .. tostring(math.random() .. ".log")
-        local contents = ""
-        local AddLineToContents = function(text)
-            contents = contents .. text .. "\r\n"
-        end
-        AddLineToContents("Error: " .. errorObject.message)
+        local fullErrorDetails = "Error: " .. errorObject.message
 
         -- Tidy the stacktrace up by removing the indented (\9) lines that relate to this xpcall function. Makes the stack trace read more naturally ignoring this function.
-        local newStackTrace, lineCount = "stacktrace:\n", 1
+        local newStackTrace, lineCount = "\r\nstacktrace:\r\n", 1
         local rawxpcallLine
         for line in string.gmatch(errorObject.stacktrace, "(\9[^\n]+)\n") do
             local skipLine = false
@@ -160,26 +151,30 @@ LoggingUtils.RunFunctionAndCatchErrors = function(functionRef, ...)
                 skipLine = true
             end
             if not skipLine then
-                newStackTrace = newStackTrace .. line .. "\n"
+                newStackTrace = newStackTrace .. line .. "\r\n"
             end
             lineCount = lineCount + 1
         end
-        AddLineToContents(newStackTrace)
+        fullErrorDetails = fullErrorDetails .. newStackTrace .. "\r\n"
 
-        AddLineToContents("")
-        AddLineToContents("Function call arguments:")
-        for index, arg in pairs(args) do
-            AddLineToContents(TableUtils.TableContentsToJSON(LoggingUtils.PrintThingsDetails(arg), "argument number: " .. tostring(index)))
+        fullErrorDetails = fullErrorDetails .. "\r\n"
+
+        fullErrorDetails = fullErrorDetails .. "Function call arguments:" .. "\r\n"
+        if #args > 0 then
+            for index, arg in pairs(args) do
+                fullErrorDetails = fullErrorDetails .. TableUtils.TableContentsToJSON(LoggingUtils.PrintThingsDetails(arg), "argument number: " .. tostring(index)) .. "\r\n"
+            end
+        else
+            fullErrorDetails = fullErrorDetails .. "no arguments provided to function" .. "\r\n"
         end
 
-        game.write_file(logFileName, contents, false) -- Wipe file if it exists from before.
-        error('Debug release: see log file in Factorio Data\'s "script-output" folder.\n' .. errorObject.message .. "\n" .. newStackTrace, 0)
+        return errorObject.message, fullErrorDetails
     end
 end
 
 -- Used to make a text object of something's attributes that can be stringified. Supports LuaObjects with handling for specific ones.
 ---@param thing any # can be a simple data type, table, or LuaObject.
----@param _tablesLogged? table<any, string>|nil # don't pass in, only used internally when self referencing the function for looping.
+---@param _tablesLogged? table<any, string> # don't pass in, only used internally when self referencing the function for looping.
 ---@return table
 LoggingUtils.PrintThingsDetails = function(thing, _tablesLogged)
     _tablesLogged = _tablesLogged or {} -- Internal variable passed when self referencing to avoid loops.
@@ -190,14 +185,14 @@ LoggingUtils.PrintThingsDetails = function(thing, _tablesLogged)
     end ---@cast thing table
 
     -- Handle specific Factorio Lua objects
-    local thing_objectName = thing.object_name --[[@as string|nil]]
+    local thing_objectName = thing.object_name --[[@as string?]]
     if thing_objectName ~= nil then
         ---@cast thing LuaObject
         -- Invalid things are returned in safe way.
         if not thing.valid then
             return {
                 object_name = thing_objectName,
-                valid = thing.valid
+                valid = false
             }
         end
 
@@ -206,7 +201,7 @@ LoggingUtils.PrintThingsDetails = function(thing, _tablesLogged)
             local thing_type = thing.type
             local entityDetails = {
                 object_name = thing_objectName,
-                valid = thing.valid,
+                valid = true,
                 type = thing_type,
                 name = thing.name,
                 unit_number = thing.unit_number,
@@ -232,7 +227,7 @@ LoggingUtils.PrintThingsDetails = function(thing, _tablesLogged)
             end
             return {
                 object_name = thing_objectName,
-                valid = thing.valid,
+                valid = true,
                 id = thing.id,
                 state = thing.state,
                 schedule = thing.schedule,
@@ -247,7 +242,7 @@ LoggingUtils.PrintThingsDetails = function(thing, _tablesLogged)
             -- Other Lua object.
             return {
                 object_name = thing_objectName,
-                valid = thing.valid
+                valid = true
             }
         end
     end
@@ -294,6 +289,54 @@ end
 LoggingUtils.WriteOutNumberedMarkerForSurfacePositionString = function(targetSurfacePositionString)
     local tempSurfaceId, tempPos = StringUtils.SurfacePositionStringToSurfaceAndPosition(targetSurfacePositionString)
     LoggingUtils.WriteOutNumberedMarker(tempSurfaceId, tempPos)
+end
+
+--- Draw a path with options to label the 2 ends.
+---@param path PathfinderWaypoint[]
+---@param surface LuaSurface
+---@param lineColor Color
+---@param startLabel? string
+---@param endLabel? string
+---@return uint64[] renderIds
+LoggingUtils.DrawPath = function(path, surface, lineColor, startLabel, endLabel)
+    local renderIds = {} ---@type uint64[]
+    local lastPoint ---@type MapPosition?
+    if startLabel ~= nil then
+        renderIds[#renderIds + 1] = rendering.draw_text {
+            text = startLabel,
+            surface = surface,
+            target = path[1].position,
+            color = lineColor,
+            scale_with_zoom = true,
+            alignment = "center",
+            vertical_alignment = "middle"
+        }
+    end
+    for _, waypoint in pairs(path) do
+        if lastPoint ~= nil then
+            renderIds[#renderIds + 1] = rendering.draw_line({
+                color = lineColor,
+                width = 4.0,
+                from = lastPoint,
+                to = waypoint.position,
+                surface = surface,
+                scale_with_zoom = true,
+            })
+        end
+        lastPoint = waypoint.position
+    end
+    if endLabel ~= nil then
+        renderIds[#renderIds + 1] = rendering.draw_text {
+            text = endLabel,
+            surface = surface,
+            target = path[#path].position,
+            color = lineColor,
+            scale_with_zoom = true,
+            alignment = "center",
+            vertical_alignment = "middle"
+        }
+    end
+    return renderIds
 end
 
 ----------------------------------------------------------------------------------

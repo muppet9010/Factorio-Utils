@@ -11,10 +11,10 @@ local PlayerWeapon = {} ---@class Utility_PlayerWeapon
 
 ---@class UtilityPlayerWeapon_RemovedWeaponToEnsureWeapon
 ---@field gunInventoryIndex uint # The index in the gun and ammo inventory where the weapon was removed.
----@field weaponItemName? string|nil # Nil if no weapon was in the slot.
----@field weaponFilterName? string|nil # Nil if no weapon filter was set on the slot.
----@field ammoItemName? string|nil # Nil if no ammo was in the slot.
----@field ammoFilterName? string|nil # Nil if no ammo filter was set on the slot.
+---@field weaponItemName? string # Nil if no weapon was in the slot.
+---@field weaponFilterName? string # Nil if no weapon filter was set on the slot.
+---@field ammoItemName? string # Nil if no ammo was in the slot.
+---@field ammoFilterName? string # Nil if no ammo filter was set on the slot.
 ---@field beforeSelectedWeaponGunIndex uint # The weapon slot that the player had selected before the weapon was removed.
 
 --- Ensure the player has the specified weapon, clearing any weapon filters if needed. Includes options to ensure compatibility with a specific ammo type, otherwise will ensure the ammo slot setup allows the gun to be placed even if the ammo filter is incompatible.
@@ -22,21 +22,17 @@ local PlayerWeapon = {} ---@class Utility_PlayerWeapon
 ---@param weaponName string
 ---@param forceWeaponToWeaponInventorySlot boolean # If the weapon should be forced to be equipped, otherwise it may end up in their inventory.
 ---@param selectWeapon boolean
----@param ammoTypePlanned? string|nil # The name of the ammo planned to be put in this weapon. Handles removing the ammo from the weapon slot and any filters if needed. Doesn't actually give any ammo.
----@return boolean|nil weaponGiven # If the weapon item had to be given to the player, compared to them already having it and it possibly just being moved between their inventories. Returns nil for invalid situations, i.e. called on a player with no gun inventory.
----@return UtilityPlayerWeapon_RemovedWeaponToEnsureWeapon|nil removedWeaponDetails # Details on the weapon that was removed to add the new weapon. Is nil if no active weapon was set/found, i.e. weapon was found/put in to the players main inventory and not as an equipped weapon.
+---@param ammoTypePlanned? string # The name of the ammo planned to be put in this weapon. Handles removing the ammo from the weapon slot and any filters if needed. Doesn't actually give any ammo.
+---@return boolean? weaponGiven # If the weapon item had to be given to the player, compared to them already having it and it possibly just being moved between their inventories. Returns nil for invalid situations, i.e. called on a player with no gun inventory.
+---@return UtilityPlayerWeapon_RemovedWeaponToEnsureWeapon? removedWeaponDetails # Details on the weapon that was removed to add the new weapon. Is nil if no active weapon was set/found, i.e. weapon was found/put in to the players main inventory and not as an equipped weapon.
 PlayerWeapon.EnsureHasWeapon = function(player, weaponName, forceWeaponToWeaponInventorySlot, selectWeapon, ammoTypePlanned)
-    if player == nil or not player.valid then
-        return nil, nil
-    end
-
     ---@type UtilityPlayerWeapon_RemovedWeaponToEnsureWeapon
     local removedWeaponDetails = {
         beforeSelectedWeaponGunIndex = player.character.selected_gun_index
     }
 
     -- See if the gun is already equipped by the player in their active gun inventory, or find which of their weapon slots is best to assign too.
-    ---@type boolean, uint|nil, uint|nil, uint|nil
+    ---@type boolean, uint?, uint?, uint?
     local weaponGiven, weaponFoundIndex, freeGunIndex, freeButFilteredGunIndex = false, nil, nil, nil
     local gunInventory = player.get_inventory(defines.inventory.character_guns)
     if gunInventory == nil then
@@ -66,7 +62,7 @@ PlayerWeapon.EnsureHasWeapon = function(player, weaponName, forceWeaponToWeaponI
 
     -- Handle if the player doesn't already have the gun equipped.
     local needsGunGiving = false
-    local characterInventory ---@type LuaInventory|nil # Only populated if needsGunGiving is true.
+    local characterInventory ---@type LuaInventory? # Only populated if needsGunGiving is true.
     if weaponFoundIndex == nil then
         needsGunGiving = true
         characterInventory = player.get_main_inventory()
@@ -103,7 +99,7 @@ PlayerWeapon.EnsureHasWeapon = function(player, weaponName, forceWeaponToWeaponI
                     removedWeaponDetails.weaponItemName = currentName
                 end
                 removedWeaponDetails.weaponFilterName = gunInventory.get_filter(weaponFoundIndex)
-                gunInventory.set_filter(weaponFoundIndex, nil) ---@diagnostic disable-line:param-type-mismatch -- Mistake in API Docs, bugged: https://forums.factorio.com/viewtopic.php?f=7&t=102859
+                gunInventory.set_filter(weaponFoundIndex, nil)
                 gunItemStack.clear()
             else
                 -- As we won't force the weapon it should go in to the characters inventory if they don't already have one.
@@ -152,7 +148,7 @@ PlayerWeapon.EnsureHasWeapon = function(player, weaponName, forceWeaponToWeaponI
         local currentAmmoFilterName = ammoInventory.get_filter(weaponFoundIndex)
         if currentAmmoFilterName ~= nil and currentAmmoFilterName ~= ammoTypePlanned then
             removedWeaponDetails.ammoFilterName = currentAmmoFilterName
-            ammoInventory.set_filter(weaponFoundIndex, nil) ---@diagnostic disable-line:param-type-mismatch  -- Mistake in API Docs, bugged: https://forums.factorio.com/viewtopic.php?f=7&t=102859
+            ammoInventory.set_filter(weaponFoundIndex, nil)
         end
     else
         -- No expected ammo type so we just need to remove any incompatible ammo, any filter can stay.
@@ -160,7 +156,7 @@ PlayerWeapon.EnsureHasWeapon = function(player, weaponName, forceWeaponToWeaponI
             -- Ammo in the slot so need to check its compatible with the gun.
 
             -- Clear the current ammo stack ready for the the planned ammo if not compatible with the gun.
-            local ammoType = ammoItemStack.prototype.get_ammo_type("player") ---@cast ammoType -nil
+            local ammoType = ammoItemStack.prototype.get_ammo_type("player") ---@cast ammoType - nil
             local ammoIsCompatibleWithGun = PlayerWeapon.IsAmmoCompatibleWithWeapon(ammoType, game.item_prototypes[weaponName])
             if not ammoIsCompatibleWithGun then
                 -- Move it to the players inventory, or the floor.
@@ -259,7 +255,7 @@ PlayerWeapon.TakeItemFromPlayerOrGround = function(player, itemName, itemCount)
 
     local itemsOnGround = player.surface.find_entities_filtered { position = player.position, radius = 10, name = "item-on-ground" }
     for _, itemOnGround in pairs(itemsOnGround) do
-        if itemOnGround.valid and itemOnGround.stack ~= nil and itemOnGround.stack.valid and itemOnGround.stack.name == itemName then
+        if itemOnGround.stack ~= nil and itemOnGround.stack.name == itemName then
             itemOnGround.destroy()
             removed = removed + 1
             itemCount = itemCount - 1
@@ -278,14 +274,18 @@ end
 ---@param weaponItemPrototype LuaItemPrototype
 ---@return boolean compatible
 PlayerWeapon.IsAmmoCompatibleWithWeapon = function(ammoType, weaponItemPrototype)
-    local currentAmmoType_category = ammoType.category
-    local newWeaponType_categories = weaponItemPrototype.attack_parameters.ammo_categories
+    local weapon_attackParameters = weaponItemPrototype.attack_parameters ---@cast weapon_attackParameters - nil # Is mandatory for `gun` type items. This will error if a non `gun` weaponItemPrototype is passed in, but that should be validated outside of this.
 
-    for _, newWeaponType_category in pairs(newWeaponType_categories) do
-        if currentAmmoType_category == newWeaponType_category then
-            return true
-        end
+    -- If the weapon has an ammo_type specified then it doesn't take any external ammo type, but generates its own attack effect. So the ammo is never the right type for this weapon. It may still have a category specified, but this doesn't really matter.
+    if weapon_attackParameters.ammo_type ~= nil then return false end
+
+    -- There is a weapon list so check if the specific ammo category is in the weapon's category list.
+    local currentAmmoType_category = ammoType.category
+    local weapon_categories = weapon_attackParameters.ammo_categories ---@cast weapon_categories - nil # If there's no ammo_type on the weapon prototype it must have categories.
+    for _, weapon_category in pairs(weapon_categories) do
+        if currentAmmoType_category == weapon_category then return true end
     end
+
     return false
 end
 
@@ -298,20 +298,18 @@ end
 ---@return float maxRange
 ---@return float cooldown
 PlayerWeapon.GetWeaponAmmoDetails = function(ammoType, weaponItemPrototype)
-    local weapon_attackParameters = weaponItemPrototype.attack_parameters --[[@as AttackParameters # Assume only sane ItemPrototypes are passed in.]]
+    local weapon_attackParameters = weaponItemPrototype.attack_parameters --[[@as AttackParameters # Is mandatory for `gun` type items. This will error if a non `gun` weaponItemPrototype is passed in, but that should be validated outside of this.]]
 
     local minRange = weapon_attackParameters.min_range
 
     local maxRange = weapon_attackParameters.range
-    -- CODE NOTE: the range_modifier isn't exposed via the API at present. Code written for if/when it is included, requested here: https://forums.factorio.com/viewtopic.php?f=28&t=103012
-    local ammoRangeModifier = ammoType.range_modifier ---@diagnostic disable-line: undefined-field, no-unknown
+    local ammoRangeModifier = ammoType.range_modifier
     if ammoRangeModifier ~= nil then
         maxRange = maxRange * ammoRangeModifier
     end
 
     local cooldown = weapon_attackParameters.cooldown
-    -- CODE NOTE: the cooldown_modifier isn't exposed via the API at present. Code written for if/when it is included, requested here: https://forums.factorio.com/viewtopic.php?f=28&t=103012
-    local cooldownModifier = ammoType.cooldown_modifier ---@diagnostic disable-line: undefined-field, no-unknown
+    local cooldownModifier = ammoType.cooldown_modifier
     if cooldownModifier ~= nil then
         cooldown = cooldown * cooldownModifier
     end

@@ -11,7 +11,7 @@ MOD.guiCheckedActions = MOD.guiCheckedActions or {} ---@type table<string, funct
 ---@field actionName string # The action name registered to this GUI element being checked.
 ---@field playerIndex uint # The player_index of the player who checked the GUI.
 ---@field data any # The data argument passed in when registering this function action name.
----@field eventData on_gui_checked_state_changed # The raw Factorio event data for the on_gui_checked_state_changed event.
+---@field eventData EventData.on_gui_checked_state_changed # The raw Factorio event data for the on_gui_checked_state_changed event.
 
 --------------------------------------------------------------------------------------------
 --                                    Public Functions
@@ -40,8 +40,8 @@ end
 ---@param elementName string # The name of the element. Must be unique within mod once elementName and elementType arguments are combined together.
 ---@param elementType string # The type of the element. Must be unique within mod once elementName and elementType arguments are combined together.
 ---@param actionName string # The actionName of the registered function to be called when the GUI element is checked.
----@param data? any|nil # Any provided data will be passed through to the actionName's registered function upon the GUI element being checked.
----@param disabled? boolean|nil # If TRUE then checked not registered (for use with GUI templating). Otherwise FALSE or nil will registered normally.
+---@param data? any # Any provided data will be passed through to the actionName's registered function upon the GUI element being checked.
+---@param disabled? boolean # If TRUE then checked not registered (for use with GUI templating). Otherwise FALSE or nil will registered normally.
 GuiActionsChecked.RegisterGuiForCheckedStateChange = function(elementName, elementType, actionName, data, disabled)
     if elementName == nil or elementType == nil or actionName == nil then
         error("GuiActions.RegisterGuiForCheckedStateChange called with missing arguments")
@@ -76,7 +76,7 @@ end
 --------------------------------------------------------------------------------------------
 
 --- Called when each on_gui_checked_state_changed event occurs and identifies any registered actionName functions to trigger.
----@param rawFactorioEventData on_gui_checked_state_changed
+---@param rawFactorioEventData EventData.on_gui_checked_state_changed
 GuiActionsChecked._HandleGuiCheckedAction = function(rawFactorioEventData)
     if global.UTILITYGUIACTIONSGUICHECKED == nil then
         return
@@ -103,11 +103,7 @@ end
 ---@param elementType string
 ---@return UtilityGuiActionsChecked_GuiElementName guiElementName
 GuiActionsChecked._GenerateGuiElementName = function(elementName, elementType)
-    if elementName == nil or elementType == nil then
-        return nil
-    else
-        return Constants.ModName .. "-" .. elementName .. "-" .. elementType
-    end
+    return Constants.ModName .. "-" .. elementName .. "-" .. elementType
 end
 
 ---@alias UtilityGuiActionsChecked_GuiElementName string # A single unique string made by combining an elements name and type with mod name.

@@ -103,8 +103,8 @@ end
 --- Returns the passed in number clamped to within the range of an int, with optional additional min and max's applied.
 --- Use Int over Integer as this is the Factorio data type and Lua 5.2 doesn't have real `integer` types. Although Sumneko does have some numeric values of the Integer type to aid usage limitations detection.
 ---@param value int
----@param min? int|nil
----@param max? int|nil
+---@param min? int
+---@param max? int
 ---@return int
 ---@return boolean valueWasOutsideRange
 MathUtils.ClampToInt = function(value, min, max)
@@ -121,8 +121,8 @@ end
 --- Returns the passed in number clamped to within the range of an int8, with optional additional min and max's applied.
 --- Use Int over Integer as this is the Factorio data type and Lua 5.2 doesn't have real `integer` types. Although Sumneko does have some numeric values of the Integer type to aid usage limitations detection.
 ---@param value int
----@param min? int|nil
----@param max? int|nil
+---@param min? int
+---@param max? int
 ---@return int8
 ---@return boolean valueWasOutsideRange
 MathUtils.ClampToInt8 = function(value, min, max)
@@ -138,8 +138,8 @@ end
 
 --- Returns the passed in number clamped to within the range of an uint (min 0), with optional additional min and max's applied.
 ---@param value int
----@param min? uint|nil
----@param max? uint|nil
+---@param min? uint
+---@param max? uint
 ---@return uint clampedValue
 ---@return boolean valueWasOutsideRange
 MathUtils.ClampToUInt = function(value, min, max)
@@ -155,8 +155,8 @@ end
 
 --- Returns the passed in number clamped to within the range of an uint 64 (min 0), with optional additional min and max's applied.
 ---@param value int
----@param min? uint64|nil
----@param max? uint64|nil
+---@param min? uint64
+---@param max? uint64
 ---@return uint64 clampedValue
 ---@return boolean valueWasOutsideRange
 MathUtils.ClampToUInt64 = function(value, min, max)
@@ -172,8 +172,8 @@ end
 
 --- Returns the passed in number clamped to within the range of an uint 16 (min 0), with optional additional min and max's applied.
 ---@param value int
----@param min? uint16|nil
----@param max? uint16|nil
+---@param min? uint16
+---@param max? uint16
 ---@return uint16 clampedValue
 ---@return boolean valueWasOutsideRange
 MathUtils.ClampToUInt16 = function(value, min, max)
@@ -189,8 +189,8 @@ end
 
 --- Returns the passed in number clamped to within the range of an uint 8 (min 0), with optional additional min and max's applied.
 ---@param value int
----@param min? uint8|nil
----@param max? uint8|nil
+---@param min? uint8
+---@param max? uint8
 ---@return uint8 clampedValue
 ---@return boolean valueWasOutsideRange
 MathUtils.ClampToUInt8 = function(value, min, max)
@@ -206,8 +206,8 @@ end
 
 --- Returns the passed in number clamped to within the range of a float, with optional additional min and max's applied.
 ---@param value double
----@param min? float|nil
----@param max? float|nil
+---@param min? float
+---@param max? float
 ---@return float clampedValue
 ---@return boolean valueWasOutsideRange
 MathUtils.ClampToFloat = function(value, min, max)
@@ -223,7 +223,7 @@ end
 
 --- This doesn't guarantee correct on some of the edge cases, but is as close as possible assuming that 1/256 is the variance for the same number (Bilka, Dev on Discord)
 ---@param value1 double
----@param logic '='|'!='|'<'|'<='|'>'|'>='
+---@param logic "="|"!="|"<"|"<="|">"|">="
 ---@param value2 double
 ---@return boolean
 MathUtils.FuzzyCompareDoubles = function(value1, logic, value2)

@@ -40,7 +40,7 @@ end
 
 -- Returns the table as an x|y table rather than an [1]|[2] table.
 ---@param thing table
----@return MapPosition|nil position? # x,y keyed table or nil if not a valid MapPosition.
+---@return MapPosition? position # x,y keyed table or nil if not a valid MapPosition.
 PositionUtils.TableToProperPosition = function(thing)
     if thing.x ~= nil and thing.y ~= nil then
         if type(thing.x) == "number" and type(thing.y) == "number" then
@@ -81,7 +81,7 @@ end
 
 -- Returns a clean bounding box object or nil if invalid.
 ---@param thing table
----@return BoundingBox|nil
+---@return BoundingBox?
 PositionUtils.TableToProperBoundingBox = function(thing)
     if not PositionUtils.IsTableValidBoundingBox(thing) then
         return nil
@@ -96,7 +96,7 @@ end
 ---@param centerPos MapPosition
 ---@param boundingBox BoundingBox
 ---@param orientation RealOrientation
----@return BoundingBox|nil
+---@return BoundingBox?
 PositionUtils.ApplyBoundingBoxToPosition = function(centerPos, boundingBox, orientation)
     local checked_centerPos = PositionUtils.TableToProperPosition(centerPos)
     if checked_centerPos == nil then
@@ -134,6 +134,7 @@ PositionUtils.ApplyBoundingBoxToPosition = function(centerPos, boundingBox, orie
     end
 end
 
+--- Round a number to set a set number of decimal places. This rounds rather than always floor/ceiling.
 ---@param pos MapPosition
 ---@param numberOfDecimalPlaces uint
 ---@return MapPosition
@@ -141,12 +142,18 @@ PositionUtils.RoundPosition = function(pos, numberOfDecimalPlaces)
     return { x = MathUtils.RoundNumberToDecimalPlaces(pos.x, numberOfDecimalPlaces), y = MathUtils.RoundNumberToDecimalPlaces(pos.y, numberOfDecimalPlaces) }
 end
 
+--- Gets the Chunk Position for a Map Position.
+---
+--- If called frequently should be done inline to avoid excessive function calls.
 ---@param pos MapPosition
 ---@return ChunkPosition
 PositionUtils.GetChunkPositionForTilePosition = function(pos)
     return { x = math_floor(pos.x / 32), y = math_floor(pos.y / 32) }
 end
 
+--- Gets the top left Map Position for a Chunk Position.
+---
+--- If called frequently should be done inline to avoid excessive function calls.
 ---@param chunkPos ChunkPosition
 ---@return MapPosition
 PositionUtils.GetLeftTopTilePositionForChunkPosition = function(chunkPos)
@@ -309,14 +316,13 @@ PositionUtils.GrowBoundingBox = function(boundingBox, growthX, growthY)
     }
 end
 
---- Checks if a bounding box is populated with valid data.
+--- Checks if a bounding box is populated with valid data. This means not nil or a 0 sized area in one or more dimensions.
 ---@param boundingBox BoundingBox
 ---@return boolean
 PositionUtils.IsBoundingBoxPopulated = function(boundingBox)
     if boundingBox == nil then
         return false
-    end
-    if boundingBox.left_top.x ~= 0 and boundingBox.left_top.y ~= 0 and boundingBox.right_bottom.x ~= 0 and boundingBox.right_bottom.y ~= 0 then
+    elseif boundingBox.right_bottom.x - boundingBox.left_top.x ~= 0 and boundingBox.right_bottom.y - boundingBox.left_top.y ~= 0 then
         return true
     else
         return false
@@ -344,21 +350,22 @@ end
 ---@param positionedBoundingBox BoundingBox
 ---@return MapPosition[]
 PositionUtils.CalculateTilesUnderPositionedBoundingBox = function(positionedBoundingBox)
-    local tiles = {}
+    local tiles = {} ---@type MapPosition[]
     for x = positionedBoundingBox.left_top.x, positionedBoundingBox.right_bottom.x do
         for y = positionedBoundingBox.left_top.y, positionedBoundingBox.right_bottom.y do
-            table.insert(tiles, { x = math_floor(x), y = math_floor(y) })
+            tiles[#tiles + 1] = { x = math_floor(x), y = math_floor(y) }
         end
     end
     return tiles
 end
 
 -- Gets the distance between the 2 positions.
----@param pos1 MapPosition
----@param pos2 MapPosition
+---@param pos1 MapPosition|ChunkPosition
+---@param pos2 MapPosition|ChunkPosition
 ---@return double # is inherently a positive number.
 PositionUtils.GetDistance = function(pos1, pos2)
-    return (((pos1.x - pos2.x) ^ 2) + ((pos1.y - pos2.y) ^ 2)) ^ 0.5
+    local distanceX, distanceY = (pos1.x - pos2.x), (pos1.y - pos2.y)
+    return ((distanceX * distanceX) + (distanceY * distanceY)) ^ 0.5
 end
 
 ---@alias Axis "'x'"|"'y'"
@@ -372,6 +379,36 @@ PositionUtils.GetDistanceSingleAxis = function(pos1, pos2, axis)
     return math_abs(pos1[axis] - pos2[axis])
 end
 
+--- Gets the nearest thing in a list based on the distance to its position, defined by its positionFieldName. Selects the first one found if multiple are of equal distance.
+---
+--- It's significantly quicker (x5-10) to use LuaSurface.get_closest() if you can (requires entities to be valid), over feeding this with existing objects with positional data.
+---@param startPosition MapPosition|ChunkPosition
+---@param list table<any,table>
+---@param positionFieldName string # The field name in each entry in the `list` table that has the position.
+---@param acceptFirstRange? double # A value that will mean the first thing found within this range is returned. For use when you'll accept anything near, otherwise want the true nearest thing beyond that.
+---@return table nearestThing
+---@return any nearestThingsKeyInList
+PositionUtils.GetNearest = function(startPosition, list, positionFieldName, acceptFirstRange)
+    ---@type any, double, double, double, MapPosition
+    local nearestThingsKey, distance, distanceX, distanceY, thing_position
+    local nearestDistance = MathUtils.doubleMax
+    local start_x, start_y = startPosition.x, startPosition.y
+    acceptFirstRange = acceptFirstRange or MathUtils.doubleMax -- Use a massive number as default so that FOR loop logic can be simpler.
+    for key, thing in pairs(list) do
+        thing_position = thing[positionFieldName] --[[@as MapPosition]]
+        distanceX, distanceY = (start_x - thing_position.x), (start_y - thing_position.y)
+        distance = ((distanceX * distanceX) + (distanceY * distanceY)) ^ 0.5
+        if distance < nearestDistance then
+            nearestThingsKey = key
+            nearestDistance = distance
+            if distance < acceptFirstRange then
+                break
+            end
+        end
+    end
+    return list[nearestThingsKey], nearestThingsKey
+end
+
 -- Returns the offset for the first position in relation to the second position.
 ---@param newPosition MapPosition
 ---@param basePosition MapPosition
@@ -382,7 +419,7 @@ end
 
 ---@param position MapPosition
 ---@param boundingBox BoundingBox
----@param safeTiling? boolean|nil # If enabled the BoundingBox can be tiled without risk of an entity on the border being in 2 result sets, i.e. for use on each chunk.
+---@param safeTiling? boolean # If enabled the BoundingBox can be tiled without risk of an entity on the border being in 2 result sets, i.e. for use on each chunk.
 ---@return boolean
 PositionUtils.IsPositionInBoundingBox = function(position, boundingBox, safeTiling)
     if safeTiling == nil or not safeTiling then
@@ -403,7 +440,7 @@ end
 --- Get a random location within a radius (circle) of a target.
 ---@param centerPos MapPosition
 ---@param maxRadius double
----@param minRadius? double|nil # Defaults to 0.
+---@param minRadius? double # Defaults to 0.
 ---@return MapPosition
 PositionUtils.RandomLocationInRadius = function(centerPos, maxRadius, minRadius)
     local angle = math_random(0, 360)
@@ -467,8 +504,8 @@ end
 ---@param radius double
 ---@param slope double # the x value per 1 Y. so 1 is a 45 degree SW to NE line. 2 is a steeper line. -1 would be a 45 degree line SE to NW line. -- I THINK...
 ---@param yIntercept double # Where on the Y axis the line crosses.
----@return MapPosition|nil firstCrossingPosition # Position if the line crossed or touched the edge of the circle. Nil if the line never crosses the circle.
----@return MapPosition|nil secondCrossingPosition # Only a position if the line crossed the circle in 2 places. Nil if the line just touched the edge of the circle or never crossed it.
+---@return MapPosition? firstCrossingPosition # Position if the line crossed or touched the edge of the circle. Nil if the line never crosses the circle.
+---@return MapPosition? secondCrossingPosition # Only a position if the line crossed the circle in 2 places. Nil if the line just touched the edge of the circle or never crossed it.
 PositionUtils.FindWhereLineCrossesCircle = function(radius, slope, yIntercept)
     local centerPos = { x = 0, y = 0 }
     local A = 1 + slope * slope

@@ -12,7 +12,7 @@ local MiscUtils = {} ---@class Utility_MiscUtils
 ---
 --- Should be done locally if called frequently.
 ---@param luaObject LuaBaseClass
----@return LuaBaseClass|nil
+---@return LuaBaseClass?
 MiscUtils.ReturnValidLuaObjectOrNil = function(luaObject)
     if luaObject == nil or not luaObject.valid then
         return nil

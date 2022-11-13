@@ -12,14 +12,15 @@ local MathUtils = require("utility.helper-utils.math-utils")
 ---@param directionToRotate defines.direction
 ---@param referenceDirection defines.direction
 ---@param appliedDirection defines.direction
+---@return defines.direction
 DirectionUtils.RotateDirectionByDirection = function(directionToRotate, referenceDirection, appliedDirection)
     local directionDif = appliedDirection - referenceDirection
     local directionValue = directionToRotate + directionDif
     -- Hard coded copy of MathUtils.LoopIntValueWithinRange().
     if directionValue > 7 then
-        return -7 + directionValue - 1
+        return -7 + directionValue - 1 --[[@as defines.direction]]
     elseif directionValue < 0 then
-        return 7 + directionValue + 1
+        return 7 + directionValue + 1 --[[@as defines.direction]]
     else
         return directionValue
     end

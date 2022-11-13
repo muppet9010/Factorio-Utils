@@ -6,7 +6,7 @@
 local TableUtils = {} ---@class Utility_TableUtils
 local string_rep = string.rep
 
--- csSpell:ignore deepcopy # Ignore in this file, but don't add as shouldn't be seen outside theis reference.
+-- cSpell:ignore deepcopy # Ignore in this file, but don't add as shouldn't be seen outside this reference to the core util.lua file.
 
 --- Copies a table and all of its children all the way down.
 --- Based on code from Factorio "__core__.lualib.util.lua", table.deepcopy().
@@ -119,9 +119,9 @@ end
 ---@param aTable table<any,any>
 ---@return string|number[]
 TableUtils.TableKeyToArray = function(aTable)
-    local newArray = {}
+    local newArray = {} ---@type string|number[]
     for key in pairs(aTable) do
-        table.insert(newArray, key)
+        newArray[#newArray + 1] = key
     end
     return newArray
 end
@@ -165,7 +165,7 @@ end
 --- Makes a numbered text string from a table's keys with the keys wrapped in single quotes.
 ---
 --- i.e. 1: 'firstKey', 2: 'secondKey'
----@param aTable table<any,any> # doesn't support commas in values or nested tables. Really for logging.t
+---@param aTable table<any,any> # doesn't support commas in values or nested tables. Really for logging.
 ---@return string
 TableUtils.TableKeyToNumberedListString = function(aTable)
     local newString
@@ -187,7 +187,7 @@ end
 --- Makes a numbered text string from a table's values with the values wrapped in single quotes.
 ---
 --- i.e. 1: 'firstValue', 2: 'secondValue'
----@param aTable table<any,any> # doesn't support commas in values or nested tables. Really for logging.t
+---@param aTable table<any,any> # doesn't support commas in values or nested tables. Really for logging.
 ---@return string
 TableUtils.TableValueToNumberedListString = function(aTable)
     local newString
@@ -207,8 +207,8 @@ end
 
 -- Stringify a table in to a JSON text string. Options to make it pretty printable.
 ---@param targetTable table
----@param name? string|nil # If provided will appear as a "name:JSONData" output.
----@param singleLineOutput? boolean|nil # If provided and true removes all lines and spacing from the output.
+---@param name? string # If provided will appear as a "name:JSONData" output.
+---@param singleLineOutput? boolean # If provided and true removes all lines and spacing from the output.
 ---@return string
 TableUtils.TableContentsToJSON = function(targetTable, name, singleLineOutput)
     singleLineOutput = singleLineOutput or false
@@ -219,25 +219,25 @@ end
 --- Searches a table of values for a specific value and returns the key(s) of that entry.
 ---@param theTable table<any,any>
 ---@param value string|number|string|number[] # Either a single value or an array of possible values.
----@param returnMultipleResults? boolean|nil # Can return a single result (returnMultipleResults = false/nil) or a list of results (returnMultipleResults = true)
+---@param returnMultipleResults? boolean # Can return a single result (returnMultipleResults = false/nil) or a list of results (returnMultipleResults = true)
 ---@return string|number[] # table of keys.
 TableUtils.GetTableKeyWithValue = function(theTable, value, returnMultipleResults)
-    local keysFound = {}
+    local keysFound = {} ---@type string|number[]
     for k, v in pairs(theTable) do
         if type(value) ~= "table" then
             if v == value then
                 if not returnMultipleResults then
                     return k
                 end
-                table.insert(keysFound, k)
+                keysFound[#keysFound + 1] = k
             end
         else
             for _, valueInList in pairs(value) do
-                if v == value then
+                if v == valueInList then
                     if not returnMultipleResults then
                         return k
                     end
-                    table.insert(keysFound, k)
+                    keysFound[#keysFound + 1] = k
                 end
             end
         end
@@ -246,28 +246,30 @@ TableUtils.GetTableKeyWithValue = function(theTable, value, returnMultipleResult
 end
 
 --- Searches a table of tables and looks inside the inner table at a specific key for a specific value and returns the key(s) of the outer table entry.
----@param theTable table<any,any>
+---@param theTable table<any,table<any,any>>
 ---@param innerKey string|number
 ---@param innerValue string|number|string|number[] # Either a single value or an array of possible values.
----@param returnMultipleResults? boolean|nil # Can return a single result (returnMultipleResults = false/nil) or a list of results (returnMultipleResults = true)
+---@param returnMultipleResults? boolean # Can return a single result (returnMultipleResults = false/nil) or a list of results (returnMultipleResults = true)
 ---@return string|number[] # table of keys.
 TableUtils.GetTableKeyWithInnerKeyValue = function(theTable, innerKey, innerValue, returnMultipleResults)
-    local keysFound = {}
+    local keysFound = {} ---@type string|number[]
+    local innerTable_innerKey ---@type any
     for k, innerTable in pairs(theTable) do
+        innerTable_innerKey = innerTable[innerKey]
         if type(innerValue) ~= "table" then
-            if innerTable[innerKey] ~= nil and innerTable[innerKey] == innerValue then
+            if innerTable_innerKey ~= nil and innerTable_innerKey == innerValue then
                 if not returnMultipleResults then
                     return k
                 end
-                table.insert(keysFound, k)
+                keysFound[#keysFound + 1] = k
             end
         else
             for _, valueInList in pairs(innerValue) do
-                if innerTable[innerKey] ~= nil and innerTable[innerKey] == innerValue then
+                if innerTable_innerKey ~= nil and innerTable_innerKey == valueInList then
                     if not returnMultipleResults then
                         return k
                     end
-                    table.insert(keysFound, k)
+                    keysFound[#keysFound + 1] = k
                 end
             end
         end
@@ -276,28 +278,30 @@ TableUtils.GetTableKeyWithInnerKeyValue = function(theTable, innerKey, innerValu
 end
 
 --- Searches a table of tables and looks inside the inner table at a specific key for a specific value(s) and returns the value(s) of the outer table entry.
----@param theTable table<any,any>
+---@param theTable table<any,table<any,any>>
 ---@param innerKey string|number
 ---@param innerValue string|number|string|number[] # Either a single value or an array of possible values.
----@param returnMultipleResults? boolean|nil # Can return a single result (returnMultipleResults = false/nil) or a list of results (returnMultipleResults = true)
+---@param returnMultipleResults? boolean # Can return a single result (returnMultipleResults = false/nil) or a list of results (returnMultipleResults = true)
 ---@return table[] # table of values, which must be a table to have an inner key/value.
 TableUtils.GetTableValueWithInnerKeyValue = function(theTable, innerKey, innerValue, returnMultipleResults)
-    local valuesFound = {}
+    local valuesFound = {} ---@type table[]
+    local innerTable_innerKey ---@type any
     for _, innerTable in pairs(theTable) do
+        innerTable_innerKey = innerTable[innerKey]
         if type(innerValue) ~= "table" then
-            if innerTable[innerKey] ~= nil and innerTable[innerKey] == innerValue then
+            if innerTable_innerKey ~= nil and innerTable_innerKey == innerValue then
                 if not returnMultipleResults then
                     return innerTable
                 end
-                table.insert(valuesFound, innerTable)
+                valuesFound[#valuesFound + 1] = innerTable
             end
         else
             for _, valueInList in pairs(innerValue) do
-                if innerTable[innerKey] ~= nil and innerTable[innerKey] == valueInList then
+                if innerTable_innerKey ~= nil and innerTable_innerKey == valueInList then
                     if not returnMultipleResults then
                         return innerTable
                     end
-                    table.insert(valuesFound, innerTable)
+                    valuesFound[#valuesFound + 1] = innerTable
                 end
             end
         end
@@ -308,12 +312,9 @@ end
 --- Returns a copy of a table's values with each value also being the key. Doesn't clone any internal data structures, so use on tables of tables with care.
 ---
 --- Useful for converting a list in to dictionary of the list items.
----@param tableWithValues table<any,any>|nil
----@return table|nil tableOfKeys # Returns nil when nil is passed in.
+---@param tableWithValues table<any,any>
+---@return table? tableOfKeys # Returns nil when nil is passed in.
 TableUtils.TableValuesToKey = function(tableWithValues)
-    if tableWithValues == nil then
-        return nil
-    end
     local newTable = {} ---@type table<any, any>
     for _, value in pairs(tableWithValues) do
         newTable[value] = value
@@ -324,13 +325,10 @@ end
 --- Returns a copy of a table's values with each value's named inner key's (innerValueAttributeName) value also being the key. Doesn't clone any internal data structures, so use on tables of tables with care.
 ---
 --- Useful for converting a list of objects in to dictionary of the list items's with a specific inner field being the new dictionary key.
----@param refTable table<any,any>|nil
+---@param refTable table<any,any>
 ---@param innerValueAttributeName any
----@return table|nil
+---@return table?
 TableUtils.TableInnerValueToKey = function(refTable, innerValueAttributeName)
-    if refTable == nil then
-        return nil
-    end
     local newTable = {} ---@type table<any, any>
     for _, value in pairs(refTable) do
         newTable[value[innerValueAttributeName]] = value
@@ -365,7 +363,7 @@ end
 
 --- Inner looping of TableContentsToJSON.
 ---@param targetTable table<any, any>
----@param name? string|nil # If provided will appear as a "name:JSONData" output.
+---@param name? string # If provided will appear as a "name:JSONData" output.
 ---@param singleLineOutput boolean
 ---@param tablesLogged table<any, any>
 ---@param indent uint # Pass a default of 1 on initial calling.

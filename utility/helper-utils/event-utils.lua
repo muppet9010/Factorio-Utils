@@ -16,8 +16,8 @@ end
 ---@alias EntityActioner LuaPlayer|LuaEntity # The placer of a built entity, either player or construction robot. A script will have a nil value.
 
 --- Get the thing that did the building/mining from an event.
----@param event on_built_entity|on_robot_built_entity|script_raised_built|script_raised_revive|on_pre_player_mined_item|on_robot_pre_mined
----@return EntityActioner|nil placer # Player, construction robot or nil if script done.
+---@param event EventData.on_built_entity|EventData.on_robot_built_entity|EventData.script_raised_built|EventData.script_raised_revive|EventData.on_pre_player_mined_item|EventData.on_robot_pre_mined
+---@return EntityActioner? placer # Player, construction robot or nil if script done.
 EventUtils.GetActionerFromEvent = function(event)
     if event.robot ~= nil then
         -- Construction robots
@@ -35,8 +35,8 @@ end
 ---
 --- Useful for passing in to rendering player/force filters or for returning items to them.
 ---@param actioner EntityActioner
----@return LuaPlayer|nil
----@return LuaForce|nil
+---@return LuaPlayer?
+---@return LuaForce?
 EventUtils.GetPlayerOrForceFromEventActioner = function(actioner)
     if actioner.is_player() then
         -- Is a player.

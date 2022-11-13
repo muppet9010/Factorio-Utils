@@ -9,7 +9,7 @@ MOD.guiClosedActions = MOD.guiClosedActions or {} ---@type table<string, functio
 ---@field actionName string # The action name registered to this GUI element being closed.
 ---@field playerIndex uint # The player_index of the player who closed the GUI.
 ---@field data any # The data argument passed in when registering this function action name.
----@field eventData on_gui_closed # The raw Factorio event data for the on_gui_closed event.
+---@field eventData EventData.on_gui_closed # The raw Factorio event data for the on_gui_closed event.
 
 --------------------------------------------------------------------------------------------
 --                                    Public Functions
@@ -31,15 +31,15 @@ GuiActionsClosed.LinkGuiClosedActionNameToFunction = function(actionName, action
 end
 
 --- Called to register a specific GUI type being closed to a named action.
----@param guiType defines.gui_type|'all' # the gui type to react to or `all` types.
+---@param guiType defines.gui_type|"all" # the gui type to react to or `all` types.
 ---@param actionName string # The actionName of the registered function to be called when the GUI element is closed.
----@param data? table|nil # Any provided data will be passed through to the actionName's registered function upon the GUI element being closed.
+---@param data? table # Any provided data will be passed through to the actionName's registered function upon the GUI element being closed.
 GuiActionsClosed.RegisterActionNameForGuiTypeClosed = function(guiType, actionName, data)
     if guiType == nil or actionName == nil then
         error("GuiActions.RegisterActionNameForGuiTypeClosed called with missing arguments")
     end
     data = data or {}
-    global.UTILITYGUIACTIONSGUITYPECLOSED = global.UTILITYGUIACTIONSGUITYPECLOSED or {} ---@type table<defines.gui_type|'all', table<string, table|nil>>
+    global.UTILITYGUIACTIONSGUITYPECLOSED = global.UTILITYGUIACTIONSGUITYPECLOSED or {} ---@type table<defines.gui_type|"all", table<string, table|nil>>
     global.UTILITYGUIACTIONSGUITYPECLOSED[guiType] = global.UTILITYGUIACTIONSGUITYPECLOSED[guiType] or {}
     global.UTILITYGUIACTIONSGUITYPECLOSED[guiType][actionName] = data
 end
@@ -47,7 +47,7 @@ end
 --- Called when desired to remove a specific GUI type closing from triggering its action.
 ---
 --- Should be called to remove links for buttons when their elements are removed to stop global data lingering. But newly registered functions will overwrite them so not critical to remove.
----@param guiType defines.gui_type|'all' # Corresponds to the same argument name on GuiActionsClosed.RegisterActionNameForGuiTypeClosed().
+---@param guiType defines.gui_type|"all" # Corresponds to the same argument name on GuiActionsClosed.RegisterActionNameForGuiTypeClosed().
 ---@param actionName string # Corresponds to the same argument name on GuiActionsClosed.RegisterActionNameForGuiTypeClosed().
 GuiActionsClosed.RemoveActionNameForGuiTypeClosed = function(guiType, actionName)
     if guiType == nil or actionName == nil then
@@ -64,7 +64,7 @@ end
 --------------------------------------------------------------------------------------------
 
 --- Called when each on_gui_closed event occurs and identifies any registered actionName functions to trigger.
----@param rawFactorioEventData on_gui_closed
+---@param rawFactorioEventData EventData.on_gui_closed
 GuiActionsClosed._HandleGuiClosedAction = function(rawFactorioEventData)
     local guiType = rawFactorioEventData.gui_type
 
