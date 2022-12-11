@@ -3,6 +3,9 @@ armors
 armored
 armouring
 
+behavior
+behaviors
+
 color
 colors
 colored
@@ -15,6 +18,3 @@ centering
 
 targetted # Just wrong in allowed default words.
 targetting # Just wrong in allowed default words.
-
-behavior
-behaviors

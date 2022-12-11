@@ -1,34 +1,46 @@
-Sumneko
-teleportable
-toggleable
-cooldown
-uints
-pathed
-pathing
-pathfind
-errored
-respawn
-localised
-TBC # To Be Confirmed
+anyway
+anyways
+autoplaced
+autoplace
+autoplacing
+aww # As in `aww cute`.
 casted
+cooldown
 dedupe
 deduped
 deduping
-QOL # Quality Of Life
 desynchronisation
 desynchronisations
-desync # Desynchronisation
-desyncs # Desynchronisations
-MP # Multi player
-SP # Single Player
-reserver
-reservable
+desync # Desynchronisation.
+desyncs # Desynchronisations.
+errored
+erroring
 hotbar
-postback
 hotfixes
+localised
+MP # Multi player.
+pathed
+pathing
+pathfind
+postback
+QOL # Quality Of Life.
 repathing
 repathed
 repath
-anyway
-anyways
+req # Abbreviation for `Requirment`.
+requestable
+reserver
+reservable
+respawn
+respawns
 respawned
+revivable
+SP # Single Player.
+Sumneko
+TBC # To Be Confirmed.
+TBH # To Be Honest.
+teleportable
+tintable
+tinted
+toggleable
+uints

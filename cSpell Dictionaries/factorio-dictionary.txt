@@ -1,30 +1,32 @@
 autoplace
+bigass # name of explosion
+blueprintable
+compilatron
 cryogun
+deconstructable
 deepwater
+doodad # Grpahical features on the ground.
 elem
+EVENTID
 factorio
 freeplay
+hitbox
 listbox
 lualib
 mipmap
 mipmaps
+nauvis # The default surface/planet.
 progressbar
 radiobutton
 rawxpcall
 RCON
+shiftings # used for artillery wagon prototype field names.
 spidertron
 spidertrons
 textfield
 roboport
 roboports
 wube
-blueprintable
-deconstructable
-nauvis # The default surface/planet.
-hitbox
-bigass # name of explosion
-shiftings # used for artillery wagon prototype field names.
-compilatron
 
 Kwh # unit of power.
 
