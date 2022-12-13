@@ -64,8 +64,7 @@
     "gitlens.hovers.currentLine.details": false,
     "gitlens.hovers.currentLine.changes": false,
     "gitlens.hovers.currentLine.enabled": false,
-    "Lua.runtime.plugin": "../.vscode/lua/plugin.lua",
-    "Lua.hover.enumsLimit": 10,
+    "Lua.hover.enumsLimit": 100,
     "[lua]": {
         "editor.defaultFormatter": "sumneko.lua"
     },
@@ -81,13 +80,9 @@
     "update.mode": "manual",
     "Lua.workspace.maxPreload": 99999999,
     "Lua.diagnostics.ignoredFiles": "Disable",
-    "factorio.workspace.library": "c:\\FactorioModding\\runtime-api",
     "Lua.runtime.version": "Lua 5.2",
     "Lua.completion.workspaceWord": false,
     "extensions.autoUpdate": false,
-    "Lua.runtime.builtin": {
-        "math": "enable"
-    },
     "Lua.diagnostics.neededFileStatus": {},
     "Lua.diagnostics.libraryFiles": "Disable",
     "Lua.diagnostics.groupFileStatus": {
@@ -162,7 +157,8 @@
         "armour",
         "colour",
         "centre",
-        "behaviour"
+        "behaviour",
+        "t"
     ],
     "cSpell.ignorePaths": [
         "package-lock.json",
