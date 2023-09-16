@@ -6,13 +6,41 @@
             "active": true
         }
     ],
+    "Lua.diagnostics.globals": [
+        "game",
+        "script",
+        "remote",
+        "commands",
+        "settings",
+        "rcon",
+        "rendering",
+        "global",
+        "log",
+        "defines",
+        "data",
+        "mods",
+        "serpent",
+        "table_size",
+        "bit32",
+        "util",
+        "localised_print",
+        "circuit_connector_definitions",
+        "universal_connector_template",
+        "__DebugAdapter",
+        "__Profiler",
+        "ourConnectionPoint"
+    ],
     "Lua.runtime.version": "Lua 5.2",
     "Lua.workspace.library": [
         "c:\\FactorioModding\\factorio-api",
-        "c:\\FactorioModding\\data"
-		 // Link to API doc generated type defs populated on first use when Factorio selector refreshed.
+        "c:\\FactorioModding\\data",
+        "c:\\FactorioModding\\data\\core\\lualib",
+        "c:\\FactorioModding\\runtime-api",
+        "c:/Users/mikeh/AppData/Roaming/Code/User/workspaceStorage/3b7204474dd27b1c4479770abab86ebb/justarandomgeek.factoriomod-debug/sumneko-3rd/factorio/library"
     ],
-    "Lua.workspace.userThirdParty": [], // Populated on first use when Factorio selector refreshed.
+    "Lua.workspace.userThirdParty": [
+        "c:\\Users\\mikeh\\AppData\\Roaming\\Code\\User\\workspaceStorage\\3b7204474dd27b1c4479770abab86ebb\\justarandomgeek.factoriomod-debug\\sumneko-3rd"
+    ], // Populated on first use when Factorio selector refreshed.
     "Lua.runtime.builtin": {
         "math": "disable",
         "io": "disable",
@@ -24,6 +52,6 @@
     "Lua.runtime.special": {
         "__object_name": "type"
     },
-    "Lua.runtime.plugin": "", // Populated on first use when Factorio selector refreshed.
+    "Lua.runtime.plugin": "c:/Users/mikeh/AppData/Roaming/Code/User/workspaceStorage/3b7204474dd27b1c4479770abab86ebb/justarandomgeek.factoriomod-debug/sumneko-3rd/factorio/plugin.lua", // Populated on first use when Factorio selector refreshed.
     "Lua.workspace.checkThirdParty": false
 }

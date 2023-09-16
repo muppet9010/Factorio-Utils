@@ -28,7 +28,7 @@ Extensions currently used:
 	- Does Formatting as default from formatter (no .editorconfig), with any required settings done via user settings.
  - Factorio Mod Debug: https://marketplace.visualstudio.com/items?itemName=justarandomgeek.factoriomod-debug
 	- Utils copy of config files at "VS CODE BITS\Per Mod .vscode", put its contents in the mods specific folder in a ".vscode" folder
-	- To generate EmmyLua docs for the Factorio API from the JSON docs press use the Factorio version selector on the status bar (bottom of VSCode) and browse to the exe. Select it and manually enter its Factorio version. This will create the docs in the root of the Factorio folder in a new folder (based on our global extension settings).
+	- To generate EmmyLua docs for the Factorio API from the JSON docs press use the Factorio version selector on the status bar (bottom of VSCode) and browse to the exe. This will create the docs in the root of the Factorio folder in a new folder (based on our global extension settings).
  - indent-rainbow: https://marketplace.visualstudio.com/items?itemName=oderwat.indent-rainbow
  - GitLens: https://marketplace.visualstudio.com/items?itemName=eamodio.gitlens
  - compareit: https://marketplace.visualstudio.com/items?itemName=in4margaret.compareit
@@ -36,15 +36,8 @@ Extensions currently used:
 	1: most settings are in the user's VS code settings. This includes the path to where it expects the custom dictionaries to be.
 	2: In the root of the shared Factorio modding source folder (same as FactorioSumnekoLuaPlugin), have a ".vscode" folder.
 	3: Within here create another folder called "cspell" and put the "cSpell Dictionaries" contents from Utils repo in there.
-
+	
 Extra things added to VSCode:
- - FactorioSumnekoLuaPlugin (helps autocomplete with Factorio specific oddities):
-	1: Download the git repo from: https://github.com/JanSharp/FactorioSumnekoLuaPlugin
-	2: Get the contents of the downloaded Zip/folder. Where the README.md is.
-	3: In the root of the shared Factorio modding source folder, the folder each of your mods source code folders live in.
-	4: Create a new folder structure: ".vscode" / "lua"
-	5: Put the downloaded contents inside the lua folder created. So you end up with: [MY FACTORIO MODS]/.vscode/lua/README.md
-	6: In VSCode set the "sumneko.lua" extensions "Plugin" setting to the shared source folder root and path you creaed: ../.vscode/lua/plugin.lua
  - Factorio API (data stage typedefs): https://github.com/Nexela/factorio-api
 	1: Download the repo and put the files in a created folder: C:\FactorioModding\factorio-api
 	2: Add the folder to Sumneko (per workspace not per user) library paths: setting name "Library", path to add: C:\FactorioModding\factorio-api
