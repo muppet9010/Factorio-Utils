@@ -27,8 +27,9 @@ Extensions currently used:
 	- Does TypeDef checks based on user settings and a few workspace settings placed by Factorio Mod Debug.
 	- Does Formatting as default from formatter (no .editorconfig), with any required settings done via user settings.
  - Factorio Mod Debug: https://marketplace.visualstudio.com/items?itemName=justarandomgeek.factoriomod-debug
-	- Utils copy of config files at "VS CODE BITS\Per Mod .vscode", put its contents in the mods specific folder in a ".vscode" folder
-	- To generate EmmyLua docs for the Factorio API from the JSON docs press use the Factorio version selector on the status bar (bottom of VSCode) and browse to the exe. This will create the docs in the root of the Factorio folder in a new folder (based on our global extension settings).
+	- Utils copy of config files at "VS CODE BITS\Per Mod .vscode", put its contents in the mods specific folder in a ".vscode" folder. In the past this included settings.json, but no the tol will auto create these approperiately.
+	- To generate EmmyLua docs for the Factorio API from the JSON docs, press the Factorio version selector on the status bar (bottom of VSCode) and browse to the exe. Name the exe reference when prompted "Modding Current". This will create the runtime and prototype docs, plus the plugin, in a user data folder and create/update an empty .vscode settings.json file to reference them.
+	- It seems VS Code needs to be restarted after this i setup before it will prompt to configure VS Code for the addon. We want to do this as it adds in the various references to the Factorio objects, etc.
  - indent-rainbow: https://marketplace.visualstudio.com/items?itemName=oderwat.indent-rainbow
  - GitLens: https://marketplace.visualstudio.com/items?itemName=eamodio.gitlens
  - compareit: https://marketplace.visualstudio.com/items?itemName=in4margaret.compareit
@@ -38,6 +39,6 @@ Extensions currently used:
 	3: Within here create another folder called "cspell" and put the "cSpell Dictionaries" contents from Utils repo in there.
 	
 Extra things added to VSCode:
- - Factorio API (data stage typedefs): https://github.com/Nexela/factorio-api
+ - NOT REQURIED ANY MORE - Factorio API (data stage typedefs): https://github.com/Nexela/factorio-api
 	1: Download the repo and put the files in a created folder: C:\FactorioModding\factorio-api
 	2: Add the folder to Sumneko (per workspace not per user) library paths: setting name "Library", path to add: C:\FactorioModding\factorio-api

@@ -18,6 +18,8 @@ erroring
 hotbar
 hotfixes
 localised
+minimalised
+minimisable
 MP # Multi player.
 pathed
 pathing

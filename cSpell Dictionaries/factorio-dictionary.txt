@@ -34,3 +34,5 @@ zzz # Used in the `order` field for putting things at the end of item/entity GUI
 img # Used by Factorio text printing for defining an image name to show in the text.
 
 typelist # used in by the Sumneko Lua plugin by JanSharp.
+
+FMTK # Factorio Modding Tool Kit
