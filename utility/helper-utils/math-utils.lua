@@ -11,7 +11,7 @@ local math_min, math_max, math_floor, math_random = math.min, math.max, math.flo
 ---@param numberOfDecimalPlaces uint
 ---@return double
 MathUtils.RoundNumberToDecimalPlaces = function(value, numberOfDecimalPlaces)
-    local result
+    local result ---@type number
     if numberOfDecimalPlaces ~= nil and numberOfDecimalPlaces > 0 then
         local multiplier = 10 ^ numberOfDecimalPlaces
         result = math_floor((value * multiplier) + 0.5) / multiplier

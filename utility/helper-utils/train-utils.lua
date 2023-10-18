@@ -90,13 +90,12 @@ TrainUtils.GetTrainSpeedCalculationData = function(train, train_speed, trainCarr
     end
 
     local trainWeight = train.weight
-    ---@type double, uint, double
-    local trainFrictionForce, forwardFacingLocoCount, trainRawBrakingForce = 0, 0, 0
-    local trainAirResistanceReductionMultiplier
-    local trainMovingForwards = train_speed > 0
+    local trainFrictionForce, forwardFacingLocoCount, trainRawBrakingForce = 0, 0, 0 ---@type double, uint, double
+    local trainAirResistanceReductionMultiplier ---@type double
+    local trainMovingForwards = train_speed > 0 ---@type boolean
 
     -- Work out which way to iterate down the train's carriage array. Starting with the lead carriage.
-    local minCarriageIndex, maxCarriageIndex, carriageIterator
+    local minCarriageIndex, maxCarriageIndex, carriageIterator ---@type uint, uint, uint
     local carriageCount = #trainCarriagesDataArray
     if trainMovingForwards then
         minCarriageIndex, maxCarriageIndex, carriageIterator = 1, carriageCount, 1
@@ -122,12 +121,12 @@ TrainUtils.GetTrainSpeedCalculationData = function(train, train_speed, trainCarr
             carriageCachedData.prototypeName = carriage_name
         end
 
-        trainFrictionForce = trainFrictionForce + PrototypeAttributes.GetAttribute("entity", carriage_name, "friction_force")
-        trainRawBrakingForce = trainRawBrakingForce + PrototypeAttributes.GetAttribute("entity", carriage_name, "braking_force")
+        trainFrictionForce = trainFrictionForce + PrototypeAttributes.GetAttribute("entity", carriage_name, "friction_force") ---@type double
+        trainRawBrakingForce = trainRawBrakingForce + PrototypeAttributes.GetAttribute("entity", carriage_name, "braking_force") ---@type double
 
         if firstCarriage then
             firstCarriage = false
-            trainAirResistanceReductionMultiplier = 1 - (PrototypeAttributes.GetAttribute("entity", carriage_name, "air_resistance") / (trainWeight / 1000))
+            trainAirResistanceReductionMultiplier = 1 - (PrototypeAttributes.GetAttribute("entity", carriage_name, "air_resistance") / (trainWeight / 1000)) ---@type double
         end
 
         if carriage_type == "locomotive" then
@@ -160,7 +159,9 @@ TrainUtils.GetTrainSpeedCalculationData = function(train, train_speed, trainCarr
         locomotiveAccelerationPower = 10 * forwardFacingLocoCount / trainWeight,
         trainAirResistanceReductionMultiplier = trainAirResistanceReductionMultiplier,
         forwardFacingLocoCount = forwardFacingLocoCount,
-        trainRawBrakingForce = trainRawBrakingForce
+        trainRawBrakingForce = trainRawBrakingForce,
+        maxSpeed = 0, -- Updated within this function prior to use.
+        locomotiveFuelAccelerationPower = 0 -- Updated within this function prior to use.
     }
 
     -- Update the train's data that depends upon the trains current fuel.
@@ -194,7 +195,7 @@ TrainUtils.UpdateTrainSpeedCalculationDataForCurrentFuel = function(trainSpeedCa
     end
 
     -- Update the acceleration data.
-    local fuelAccelerationBonus
+    local fuelAccelerationBonus ---@type double
     if fuelPrototype ~= nil then
         fuelAccelerationBonus = fuelPrototype.fuel_acceleration_multiplier
     else
@@ -203,7 +204,7 @@ TrainUtils.UpdateTrainSpeedCalculationDataForCurrentFuel = function(trainSpeedCa
     trainSpeedCalculationData.locomotiveFuelAccelerationPower = trainSpeedCalculationData.locomotiveAccelerationPower * fuelAccelerationBonus
 
     -- Have to get the right prototype max speed as they're not identical at runtime even if the train is symmetrical. This API result includes the fuel type currently being burnt.
-    local trainPrototypeMaxSpeedIncludesFuelBonus
+    local trainPrototypeMaxSpeedIncludesFuelBonus ---@type double
     if trainMovingForwardsToCacheData then
         trainPrototypeMaxSpeedIncludesFuelBonus = train.max_forward_speed
     elseif not trainMovingForwardsToCacheData then

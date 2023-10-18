@@ -19,7 +19,7 @@ SettingsManager.ExpectedValueTypes = {
 ---@class UtilitySettingsManager_ExpectedValueType
 ---@field name string # Same as key in the ExpectedValueTypes table.
 ---@field hasChildren boolean # If the expected type is a list.
----@field childExpectedValueType UtilitySettingsManager_ExpectedValueType # The type of entry in the list.
+---@field childExpectedValueType? UtilitySettingsManager_ExpectedValueType # The type of entry in the list.
 
 ---@alias UtilityMultipleValuesInSettings_GlobalGroupsContainer table<uint, UtilityMultipleValuesInSettings_GlobalGroupsContainerOccurrence> # Key'd by the the occurrence number of the grouped settings (id argument when retrieving setting values).
 ---@alias UtilityMultipleValuesInSettings_GlobalGroupsContainerOccurrence table<string, UtilityMultipleValuesInSettings_GlobalGroupsContainerOccurrenceSetting>
@@ -72,7 +72,7 @@ SettingsManager.HandleSettingWithArrayOfValues = function(factorioSettingType, f
         tableOfValues = game.json_to_table(values)
     end
 
-    local isMultipleGroups
+    local isMultipleGroups ---@type boolean
     if tableOfValues == nil or type(tableOfValues) ~= "table" then
         isMultipleGroups = false
     else
@@ -170,7 +170,7 @@ SettingsManager._ValueToType = function(value, expectedType)
         value = string.gsub(tostring(value), "%%", "")
         return tonumber(value)
     elseif expectedType == SettingsManager.ExpectedValueTypes.boolean then
-        return BooleanUtils.ToBoolean(value--[[@as boolean|string|int]] )
+        return BooleanUtils.ToBoolean(value --[[@as boolean|string|int]])
     elseif expectedType.hasChildren then
         if type(value) ~= "table" then
             return nil

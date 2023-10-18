@@ -119,7 +119,7 @@ GuiUtil.AddElement = function(elementDetails)
         elementDetailsNoClass._hidden_parent = nil ---@type nil
     end
 
-    local element = elementDetails.parent.add(elementDetails--[[@as LuaGuiElement.add_param]] )
+    local element = elementDetails.parent.add(elementDetails --[[@as LuaGuiElement.add_param]]) ---@type LuaGuiElement
 
     local returnElements = {} ---@type table<string, LuaGuiElement>
     if returnElement then
@@ -166,7 +166,7 @@ GuiUtil.AddElement = function(elementDetails)
         for k, v in pairs(attributes) do
             if type(v) == "function" then
                 ---@cast v fun():any # A function will return something, even if nil.
-                v = v()
+                v = v() ---@type any
             end
             element[k] = v
         end
@@ -179,6 +179,7 @@ GuiUtil.AddElement = function(elementDetails)
             elseif child.valid --[[@as boolean?]] then
                 error("GuiUtil.AddElement called with 'children' not a table of children, but instead a Lua Object of some type, as it has `valid = true`.")
             else
+                ---@diagnostic disable-next-line: inject-field # Not sure what this is really objecting too, so just silence it.
                 child._hidden_parent = element
                 local childReturnElements = GuiUtil.AddElement(child)
                 if childReturnElements ~= nil then
@@ -279,7 +280,7 @@ GuiUtil.UpdateElementFromPlayersReferenceStorage = function(playerIndex, storeNa
         for k, v in pairs(changes.attributes) do
             if type(v) == "function" then
                 ---@cast v fun():any # A function will return something, even if nil.
-                v = v()
+                v = v() ---@type any
             end
             element[k] = v
         end
@@ -376,7 +377,7 @@ GuiUtil._ApplyStylingArgumentsToElement = function(element, stylingArgs)
         return
     end
     if stylingArgs.column_alignments ~= nil then
-        for k, v in pairs(stylingArgs.column_alignments--[[@as string[] # Column alignments are always provided in this format. ]] ) do
+        for k, v in pairs(stylingArgs.column_alignments --[[@as string[] # Column alignments are always provided in this format. ]]) do
             ---@cast k uint
             element.style.column_alignments[k] = v
         end

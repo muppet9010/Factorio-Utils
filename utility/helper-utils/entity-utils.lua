@@ -138,7 +138,7 @@ EntityUtils.MoveKillableObjectsFromEntityBoundingBox = function(surface, central
     if killNonMoved then
         createdEntityForce = createdEntityForce or centralEntity.force --[[@as LuaForce]]
     end
-    local entityMoved, entityNewPosition
+    local entityMoved, entityNewPosition ---@type boolean, MapPosition?
     for _, entity in pairs(entitiesInTheWay) do
         entityMoved = false
         if MovablePrototypeTypes[entity.type] ~= nil then

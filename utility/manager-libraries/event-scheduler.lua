@@ -14,7 +14,7 @@ local EventScheduler = {} ---@class Utility_EventScheduler
 MOD = MOD or {} ---@class MOD
 ---@type table<string, function>
 MOD.scheduledEventNames =
-MOD.scheduledEventNames or
+    MOD.scheduledEventNames or
     {
         ["EventScheduler.GamePrint"] = function(event)
             -- Builtin game.print delayed function, needed for 0 tick logging (startup) writing to screen activities.
@@ -300,7 +300,7 @@ end
 ---@return boolean|UtilityScheduledEvent_Information? result # The result type is based on the actionFunction passed in. However nil may be returned if the actionFunction finds no matching results for any reason.
 ---@return UtilityScheduledEvent_Information[]|uint[] results # A table of the results found or an empty table if nothing matching found.
 EventScheduler._ParseScheduledOnceEvents = function(targetEventName, targetInstanceId, targetTick, actionFunction)
-    local result
+    local result ---@type boolean|UtilityScheduledEvent_Information
     local results = {} ---@type UtilityScheduledEvent_Information[]|uint[]
     if global.UTILITYSCHEDULEDFUNCTIONS ~= nil then
         if targetTick == nil then
@@ -410,7 +410,7 @@ end
 ---@return boolean|UtilityScheduledEvent_Information|nil result? # The result type is based on the actionFunction passed in. However nil may be returned if the actionFunction finds no matching results for any reason.
 ---@return UtilityScheduledEvent_Information[]|uint[] results # A table of the results found or an empty table if nothing matching found.
 EventScheduler._ParseScheduledEachTickEvents = function(targetEventName, targetInstanceId, actionFunction)
-    local result
+    local result ---@type boolean|UtilityScheduledEvent_Information|nil
     local results = {} ---@type UtilityScheduledEvent_Information[]|uint[]
     if global.UTILITYSCHEDULEDFUNCTIONSPERTICK ~= nil then
         local outcome = actionFunction(global.UTILITYSCHEDULEDFUNCTIONSPERTICK, targetEventName, targetInstanceId)

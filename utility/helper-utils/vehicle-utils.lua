@@ -20,9 +20,9 @@ VehicleUtils.GetVehicleCurrentFuelPrototype = function(vehicle, vehicle_burner)
 
     -- Check the fuel inventories as this will be burnt next.
     local burner_inventory = vehicle_burner.inventory
-    local currentFuelStack
+    local currentFuelStack ---@type LuaItemStack
     for i = 1, #burner_inventory do
-        currentFuelStack = burner_inventory[i] ---@type LuaItemStack
+        currentFuelStack = burner_inventory[i]
         if currentFuelStack ~= nil and currentFuelStack.valid_for_read then
             return currentFuelStack.prototype
         end

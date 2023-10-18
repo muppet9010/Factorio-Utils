@@ -19,7 +19,7 @@ local LoggingUtils = require("utility.helper-utils.logging-utils")
 ---@param adminOnly boolean
 CommandsUtils.Register = function(name, helpText, commandFunction, adminOnly)
     commands.remove_command(name)
-    local handlerFunction
+    local handlerFunction ---@type function
     if not adminOnly then
         handlerFunction = commandFunction
     elseif adminOnly then

@@ -28,7 +28,8 @@ local PlayerWeapon = {} ---@class Utility_PlayerWeapon
 PlayerWeapon.EnsureHasWeapon = function(player, weaponName, forceWeaponToWeaponInventorySlot, selectWeapon, ammoTypePlanned)
     ---@type UtilityPlayerWeapon_RemovedWeaponToEnsureWeapon
     local removedWeaponDetails = {
-        beforeSelectedWeaponGunIndex = player.character.selected_gun_index
+        beforeSelectedWeaponGunIndex = player.character.selected_gun_index,
+        gunInventoryIndex = (nil) --[[@as uint # We always overwrite this value before returning so it's fine.]]
     }
 
     -- See if the gun is already equipped by the player in their active gun inventory, or find which of their weapon slots is best to assign too.
@@ -228,7 +229,7 @@ PlayerWeapon.ReturnRemovedWeapon = function(player, removedWeaponDetails)
 
         -- If an ammo item was removed from the slot, so assuming the player still has it in their inventory return it to the ammo slot.
         if removedWeaponDetails.ammoItemName ~= nil then
-            playerCharacterInventory = playerCharacterInventory or player.get_main_inventory()
+            playerCharacterInventory = playerCharacterInventory or (player.get_main_inventory()) --[[@as LuaInventory]]
             playerAmmoInventory = playerAmmoInventory or player.get_inventory(defines.inventory.character_ammo)
             local ammoItemStackToReturn = playerCharacterInventory.find_item_stack(removedWeaponDetails.ammoItemName)
             if ammoItemStackToReturn ~= nil then

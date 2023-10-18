@@ -28,13 +28,13 @@ end
 ---
 --- The dataset is a table of entries. Each entry has various keys that are used in the calling scope and ignored by this function. It also has a key of the name passed in as the chancePropertyName parameter that defines the chance of this result.
 ---@param dataSet table[] # The dataSet to be reviewed and updated.
----@param chancePropertyName string # The attribute name that has the chance value per dataSet entry.
+---@param chancePropertyName string # The attribute name that has the chance value per dataSet entry. The value can be any positive number.
 ---@param skipFillingEmptyChance? boolean # Defaults to FALSE. If TRUE then total chance below 1 will not be scaled up, so that nil results can be had in random selection.
 ---@return table[] # Same object passed in by reference as dataSet, so technically no return is needed, legacy.
 RandomChance.NormaliseChanceList = function(dataSet, chancePropertyName, skipFillingEmptyChance)
     local totalChance = 0
     for _, v in pairs(dataSet) do
-        totalChance = totalChance + v[chancePropertyName]
+        totalChance = totalChance + v[chancePropertyName] --[[@as number]]
     end
     local multiplier = 1
     if not skipFillingEmptyChance or (skipFillingEmptyChance and totalChance > 1) then
@@ -54,9 +54,9 @@ end
 RandomChance.GetRandomEntryFromNormalisedDataSet = function(dataSet, chancePropertyName)
     local random = math_random()
     local chanceRangeLow = 0
-    local chanceRangeHigh
+    local chanceRangeHigh ---@type number
     for _, v in pairs(dataSet) do
-        chanceRangeHigh = chanceRangeLow + v[chancePropertyName]
+        chanceRangeHigh = chanceRangeLow + v[chancePropertyName] --[[@as number]]
         if random >= chanceRangeLow and random <= chanceRangeHigh then
             return v
         end

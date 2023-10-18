@@ -97,7 +97,7 @@ InventoryUtils.TryTakeGridsItems = function(sourceGrid, targetInventory, dropUnm
         return nil
     end
 
-    local sourceOwner
+    local sourceOwner ---@type LuaEntity|LuaPlayer?
     local itemAllMoved = true
 
     --Do the actual item moving.
@@ -148,7 +148,7 @@ InventoryUtils.TryInsertInventoryContents = function(contents, targetInventory, 
         return false
     end
 
-    local sourceOwner
+    local sourceOwner ---@type LuaEntity|LuaPlayer?
     local itemAllMoved = true
 
     --Do the actual item moving.
@@ -202,7 +202,7 @@ InventoryUtils.TryInsertSimpleItems = function(simpleItemStacks, targetInventory
         return false
     end
 
-    local sourceOwner
+    local sourceOwner ---@type LuaEntity|LuaPlayer?
     local itemAllMoved = true
 
     --Do the actual item moving.
@@ -235,12 +235,16 @@ end
 
 --- Get the inventory of the builder (player, bot, or god controller).
 ---@param builder EntityActioner
+---@return LuaInventory|EntityActioner?
 InventoryUtils.GetBuilderInventory = function(builder)
     if builder.is_player() then
+        -- Is a player's character doing the building. So return its main inventory.
         return builder.get_main_inventory()
     elseif builder.type ~= nil and builder.type == "construction-robot" then
+        -- Is a construction robot doing the building. So return its main inventory.
         return builder.get_inventory(defines.inventory.robot_cargo)
     else
+        -- Is god controller doing the building. So return the player.
         return builder
     end
 end

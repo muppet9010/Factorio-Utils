@@ -154,7 +154,8 @@ end
 ---@return string? treeName
 BiomeTrees.GetBiomeTreeName = function(surface, position)
     -- Returns the tree name or nil if tile isn't land type
-    local tile = surface.get_tile(position--[[@as TilePosition # handled equally by Factorio in this API function.]] )
+    ---@diagnostic disable-next-line: missing-parameter, param-type-mismatch # Factorio API bug: https://forums.factorio.com/viewtopic.php?f=233&t=109145&p=593761&hilit=get_tile#p593761
+    local tile = surface.get_tile(position --[[@as TilePosition # Rounds down values, which is the same tile the decimal value was part way across.]])
     local tileData = global.UTILITYBIOMETREES.tileData[tile.name]
     if tileData == nil then
         local tileName = tile.hidden_tile
@@ -214,7 +215,9 @@ BiomeTrees.AddBiomeTreeNearPosition = function(surface, position, distance)
         LoggingUtils.ModLog("No position for new tree found", true, LogPlacedNonPositives)
         return nil, nil, nil
     end
-    local newTree = surface.create_entity { name = treeName, position = newPosition, force = "neutral", raise_built = true, create_build_effect_smoke = false }
+
+    ---@diagnostic disable-next-line: missing-fields # Temporary work around until Factorio docs and FMTK updated to allow per type field specification.
+    local newTree = surface.create_entity({ name = treeName, position = newPosition, force = "neutral", raise_built = true, create_build_effect_smoke = false })
     if newTree == nil then
         LoggingUtils.LogPrintError("Failed to create tree at found position", LogPlacedPositives or LogPlacedNonPositives)
         return nil, nil, nil
@@ -270,7 +273,7 @@ BiomeTrees._GetTreePossibilitiesForTileData = function(tileData)
     local suitableTrees = { trees = {}, maxChance = 0 } ---@type UtilityBiomeTrees_suitableTrees
     local currentChance = 0 ---@type number
     local suitableTrees_trees = suitableTrees.trees
-    local treeTempMin, treeTempMax, treeMoistureMin, treeMoistureMax
+    local treeTempMin, treeTempMax, treeMoistureMin, treeMoistureMax ---@type double, double, double, double
     local logTileDetails = LogSuitableNonPositives or LogSuitablePositives or LogTags
     if logTileDetails then LoggingUtils.ModLog("\r\n" .. tileData.name, false) end
 
@@ -368,18 +371,18 @@ end
 ---@return UtilityBiomeTrees_EnvironmentData
 BiomeTrees._GetEnvironmentData = function()
     -- Used to handle the differing tree to tile value relationships of mods vs base game. This assumes that either or is in use as I believe the 2 are incompatible in map generation.
-    local environmentData = {} ---@type UtilityBiomeTrees_EnvironmentData
+    local environmentData ---@type UtilityBiomeTrees_EnvironmentData
     if game.active_mods["alien-biomes"] then
-        environmentData.moistureRangeAttributeNames = { optimal = "water_optimal", range = "water_max_range" }
-        environmentData.tileTemperatureCalculationSettings = {
+        local moistureRangeAttributeNames = { optimal = "water_optimal", range = "water_max_range" }
+        local tileTemperatureCalculationSettings = {
             -- on scale of -0.5 to 1.5 = -50 to 150. -15 is lowest temp tree +125 is highest temp tree.
             scaleMultiplier = 100,
             max = 125,
             min = -15
         }
-        environmentData.tileData = BiomeTrees._ProcessTilesRawData(AlienBiomesData.GetTileData())
+        local tileData = BiomeTrees._ProcessTilesRawData(AlienBiomesData.GetTileData())
         local tagToColors = AlienBiomesData.GetTileTagToTreeColors() ---@type UtilityBiomeTrees_TileTagToTreeTagsList
-        for _, tile in pairs(environmentData.tileData) do
+        for _, tile in pairs(tileData) do
             if tile.rawTag ~= nil then
                 if tagToColors[tile.rawTag] then
                     tile.tags = tagToColors[tile.rawTag]
@@ -388,20 +391,38 @@ BiomeTrees._GetEnvironmentData = function()
                 end
             end
         end
-        environmentData.treesMetaData = AlienBiomesData.GetTreesMetaData() ---@type UtilityBiomeTrees_TreesMetaData
-        environmentData.deadTreeNames = { "dead-tree-desert", "dead-grey-trunk", "dead-dry-hairy-tree", "dry-hairy-tree", "dry-tree" }
-        environmentData.randomTreeLastResort = "GetRandomDeadTree"
+        local treesMetaData = AlienBiomesData.GetTreesMetaData() ---@type UtilityBiomeTrees_TreesMetaData
+        local deadTreeNames = { "dead-tree-desert", "dead-grey-trunk", "dead-dry-hairy-tree", "dry-hairy-tree", "dry-tree" }
+        local randomTreeLastResort = "GetRandomDeadTree"
+
+        environmentData = {
+            moistureRangeAttributeNames = moistureRangeAttributeNames,
+            tileTemperatureCalculationSettings = tileTemperatureCalculationSettings,
+            tileData = tileData,
+            treesMetaData = treesMetaData,
+            deadTreeNames = deadTreeNames,
+            randomTreeLastResort = randomTreeLastResort
+        }
     else
-        environmentData.moistureRangeAttributeNames = { optimal = "water_optimal", range = "water_range" }
-        environmentData.tileTemperatureCalculationSettings = {
+        local moistureRangeAttributeNames = { optimal = "water_optimal", range = "water_range" }
+        local tileTemperatureCalculationSettings = {
             -- on scale of 0 to 1 = 0 to 35. 5 is the lowest tempt tree.
             scaleMultiplier = 35,
             min = 5
         }
-        environmentData.tileData = BiomeTrees._ProcessTilesRawData(BaseGameData.GetTileData())
-        environmentData.treesMetaData = nil
-        environmentData.deadTreeNames = { "dead-tree-desert", "dead-grey-trunk", "dead-dry-hairy-tree", "dry-hairy-tree", "dry-tree" }
-        environmentData.randomTreeLastResort = "GetTrulyRandomTree"
+        local tileData = BiomeTrees._ProcessTilesRawData(BaseGameData.GetTileData())
+        local treesMetaData = nil
+        local deadTreeNames = { "dead-tree-desert", "dead-grey-trunk", "dead-dry-hairy-tree", "dry-hairy-tree", "dry-tree" }
+        local randomTreeLastResort = "GetTrulyRandomTree"
+
+        environmentData = {
+            moistureRangeAttributeNames = moistureRangeAttributeNames,
+            tileTemperatureCalculationSettings = tileTemperatureCalculationSettings,
+            tileData = tileData,
+            treesMetaData = treesMetaData,
+            deadTreeNames = deadTreeNames,
+            randomTreeLastResort = randomTreeLastResort
+        }
     end
 
     return environmentData
@@ -411,9 +432,10 @@ end
 ---@return UtilityBiomeTrees_TreeDetails[]
 BiomeTrees._GetTreeData = function()
     local treeDataArray = {} ---@type UtilityBiomeTrees_TreeDetails[]
-    local treeData, prototypeName
+    local treeData, prototypeName ---@type UtilityBiomeTrees_TreeDetails, string
     local environmentData = global.UTILITYBIOMETREES.environmentData
     local moistureRangeAttributeNames = global.UTILITYBIOMETREES.environmentData.moistureRangeAttributeNames
+    ---@diagnostic disable-next-line: missing-fields # Temporary work around until Factorio docs and FMTK updated to allow per type field specification.
     local treePrototypes = game.get_filtered_entity_prototypes({ { filter = "type", type = "tree" }, { mode = "and", filter = "autoplace" } })
 
     for _, prototype in pairs(treePrototypes) do

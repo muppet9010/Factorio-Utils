@@ -97,27 +97,27 @@ StyleData.GeneratePrototypes = function()
     styleNamesGenerated.frame = {} ---@type table<string, table<string, string>>
     for _, graphic in pairs(
         {
-            { "_main", { base = { position = { 0, 0 }, corner_size = 8 } }, 0, 0 },
-            { "_main_shadowSunken", { base = { position = { 0, 0 }, corner_size = 8 }, shadow = frameShadowSunken() }, 2, 0 },
-            { "_main_shadowRisen", { base = { position = { 0, 0 }, corner_size = 8 }, shadow = frameShadowRisen() }, 0, 2 },
-            { "_content", { base = { position = { 68, 0 }, corner_size = 8 } }, 0, 0 },
-            { "_content_shadowSunken", { base = { position = { 68, 0 }, corner_size = 8 }, shadow = frameShadowSunken() }, 2, 0 },
-            { "_content_shadowRisen", { base = { position = { 68, 0 }, corner_size = 8 }, shadow = frameShadowRisen() }, 0, 2 },
-            { "_contentInnerDark", { base = { position = { 34, 0 }, corner_size = 8 } }, 0, 0 },
-            { "_contentInnerDark_shadowSunken", { base = { position = { 34, 0 }, corner_size = 8 }, shadow = frameShadowSunken() }, 2, 0 },
-            { "_contentInnerDark_shadowRisen", { base = { position = { 34, 0 }, corner_size = 8 }, shadow = frameShadowRisen() }, 0, 2 },
-            { "_contentInnerLight", { base = { position = { 0, 17 }, corner_size = 8 } }, 0, 0 },
-            { "_contentInnerLight_shadowSunken", { base = { position = { 0, 17 }, corner_size = 8 }, shadow = frameShadowSunken() }, 2, 0 },
-            { "_contentInnerLight_shadowRisen", { base = { position = { 0, 17 }, corner_size = 8 }, shadow = frameShadowRisen() }, 0, 2 },
-            { "_brightGreen", { base = { position = { 102, 17 }, corner_size = 8 } }, 0, 0 },
-            { "_brightGreen_shadowSunken", { base = { position = { 102, 17 }, corner_size = 8 }, shadow = frameShadowSunken() }, 2, 0 },
-            { "_brightGreen_shadowRisen", { base = { position = { 102, 17 }, corner_size = 8 }, shadow = frameShadowRisen() }, 0, 2 },
-            { "_brightRed", { base = { position = { 136, 17 }, corner_size = 8 } }, 0, 0 },
-            { "_brightRed_shadowSunken", { base = { position = { 136, 17 }, corner_size = 8 }, shadow = frameShadowSunken() }, 2, 0 },
-            { "_brightRed_shadowRisen", { base = { position = { 136, 17 }, corner_size = 8 }, shadow = frameShadowRisen() }, 0, 2 },
-            { "_brightOrange", { base = { position = { 34, 17 }, corner_size = 8 } }, 0, 0 },
-            { "_brightOrange_shadowSunken", { base = { position = { 34, 17 }, corner_size = 8 }, shadow = frameShadowSunken() }, 2, 0 },
-            { "_brightOrange_shadowRisen", { base = { position = { 34, 17 }, corner_size = 8 }, shadow = frameShadowRisen() }, 0, 2 },
+            { "_main",                           { base = { position = { 0, 0 }, corner_size = 8 } },                                  0, 0 },
+            { "_main_shadowSunken",              { base = { position = { 0, 0 }, corner_size = 8 }, shadow = frameShadowSunken() },    2, 0 },
+            { "_main_shadowRisen",               { base = { position = { 0, 0 }, corner_size = 8 }, shadow = frameShadowRisen() },     0, 2 },
+            { "_content",                        { base = { position = { 68, 0 }, corner_size = 8 } },                                 0, 0 },
+            { "_content_shadowSunken",           { base = { position = { 68, 0 }, corner_size = 8 }, shadow = frameShadowSunken() },   2, 0 },
+            { "_content_shadowRisen",            { base = { position = { 68, 0 }, corner_size = 8 }, shadow = frameShadowRisen() },    0, 2 },
+            { "_contentInnerDark",               { base = { position = { 34, 0 }, corner_size = 8 } },                                 0, 0 },
+            { "_contentInnerDark_shadowSunken",  { base = { position = { 34, 0 }, corner_size = 8 }, shadow = frameShadowSunken() },   2, 0 },
+            { "_contentInnerDark_shadowRisen",   { base = { position = { 34, 0 }, corner_size = 8 }, shadow = frameShadowRisen() },    0, 2 },
+            { "_contentInnerLight",              { base = { position = { 0, 17 }, corner_size = 8 } },                                 0, 0 },
+            { "_contentInnerLight_shadowSunken", { base = { position = { 0, 17 }, corner_size = 8 }, shadow = frameShadowSunken() },   2, 0 },
+            { "_contentInnerLight_shadowRisen",  { base = { position = { 0, 17 }, corner_size = 8 }, shadow = frameShadowRisen() },    0, 2 },
+            { "_brightGreen",                    { base = { position = { 102, 17 }, corner_size = 8 } },                               0, 0 },
+            { "_brightGreen_shadowSunken",       { base = { position = { 102, 17 }, corner_size = 8 }, shadow = frameShadowSunken() }, 2, 0 },
+            { "_brightGreen_shadowRisen",        { base = { position = { 102, 17 }, corner_size = 8 }, shadow = frameShadowRisen() },  0, 2 },
+            { "_brightRed",                      { base = { position = { 136, 17 }, corner_size = 8 } },                               0, 0 },
+            { "_brightRed_shadowSunken",         { base = { position = { 136, 17 }, corner_size = 8 }, shadow = frameShadowSunken() }, 2, 0 },
+            { "_brightRed_shadowRisen",          { base = { position = { 136, 17 }, corner_size = 8 }, shadow = frameShadowRisen() },  0, 2 },
+            { "_brightOrange",                   { base = { position = { 34, 17 }, corner_size = 8 } },                                0, 0 },
+            { "_brightOrange_shadowSunken",      { base = { position = { 34, 17 }, corner_size = 8 }, shadow = frameShadowSunken() },  2, 0 },
+            { "_brightOrange_shadowRisen",       { base = { position = { 34, 17 }, corner_size = 8 }, shadow = frameShadowRisen() },   0, 2 },
         }
     ) do
         local graphicEmmyLuaName = string.sub(graphic[1], 2)
@@ -221,10 +221,10 @@ StyleData.GeneratePrototypes = function()
     styleNamesGenerated.spriteButton = {} ---@type table<string, string>
     for _, attributes in pairs(
         {
-            { "", {} },
-            { "_frame", { default_graphical_set = { base = { position = { 0, 0 }, corner_size = 8 }, shadow = { position = { 440, 24 }, corner_size = 8, draw_type = "outer" } } } },
-            { "_noBorder", { default_graphical_set = {}, hovered_graphical_set = {}, clicked_graphical_set = {} } },
-            { "_noBorderHover", { default_graphical_set = {}, clicked_graphical_set = {} } },
+            { "",                           {} },
+            { "_frame",                     { default_graphical_set = { base = { position = { 0, 0 }, corner_size = 8 }, shadow = { position = { 440, 24 }, corner_size = 8, draw_type = "outer" } } } },
+            { "_noBorder",                  { default_graphical_set = {}, hovered_graphical_set = {}, clicked_graphical_set = {} } },
+            { "_noBorderHover",             { default_graphical_set = {}, clicked_graphical_set = {} } },
             { "_frameCloseButtonClickable", { default_graphical_set = { base = { position = { 0, 0 }, corner_size = 8 }, shadow = { position = { 440, 24 }, corner_size = 8, draw_type = "outer" } }, padding = -6, width = 16, height = 16 } }
         }
     ) do
@@ -234,15 +234,17 @@ StyleData.GeneratePrototypes = function()
             local styleNameVersion = styleName .. StyleData.styleVersion
             defaultStyle[styleNameVersion] = {
                 type = "button_style",
-                width = size[2] --[[@as uint?]] ,
-                height = size[2] --[[@as uint?]] ,
+                width = size[2] --[[@as uint?]],
+                height = size[2] --[[@as uint?]],
                 margin = 0,
                 padding = 0
             }
-            for k, v in pairs(attributes[2]--[[@as table<string, table>]] ) do
-                if type(k) == "number" then ---@cast k uint # It's really a uint value if its a number type.
+            for k, v in pairs(attributes[2] --[[@as table<string|uint, table>]]) do
+                if type(k) == "number" then
+                    ---@cast k uint # It's really a uint value if it's a number type.
                     defaultStyle[styleNameVersion][k] = (defaultStyle[styleNameVersion][k] or 0) + v
                 else
+                    ---@cast k string
                     defaultStyle[styleNameVersion][k] = v
                 end
             end
@@ -258,8 +260,8 @@ StyleData.GeneratePrototypes = function()
         for _, boldness in pairs({ { "", "" }, { "_semibold", "_semibold" }, { "_bold", "_bold" } }) do
             for _, attributes in pairs(
                 {
-                    { "", {} },
-                    { "_frame", { default_graphical_set = { base = { position = { 0, 0 }, corner_size = 8 }, shadow = { position = { 440, 24 }, corner_size = 8, draw_type = "outer" } }, default_font_color = Colors.white, hovered_font_color = Colors.white, clicked_font_color = Colors.white } },
+                    { "",          {} },
+                    { "_frame",    { default_graphical_set = { base = { position = { 0, 0 }, corner_size = 8 }, shadow = { position = { 440, 24 }, corner_size = 8, draw_type = "outer" } }, default_font_color = Colors.white, hovered_font_color = Colors.white, clicked_font_color = Colors.white } },
                     { "_noBorder", { default_graphical_set = {}, hovered_graphical_set = {}, clicked_graphical_set = {} } }
                 }
             ) do
@@ -278,10 +280,12 @@ StyleData.GeneratePrototypes = function()
                         minimal_width = 0,
                         minimal_height = 0
                     }
-                    for k, v in pairs(attributes[2]--[[@as table<string, table>]] ) do
-                        if type(k) == "number" then ---@cast k uint # It's really a uint value if its a number type.
+                    for k, v in pairs(attributes[2] --[[@as table<string|uint, table>]]) do
+                        if type(k) == "number" then
+                            ---@cast k uint # It's really a uint value if it's a number type.
                             defaultStyle[styleNameVersion][k] = (defaultStyle[styleNameVersion][k] or 0) + v
                         else
+                            ---@cast k string
                             defaultStyle[styleNameVersion][k] = v
                         end
                     end
@@ -347,7 +351,7 @@ StyleData.GeneratePrototypes = function()
     end
 
     --- The extra fonts must be set manually as styling.
-    ---@type Prototype.Font[]
+    ---@type data.FontPrototype[]
     local muppetFonts = {
         {
             type = "font",
@@ -465,7 +469,7 @@ StyleData.GeneratePrototypes = function()
         -- Write out the style data to the log for all the styles we generated.
         local text = "\r\n\r\n\r\n" .. "---@class UtilityGuiStyle_MuppetStyle" .. "\r\n" .. "StyleData.MuppetStyles = {" .. "\r\n"
         for typeName, styles in pairs(styleNamesGenerated) do
-            text = text .. typeName .. " = {" .. "\r\n"
+            text = text .. typeName .. " = {" .. "\r\n" ---@type string # Sumneko bug when embedded variable setting: https://github.com/LuaLS/lua-language-server/issues/2374
             text = text .. StyleData._TraverseStyleChildrenToString(styles)
             text = text .. "}," .. "\r\n"
         end
@@ -473,7 +477,7 @@ StyleData.GeneratePrototypes = function()
 
         -- Write out the font data to the log for all the fonts we generated.
         text = text .. "\r\n" .. "---@class UtilityGuiStyle_MuppetFonts" .. "\r\n" .. "StyleData.MuppetFonts = {" .. "\r\n"
-        local fontListName
+        local fontListName ---@type string
         for _, font in pairs(muppetFonts) do
             fontListName = string.gsub(font.name, StyleData.styleVersion, "")
             text = text .. fontListName .. ' = "' .. font.name .. '", ' .. "\r\n"
@@ -486,6 +490,7 @@ end
 
 --- Traverse the variable nesting layers of the muppet styles and make a Lua object string for them.
 ---@param styleChildren table<string, string|table> # A dictionary of the current style children.
+---@return string
 StyleData._TraverseStyleChildrenToString = function(styleChildren)
     local text = ""
     for styleDetailsName, styleFullName in pairs(styleChildren) do
@@ -495,7 +500,7 @@ StyleData._TraverseStyleChildrenToString = function(styleChildren)
         else
             -- Another layer of nesting
             text = text .. styleDetailsName .. " = {" .. "\r\n"
-            text = text .. StyleData._TraverseStyleChildrenToString(styleFullName)
+            text = text .. StyleData._TraverseStyleChildrenToString(styleFullName) ---@type string # Sumneko bug when embedded variable setting: https://github.com/LuaLS/lua-language-server/issues/2374
             text = text .. "}," .. "\r\n"
         end
     end

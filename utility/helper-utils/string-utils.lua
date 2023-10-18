@@ -88,18 +88,18 @@ end
 ---@param requiredLength uint
 ---@return string paddedNumber
 StringUtils.PadNumberToMinimumDigits = function(number, requiredLength)
-	local negativeNumber
+    local negativeNumber = false
     if number < 0 then
         negativeNumber = true
         number = 0 - number
     end
     local numberString = tostring(number)
     local shortBy = requiredLength - string_len(numberString)
-    for i = 1, shortBy do
+    for _ = 1, shortBy do
         numberString = "0" .. numberString
     end
     if negativeNumber then
-        numberString = "-" .. numberString
+        numberString = "-" .. numberString ---@type string # This is a workaround for a SumnekoLua bug: https://github.com/LuaLS/lua-language-server/issues/2374
     end
     return numberString
 end
@@ -112,7 +112,7 @@ StringUtils.DisplayNumberPretty = function(number)
         return ""
     end
     local formatted = tostring(number)
-    local k
+    local k ---@type integer
     while true do
         formatted, k = string_gsub(formatted, "^(-?%d+)(%d%d%d)", "%1,%2")
         if (k == 0) then
@@ -126,6 +126,7 @@ end
 ---@param inputTicks int
 ---@param displayLargestTimeUnit "auto"|"hour"|"minute"|"second"
 ---@param displaySmallestTimeUnit "auto"|"hour"|"minute"|"second"
+---@return string
 StringUtils.DisplayTimeOfTicks = function(inputTicks, displayLargestTimeUnit, displaySmallestTimeUnit)
     if inputTicks == nil then
         return ""

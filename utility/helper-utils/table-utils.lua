@@ -130,10 +130,10 @@ end
 ---@param aTable table<any,any> # doesn't support commas in values or nested tables. Really for logging.
 ---@return string
 TableUtils.TableKeyToCommaString = function(aTable)
-    local newString
     if TableUtils.IsTableEmpty(aTable) then
         return ""
     end
+    local newString ---@type string
     for key in pairs(aTable) do
         if newString == nil then
             newString = tostring(key)
@@ -148,10 +148,10 @@ end
 ---@param aTable table<any,any> # doesn't support commas in values or nested tables. Really for logging.
 ---@return string
 TableUtils.TableValueToCommaString = function(aTable)
-    local newString
     if TableUtils.IsTableEmpty(aTable) then
         return ""
     end
+    local newString ---@type string
     for _, value in pairs(aTable) do
         if newString == nil then
             newString = tostring(value)
@@ -168,10 +168,10 @@ end
 ---@param aTable table<any,any> # doesn't support commas in values or nested tables. Really for logging.
 ---@return string
 TableUtils.TableKeyToNumberedListString = function(aTable)
-    local newString
     if TableUtils.IsTableEmpty(aTable) then
         return ""
     end
+    local newString ---@type string
     local count = 1
     for key in pairs(aTable) do
         if newString == nil then
@@ -190,10 +190,10 @@ end
 ---@param aTable table<any,any> # doesn't support commas in values or nested tables. Really for logging.
 ---@return string
 TableUtils.TableValueToNumberedListString = function(aTable)
-    local newString
     if TableUtils.IsTableEmpty(aTable) then
         return ""
     end
+    local newString ---@type string
     local count = 1
     for _, value in pairs(aTable) do
         if newString == nil then
@@ -380,7 +380,7 @@ TableUtils._TableContentsToJSON = function(targetTable, name, singleLineOutput, 
     local table_contents = ""
     if TableUtils.GetTableNonNilLength(targetTable) > 0 then
         for k, v in pairs(targetTable) do
-            local key, value
+            local key, value ---@type string, string
             if type(k) == "string" or type(k) == "number" or type(k) == "boolean" then -- keys are always strings
                 key = '"' .. tostring(k) .. '"'
             elseif type(k) == "nil" then
@@ -389,7 +389,7 @@ TableUtils._TableContentsToJSON = function(targetTable, name, singleLineOutput, 
                 if stopTraversing == true then
                     key = '"CIRCULAR LOOP TABLE"'
                 else
-                    local subStopTraversing
+                    local subStopTraversing ---@type boolean
                     if tablesLogged[k] ~= nil then
                         subStopTraversing = true
                     end
@@ -398,7 +398,7 @@ TableUtils._TableContentsToJSON = function(targetTable, name, singleLineOutput, 
             elseif type(k) == "function" then
                 key = '"' .. tostring(k) .. '"'
             else
-                key = '"unhandled type: ' .. type(k) .. '"'
+                key = '"unhandled type: ' .. tostring(type(k)) .. '"'
             end
             if type(v) == "string" then
                 value = '"' .. tostring(v) .. '"'
@@ -410,7 +410,7 @@ TableUtils._TableContentsToJSON = function(targetTable, name, singleLineOutput, 
                 if stopTraversing == true then
                     value = '"CIRCULAR LOOP TABLE"'
                 else
-                    local subStopTraversing
+                    local subStopTraversing ---@type boolean
                     if tablesLogged[v] ~= nil then
                         subStopTraversing = true
                     end
@@ -419,7 +419,7 @@ TableUtils._TableContentsToJSON = function(targetTable, name, singleLineOutput, 
             elseif type(v) == "function" then
                 value = '"' .. tostring(v) .. '"'
             else
-                value = '"unhandled type: ' .. type(v) .. '"'
+                value = '"unhandled type: ' .. tostring(type(v)) .. '"'
             end
             if table_contents ~= "" then
                 table_contents = table_contents .. "," .. newLineCharacter

@@ -137,7 +137,7 @@ LoggingUtils.RunFunctionAndCatchErrors = function(functionRef, ...)
 
         -- Tidy the stacktrace up by removing the indented (\9) lines that relate to this xpcall function. Makes the stack trace read more naturally ignoring this function.
         local newStackTrace, lineCount = "\r\nstacktrace:\r\n", 1
-        local rawxpcallLine
+        local rawxpcallLine ---@type integer?
         for line in string.gmatch(errorObject.stacktrace, "(\9[^\n]+)\n") do
             local skipLine = false
             if lineCount == 1 then
@@ -253,9 +253,9 @@ LoggingUtils.PrintThingsDetails = function(thing, _tablesLogged)
     ---@cast thing table<any, any>
     for key, value in pairs(thing) do
         if _tablesLogged[key] ~= nil or _tablesLogged[value] ~= nil then
-            local valueIdText
+            local valueIdText ---@type string
             if value.id ~= nil then
-                valueIdText = "ID: " .. value.id
+                valueIdText = "ID: " .. tostring(value.id)
             else
                 valueIdText = "no ID"
             end
@@ -348,6 +348,7 @@ end
 ---@field stacktrace string
 
 ---@param errorMessage string
+---@return UtilityLogging_RunFunctionAndCatchErrors_ErrorObject
 LoggingUtils._RunFunctionAndCatchErrors_ErrorHandlerFunction = function(errorMessage)
     local errorObject = { message = errorMessage, stacktrace = debug.traceback() }
     return errorObject

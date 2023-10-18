@@ -3,7 +3,6 @@
 --]]
 --
 ---@meta
----@diagnostic disable
 
 --- The entities unit_number or "destroyedId_[UNIQUE_NUMBER_PER_ENTITY]". Created with code like `entity.unit_number or ("destroyedId_" .. script.register_on_entity_destroyed(entity))`.
 ---@alias EntityIdentifier string|uint

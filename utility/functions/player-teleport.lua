@@ -2,7 +2,20 @@
     Can teleport a player to near a target. Handles vehicles, finding valid placements and checking walkable paths based on settings.
 
     Usage: Call any public functions (not starting with "_") as required to request a teleport for a player. Other public functions can also be utilised as required.
-]]
+
+    Advised to check the response to teleport request in the below order. This seems to be a legacy thing as all states default to false.
+        local teleportResponse = PlayerTeleport.RequestTeleportToNearPosition()
+        if teleportResponse.teleportSucceeded == true then
+            -- All completed.
+        elseif pathRequestId ~= nil then
+            -- A pathing request has been made, monitor it and react when it completes.
+        elseif teleportResponse.errorNoValidPositionFound then
+            -- No valid position was found to try and teleport too.
+        elseif teleportResponse.errorTeleportFailed then
+            -- Failed to teleport the entity to the specific position.
+        end
+--]]
+
 local PositionUtils = require("utility.helper-utils.position-utils")
 local DirectionUtils = require("utility.helper-utils.direction-utils")
 
@@ -29,7 +42,8 @@ PlayerTeleport.RequestTeleportToNearPosition = function(targetPlayer, targetSurf
         targetPosition = nil,
         teleportSucceeded = false,
         pathRequestId = nil,
-        errorNoValidPositionFound = false
+        errorNoValidPositionFound = false,
+        errorTeleportFailed = false
     }
 
     -- Get the working data.
@@ -53,7 +67,7 @@ PlayerTeleport.RequestTeleportToNearPosition = function(targetPlayer, targetSurf
     -- Record the current placement entity for checking post path request.
     responseDetails.targetPlayerTeleportEntity = targetPlayerPlacementEntity
 
-    local arrivalPos
+    local arrivalPos ---@type MapPosition?
     local randomPositionsToTry = math.max(1, math.min(placementAttempts, inaccuracyToTargetPosition ^ inaccuracyToTargetPosition)) -- Avoid looking around lots of positions all within a very small arrival radius of the target. The arrival radius can be as low as 0.
     for _ = 1, randomPositionsToTry do
         -- Select a random position near the target and look for a valid placement near it.
@@ -85,17 +99,17 @@ PlayerTeleport.RequestTeleportToNearPosition = function(targetPlayer, targetSurf
         -- Create the path request. We use the player's real character for this as in worst case they can get out of their vehicle and walk back through the narrow terrain.
         local targetPlayer_character_prototype = targetPlayer_character.prototype
         local pathRequestId =
-        targetSurface.request_path {
-            bounding_box = targetPlayer_character_prototype.collision_box,
-            collision_mask = targetPlayer_character_prototype.collision_mask,
-            start = arrivalPos,
-            goal = reachablePosition,
-            force = targetPlayer_force,
-            radius = 1.0,
-            can_open_gates = true,
-            entity_to_ignore = targetPlayerPlacementEntity,
-            pathfind_flags = { allow_paths_through_own_entities = true, cache = false }
-        }
+            targetSurface.request_path {
+                bounding_box = targetPlayer_character_prototype.collision_box,
+                collision_mask = targetPlayer_character_prototype.collision_mask,
+                start = arrivalPos,
+                goal = reachablePosition,
+                force = targetPlayer_force,
+                radius = 1.0,
+                can_open_gates = true,
+                entity_to_ignore = targetPlayerPlacementEntity,
+                pathfind_flags = { allow_paths_through_own_entities = true, cache = false }
+            }
         responseDetails.pathRequestId = pathRequestId
         return responseDetails
     else
@@ -115,7 +129,7 @@ end
 ---@param targetPosition MapPosition # The exact position on the map to teleport them to.
 ---@return boolean teleportSucceeded # If the actual teleport command to the player/vehicle failed.
 PlayerTeleport.TeleportToSpecificPosition = function(targetPlayer, targetSurface, targetPosition)
-    local teleportSucceeded, wasDriving, wasPassengerIn
+    local teleportSucceeded, vehicleWasDriving, vehicleWasPassengerIn ---@type boolean, LuaEntity?, LuaEntity?
     local targetPlayer_vehicle = targetPlayer.vehicle
 
     -- Teleport the appropriate entity to the specified position.
@@ -125,9 +139,9 @@ PlayerTeleport.TeleportToSpecificPosition = function(targetPlayer, targetSurface
         if targetPlayer_vehicle ~= nil then
             -- Player is in a non teleportable vehicle, so get them out of it before teleporting the player (character).
             if targetPlayer_vehicle.get_driver() then
-                wasDriving = targetPlayer_vehicle
+                vehicleWasDriving = targetPlayer_vehicle
             elseif targetPlayer_vehicle.get_passenger() then
-                wasPassengerIn = targetPlayer_vehicle
+                vehicleWasPassengerIn = targetPlayer_vehicle
             end
             targetPlayer.driving = false
         end
@@ -136,10 +150,10 @@ PlayerTeleport.TeleportToSpecificPosition = function(targetPlayer, targetSurface
 
     -- If the teleport failed and the player was in a non teleportable vehicle, put them back in their seat.
     if not teleportSucceeded then
-        if wasDriving then
-            wasDriving.set_driver(targetPlayer)
-        elseif wasPassengerIn then
-            wasPassengerIn.set_passenger(targetPlayer)
+        if vehicleWasDriving then
+            vehicleWasDriving.set_driver(targetPlayer)
+        elseif vehicleWasPassengerIn then
+            vehicleWasPassengerIn.set_passenger(targetPlayer)
         end
     end
 

@@ -79,11 +79,11 @@ BiterSelection.GetWormType = function(wormEvoGlobalName, evolution)
         MOD.UTILITYBITERSELECTION.WormCacheName = {} ---@type table<string, UtilityBiterSelection_WormCacheEntry> # Key'd by the worm cache name.
     end
     local wormEvoType = MOD.UTILITYBITERSELECTION.WormCacheName[wormEvoGlobalName]
+    evolution = MathUtils.RoundNumberToDecimalPlaces(evolution, 2)
     if wormEvoType == nil then
-        wormEvoType = {} ---@type UtilityBiterSelection_WormCacheEntry
+        wormEvoType = { calculatedEvolution = evolution }
         MOD.UTILITYBITERSELECTION.WormCacheName[wormEvoGlobalName] = wormEvoType
     end
-    evolution = MathUtils.RoundNumberToDecimalPlaces(evolution, 2)
     if wormEvoType.calculatedEvolution == nil or wormEvoType.calculatedEvolution ~= evolution then
         wormEvoType.calculatedEvolution = evolution
         wormEvoType.name = BiterSelection._CalculateSpecificWormForEvolution(evolution)
@@ -103,8 +103,7 @@ BiterSelection._CalculateSpecificBiterSelectionProbabilities = function(spawnerT
     local rawUnitProbabilities = game.entity_prototypes[spawnerType].result_units
     local currentEvolutionProbabilities = {} ---@type UtilityBiterSelection_UnitChanceEntry[]
     if rawUnitProbabilities == nil then
-        -- This may cause an error, but added to make Sumneko happy and is technically a valid result.
-        return currentEvolutionProbabilities
+        return nil
     end
     for _, possibility in pairs(rawUnitProbabilities) do
         local startSpawnPointIndex ---@type int
@@ -115,14 +114,14 @@ BiterSelection._CalculateSpecificBiterSelectionProbabilities = function(spawnerT
         end
         if startSpawnPointIndex ~= nil then
             local startSpawnPoint = possibility.spawn_points[startSpawnPointIndex]
-            local endSpawnPoint
+            local endSpawnPoint ---@type SpawnPointDefinition
             if possibility.spawn_points[startSpawnPointIndex + 1] ~= nil then
                 endSpawnPoint = possibility.spawn_points[startSpawnPointIndex + 1]
             else
                 endSpawnPoint = { evolution_factor = 1.0, weight = startSpawnPoint.weight }
             end
 
-            local weight
+            local weight ---@type double
             if startSpawnPoint.evolution_factor ~= endSpawnPoint.evolution_factor then
                 local evoRange = endSpawnPoint.evolution_factor - startSpawnPoint.evolution_factor
                 local weightRange = endSpawnPoint.weight - startSpawnPoint.weight
@@ -142,6 +141,7 @@ end
 ---@param evolution double # The evolution the worm turret must be below.
 ---@return string? wormTurretName
 BiterSelection._CalculateSpecificWormForEvolution = function(evolution)
+    ---@diagnostic disable-next-line: missing-fields # Temporary work around until Factorio docs and FMTK updated to allow per type field specification.
     local turrets = game.get_filtered_entity_prototypes({ { filter = "turret" }, { mode = "and", filter = "build-base-evolution-requirement", comparison = "≤", value = evolution }, { mode = "and", filter = "flag", flag = "placeable-enemy" }, { mode = "and", filter = "flag", flag = "player-creation", invert = true } })
     if #turrets == 0 then
         return nil
