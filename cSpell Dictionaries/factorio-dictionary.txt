@@ -36,3 +36,22 @@ img # Used by Factorio text printing for defining an image name to show in the t
 typelist # used in by the Sumneko Lua plugin by JanSharp.
 
 FMTK # Factorio Modding Tool Kit
+
+
+# Energy Units
+K
+M
+G
+T
+P
+E
+Z
+Y
+KW
+MW
+GW
+TW
+PW
+EW
+ZW
+YJ

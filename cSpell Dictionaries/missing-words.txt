@@ -21,6 +21,7 @@ localised
 minimalised
 minimisable
 MP # Multi player.
+nerfed
 pathed
 pathing
 pathfind
