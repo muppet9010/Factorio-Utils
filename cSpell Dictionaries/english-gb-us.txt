@@ -1,7 +1,7 @@
 armor
 armors
 armored
-armouring
+armoring
 
 behavior
 behaviors
@@ -15,6 +15,3 @@ center
 centers
 centered
 centering
-
-targetted # Just wrong in allowed default words.
-targetting # Just wrong in allowed default words.

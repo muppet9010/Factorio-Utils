@@ -4,6 +4,8 @@ blueprintable
 compilatron
 cryogun
 deconstructable
+decorative
+decoratives
 deepwater
 doodad # Grpahical features on the ground.
 elem

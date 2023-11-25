@@ -57,9 +57,6 @@
     "gitlens.hovers.currentLine.over": "line",
     "editor.semanticHighlighting.enabled": true,
     "Lua.telemetry.enable": false,
-    "Lua.diagnostics.disable": [
-        "different-requires"
-    ],
     "Lua.workspace.preloadFileSize": 999999999,
     "gitlens.hovers.currentLine.details": false,
     "gitlens.hovers.currentLine.changes": false,
@@ -154,11 +151,21 @@
     "cSpell.spellCheckOnlyWorkspaceFiles": true,
     "cSpell.language": "en-GB",
     "cSpell.flagWords": [
-        "armour",
-        "colour",
-        "centre",
-        "behaviour",
-        "t"
+        "t", // To flag bad characters before the letter, i.e. don;t
+        "armour: armor",
+        "armours: armors",
+        "armoured: armored",
+        "armouring: armoring",
+        "behaviour: behavior",
+        "behaviours: behaviors",
+        "colour: color",
+        "colours: colors",
+        "coloured: colored",
+        "colouring: coloring",
+        "centre: center",
+        "centres: centers",
+        "centred: centered",
+        "centring: centering"
     ],
     "cSpell.ignorePaths": [
         "package-lock.json",
@@ -176,7 +183,8 @@
         "editor.defaultFormatter": "vscode.json-language-features"
     },
     "Lua.format.defaultConfig": {
-        "max_line_length": "99999999"
+        "max_line_length": "99999999",
+        "align_continuous_inline_comment": "false"
     },
     "cSpell.suggestionMenuType": "quickFix",
     "cSpell.suggestionNumChanges": 5,
@@ -195,4 +203,8 @@
         "text"
     ],
     "window.newWindowDimensions": "offset",
+    "[json]": {
+        "editor.defaultFormatter": "vscode.json-language-features"
+    },
+    "git.openRepositoryInParentFolders": "never",
 }
