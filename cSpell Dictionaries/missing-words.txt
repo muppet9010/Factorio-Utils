@@ -1,9 +1,10 @@
 anyway
 anyways
-autoplaced
 autoplace
+autoplaced
 autoplacing
 aww # As in `aww cute`.
+BRB # slang.
 casted
 cooldown
 dedupe
@@ -25,6 +26,7 @@ nerfed
 pathed
 pathing
 pathfind
+PEBKAC # slang.
 postback
 QOL # Quality Of Life.
 repathing
@@ -41,6 +43,7 @@ revivable
 SP # Single Player.
 Sumneko
 TBC # To Be Confirmed.
+TBD # To Be Decided.
 TBH # To Be Honest.
 teleportable
 tintable

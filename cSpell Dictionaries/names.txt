@@ -1,0 +1,34 @@
+# Modders, Develoeprs & Tool Makers
+Battlefluffy # Scenario creator.
+Bilbo # Modder.
+Bilka # Factorio developer & modder.
+darkfrei # Modder.
+Earendel # Factorio developer & Modder.
+JARG # Modder.
+kajacx # Modder.
+Klonan # Factorio developer & modder.
+
+
+
+# Streamer & Content Creators
+JD # Streamer.
+JD-Plays # Streamer JD Plays's ingame name.
+JDPlays # Streamer.
+Mukkie # Streamer.
+P00ber # Commonly used mis-spelling of the streamers name.
+P0ober # Streamer.
+P0obers # Streamer.
+Poober # Streamer P0ober's ingame name.
+
+
+
+# Players
+Bilbo # JD Plays community members name.
+BTG # JD Plays community members name.
+Redmew # Scenario name/creator.
+Sorahn # JD Plays community members name.
+
+
+# Other Mods & Tools
+FMTK # Factorio Modding Tool Kit
+Babelfish # other mods name.

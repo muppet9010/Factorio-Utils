@@ -1,4 +1,3 @@
-autoplace
 bigass # name of explosion
 blueprintable
 compilatron
@@ -7,7 +6,7 @@ deconstructable
 decorative
 decoratives
 deepwater
-doodad # Grpahical features on the ground.
+doodad # Graphical features on the ground.
 elem
 EVENTID
 factorio
@@ -28,16 +27,14 @@ spidertrons
 textfield
 roboport
 roboports
+upvalue
 wube
 
-Kwh # unit of power.
+
 
 zzz # Used in the `order` field for putting things at the end of item/entity GUI lists.
 img # Used by Factorio text printing for defining an image name to show in the text.
 
-typelist # used in by the Sumneko Lua plugin by JanSharp.
-
-FMTK # Factorio Modding Tool Kit
 
 
 # Energy Units

@@ -14,5 +14,4 @@ TL # Top Left in Gui Style.
 BR # Bottom Right in Gui Style.
 Evo # Evolution
 
-Earendel # Alien Biomes mod creator.
-Bilka # Factorio developer.
+MODDATA # the generic Lua global variable I use when occasioanlly needed.

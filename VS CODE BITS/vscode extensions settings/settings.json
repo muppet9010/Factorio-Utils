@@ -141,6 +141,12 @@
             "addWords": false,
             "scope": "user"
         },
+        "names": {
+            "name": "names",
+            "path": "../../.vscode/cspell/names.txt",
+            "addWords": false,
+            "scope": "user"
+        },
         "workspace-dictionary": {
             "name": "workspace-dictionary",
             "path": "./.vscode/cspell/workspace-dictionary.txt",
