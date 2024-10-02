@@ -65,7 +65,6 @@
     "[lua]": {
         "editor.defaultFormatter": "sumneko.lua"
     },
-    "vscode-lua-format.configPath": "E:\\Home\\Projects\\Factorio Modding\\.lua-format",
     "Lua.completion.callSnippet": "Replace",
     "Lua.diagnostics.workspaceDelay": 1000,
     "Lua.hover.fieldInfer": 5000,
@@ -113,37 +112,37 @@
     "cSpell.customDictionaries": {
         "missing-words": {
             "name": "missing-words",
-            "path": "../../.vscode/cspell/missing-words.txt",
+            "path": "../../Factorio-Utils/cSpell Dictionaries/missing-words.txt",
             "addWords": false,
             "scope": "user"
         },
         "factorio-dictionary": {
             "name": "factorio-dictionary",
-            "path": "../../.vscode/cspell/factorio-dictionary.txt",
+            "path": "../../Factorio-Utils/cSpell Dictionaries/factorio-dictionary.txt",
             "addWords": false,
             "scope": "user"
         },
         "english-gb-us": {
             "name": "english-gb-us",
-            "path": "../../.vscode/cspell/english-gb-us.txt",
+            "path": "../../Factorio-Utils/cSpell Dictionaries/english-gb-us.txt",
             "addWords": false,
             "scope": "user"
         },
         "colors": {
             "name": "colors",
-            "path": "../../.vscode/cspell/colors.txt",
+            "path": "../../Factorio-Utils/cSpell Dictionaries/colors.txt",
             "addWords": false,
             "scope": "user"
         },
         "utility-library": {
             "name": "utility-library",
-            "path": "../../.vscode/cspell/utility-library.txt",
+            "path": "../../Factorio-Utils/cSpell Dictionaries/utility-library.txt",
             "addWords": false,
             "scope": "user"
         },
         "names": {
             "name": "names",
-            "path": "../../.vscode/cspell/names.txt",
+            "path": "../../Factorio-Utils/cSpell Dictionaries/names.txt",
             "addWords": false,
             "scope": "user"
         },

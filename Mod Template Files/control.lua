@@ -2,7 +2,7 @@ local function CreateGlobals()
 end
 
 local function OnLoad()
-	--Any Remote Interface registration calls can go in here or in root of control.lua
+	-- Any Remote Interface or Command registration calls go in here.
 end
 
 ---@param event EventData.on_runtime_mod_setting_changed|nil # nil value when called from OnStartup (on_init & on_configuration_changed)

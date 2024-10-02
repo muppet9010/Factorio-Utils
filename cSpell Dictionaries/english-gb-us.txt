@@ -2,6 +2,7 @@ armor
 armors
 armored
 armoring
+unarmored
 
 behavior
 behaviors

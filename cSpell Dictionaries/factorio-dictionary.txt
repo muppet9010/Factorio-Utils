@@ -1,3 +1,4 @@
+aquilo
 bigass # name of explosion
 blueprintable
 compilatron
@@ -11,6 +12,8 @@ elem
 EVENTID
 factorio
 freeplay
+fulgora
+gleba
 hitbox
 listbox
 lualib
@@ -28,6 +31,7 @@ textfield
 roboport
 roboports
 upvalue
+vulcanus
 wube
 
 
@@ -53,4 +57,12 @@ TW
 PW
 EW
 ZW
+YW
+KJ
+MJ
+GJ
+TJ
+PJ
+EJ
+ZJ
 YJ

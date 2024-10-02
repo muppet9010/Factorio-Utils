@@ -26,8 +26,8 @@ Extensions currently used:
  - Lua (class type definitions): https://marketplace.visualstudio.com/items?itemName=sumneko.lua    documentation: https://github.com/sumneko/lua-language-server/wiki/EmmyLua-Annotations
 	- Does TypeDef checks based on user settings and a few workspace settings placed by Factorio Mod Debug.
 	- Does Formatting as default from formatter (no .editorconfig), with any required settings done via user settings.
- - Factorio Mod Debug: https://marketplace.visualstudio.com/items?itemName=justarandomgeek.factoriomod-debug
-	- Utils copy of config files at "VS CODE BITS\Per Mod .vscode", put its contents in the mods specific folder in a ".vscode" folder. In the past this included settings.json, but no the tol will auto create these approperiately.
+ - Factorio Modding Tool Kit: https://marketplace.visualstudio.com/items?itemName=justarandomgeek.factoriomod-debug
+	- Utils copy of config files at "VS CODE BITS\Per Mod .vscode", put its contents in the mods specific folder in a ".vscode" folder. In the past this included settings.json, but now the tool will auto create these approperiately.
 	- To generate EmmyLua docs for the Factorio API from the JSON docs, press the Factorio version selector on the status bar (bottom of VSCode) and browse to the exe. Name the exe reference when prompted "Modding Current". This will create the runtime and prototype docs, plus the plugin, in a user data folder and create/update an empty .vscode settings.json file to reference them.
 	- It seems VS Code needs to be restarted after this i setup before it will prompt to configure VS Code for the addon. We want to do this as it adds in the various references to the Factorio objects, etc.
  - indent-rainbow: https://marketplace.visualstudio.com/items?itemName=oderwat.indent-rainbow
