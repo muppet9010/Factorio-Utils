@@ -7,6 +7,7 @@ aww # As in `aww cute`.
 BRB # slang.
 casted
 cooldown
+craftable
 dedupe
 deduped
 deduping

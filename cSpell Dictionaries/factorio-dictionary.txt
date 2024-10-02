@@ -6,6 +6,7 @@ cryogun
 deconstructable
 decorative
 decoratives
+deepcopy
 deepwater
 doodad # Graphical features on the ground.
 elem
@@ -50,6 +51,8 @@ P
 E
 Z
 Y
+R
+Q
 KW
 MW
 GW
@@ -58,6 +61,8 @@ PW
 EW
 ZW
 YW
+RW
+QW
 KJ
 MJ
 GJ
@@ -66,3 +71,5 @@ PJ
 EJ
 ZJ
 YJ
+RJ
+QJ

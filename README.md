@@ -29,7 +29,7 @@ Extensions currently used:
  - Factorio Modding Tool Kit: https://marketplace.visualstudio.com/items?itemName=justarandomgeek.factoriomod-debug
 	- Utils copy of config files at "VS CODE BITS\Per Mod .vscode", put its contents in the mods specific folder in a ".vscode" folder. In the past this included settings.json, but now the tool will auto create these approperiately.
 	- To generate EmmyLua docs for the Factorio API from the JSON docs, press the Factorio version selector on the status bar (bottom of VSCode) and browse to the exe. Name the exe reference when prompted "Modding Current". This will create the runtime and prototype docs, plus the plugin, in a user data folder and create/update an empty .vscode settings.json file to reference them.
-	- It seems VS Code needs to be restarted after this i setup before it will prompt to configure VS Code for the addon. We want to do this as it adds in the various references to the Factorio objects, etc.
+	- It seems VS Code needs to be restarted after this is setup before it will prompt to configure VS Code for the addon. We want to do this as it adds in the various references to the Factorio objects, etc.
  - indent-rainbow: https://marketplace.visualstudio.com/items?itemName=oderwat.indent-rainbow
  - GitLens: https://marketplace.visualstudio.com/items?itemName=eamodio.gitlens
  - compareit: https://marketplace.visualstudio.com/items?itemName=in4margaret.compareit

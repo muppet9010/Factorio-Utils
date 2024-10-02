@@ -212,4 +212,19 @@
         "editor.defaultFormatter": "vscode.json-language-features"
     },
     "git.openRepositoryInParentFolders": "never",
+    "extensions.autoCheckUpdates": false,
+    "Lua.workspace.checkThirdParty": "ApplyInMemory",
+    "factorio.versions": [
+        {
+            "name": "Factorio BetaTester",
+            "factorioPath": "c:\\FactorioBetaTester\\bin\\x64\\factorio-run.exe",
+            "active": true
+        }
+    ],
+    "Lua.workspace.library": [
+        "c:\\FactorioBetaTester\\data"
+    ],
+    "Lua.workspace.userThirdParty": [
+        "c:\\Users\\mikeh\\AppData\\Roaming\\Code\\User\\workspaceStorage\\2c260279a614f4b69cd59dd73f1794f0\\justarandomgeek.factoriomod-debug\\sumneko-3rd"
+    ]
 }

@@ -17,6 +17,20 @@
             "hookLog": true,
             "hookMode": "debug",
             "profileLines": true
+        },
+		{
+            "type": "factoriomod",
+            "request": "launch",
+            "name": "Factorio BetaTester Debug",
+            "factorioArgs": [
+                "--window-size=1600x900"
+            ],
+            "hookControl": true,
+            "hookData": false,
+            "hookSettings": true,
+            "hookLog": true,
+            "hookMode": "debug",
+            "profileLines": true
         }
     ]
 }
