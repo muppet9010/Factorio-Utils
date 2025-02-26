@@ -12,6 +12,7 @@ doodad # Graphical features on the ground.
 elem
 EVENTID
 factorio
+factoriopedia
 freeplay
 fulgora
 gleba
